@@ -241,6 +241,23 @@ router.post('/auto-setup', requireAuth, async (req, res) => {
 });
 
 /**
+ * One-Click Sync: Push ALL panel and website routes to Cloudflare Ingress & DNS
+ */
+router.post('/sync-routes', requireAuth, async (req, res) => {
+  try {
+    const { apiToken, domain } = req.body;
+    const result = await cloudflareService.syncAllCloudflareRoutes(apiToken || null, domain || null);
+    return res.json({
+      success: true,
+      message: 'All Cloudflare Tunnel Ingress routes & DNS records synchronized successfully!',
+      details: result
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * Restart Cloudflare Tunnel process
  */
 router.post('/restart', requireAuth, async (req, res) => {

@@ -335,16 +335,68 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
     throw new Error('Failed to retrieve Tunnel Token from Cloudflare API');
   }
 
-  // 5. Configure Tunnel Ingress Rules (remotely managed configuration)
-  const ingressRules = [];
+  // 5. Gather and aggregate all application and panel ingress rules
+  const db = require('../database/db');
+  const allHostnamesMap = new Map();
 
-  // Add all app routes
+  // Always ensure panel hostname is mapped
+  const panelHostname = `panel.${cleanDomain}`;
+  allHostnamesMap.set(panelHostname, {
+    hostname: panelHostname,
+    service: `http://localhost:${config.PORT || 9000}`
+  });
+
+  // Pull all connected domains from database
+  try {
+    const dbDomains = await db.all(`
+      SELECT d.domain, d.website_id, w.port as website_port
+      FROM domains d
+      LEFT JOIN websites w ON d.website_id = w.id
+    `);
+
+    for (const d of dbDomains) {
+      if (d.domain) {
+        const port = d.website_port || config.PORT || 9000;
+        allHostnamesMap.set(d.domain, {
+          hostname: d.domain,
+          service: `http://localhost:${port}`
+        });
+      }
+    }
+  } catch (_) {}
+
+  // Fetch existing remote ingress from Cloudflare to preserve anything already configured
+  try {
+    const existingConfig = await cfApiRequest(
+      `/accounts/${accountId}/cfd_tunnel/${tunnelId}/configurations`,
+      apiToken
+    );
+    if (existingConfig && existingConfig.config && Array.isArray(existingConfig.config.ingress)) {
+      for (const rule of existingConfig.config.ingress) {
+        if (rule.hostname && rule.service && rule.service !== 'http_status:404') {
+          if (!allHostnamesMap.has(rule.hostname)) {
+            allHostnamesMap.set(rule.hostname, {
+              hostname: rule.hostname,
+              service: rule.service
+            });
+          }
+        }
+      }
+    }
+  } catch (_) {}
+
+  // Add the newly requested routes
   for (const r of routes) {
-    ingressRules.push({
-      hostname: r.hostname,
-      service: r.service
-    });
+    if (r.hostname && r.service) {
+      allHostnamesMap.set(r.hostname, {
+        hostname: r.hostname,
+        service: r.service
+      });
+    }
   }
+
+  // Construct ingress rules array
+  const ingressRules = Array.from(allHostnamesMap.values());
 
   // Catch-all 404 rule required by Cloudflare
   ingressRules.push({
@@ -362,9 +414,9 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
   const existingDns = await cfApiRequest(`/zones/${zoneId}/dns_records`, apiToken);
   const createdRecords = [];
 
-  for (const r of routes) {
+  for (const r of Array.from(allHostnamesMap.values())) {
     const hostname = r.hostname.trim();
-    const existing = existingDns.find((d) => d.name === hostname);
+    const existing = (existingDns || []).find((d) => d.name === hostname);
 
     if (existing) {
       if (existing.type === 'CNAME' && existing.content === dnsTarget) {
@@ -404,6 +456,36 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
     cnameTarget: dnsTarget,
     dnsRecords: createdRecords
   };
+}
+
+/**
+ * One-Click Sync: Ensure ALL connected websites and panel hostname are active in Cloudflare Ingress & DNS
+ */
+async function syncAllCloudflareRoutes(apiToken = null, zoneDomain = null) {
+  const effectiveToken = (apiToken && apiToken.trim()) || getSavedApiToken();
+  if (!effectiveToken) {
+    throw new Error('Cloudflare API Token not configured. Please save API Token first.');
+  }
+
+  // Find root domain from zones
+  let domain = zoneDomain;
+  if (!domain) {
+    const zones = await listZones(effectiveToken);
+    if (zones.length > 0) {
+      domain = zones[0].name;
+    }
+  }
+
+  if (!domain) {
+    throw new Error('Could not detect active Cloudflare zone domain');
+  }
+
+  return await setupTunnelViaApi({
+    apiToken: effectiveToken,
+    domain,
+    tunnelName: 'termux-android-tunnel',
+    routes: []
+  });
 }
 
 /**
@@ -520,5 +602,6 @@ module.exports = {
   stopTunnel,
   restartTunnel,
   deleteTunnelToken,
-  getTunnelLogs
+  getTunnelLogs,
+  syncAllCloudflareRoutes
 };

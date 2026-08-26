@@ -498,6 +498,15 @@ const tunnelManager = {
     }
   },
 
+  async syncCloudflareRoutes() {
+    try {
+      API.toast('Syncing all panel and website routes to Cloudflare Ingress...', 'info');
+      const res = await API.post('/api/tunnel/sync-routes', {});
+      API.toast(res.message || 'All Cloudflare routes synchronized!', 'success');
+      this.loadStatus();
+    } catch (err) {}
+  },
+
   async restart() {
     try {
       API.toast('Restarting Cloudflare Tunnel...', 'info');

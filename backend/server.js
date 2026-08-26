@@ -131,6 +131,20 @@ async function startServer() {
       } catch (err) {
         console.warn('[TermuxPanel] Autostart error:', err.message);
       }
+
+      // Auto-sync Cloudflare ingress routes on boot if API token is present
+      const cloudflareService = require('./services/cloudflare.service');
+      if (cloudflareService.getSavedApiToken()) {
+        setTimeout(async () => {
+          try {
+            console.log('[TermuxPanel] Syncing Cloudflare Ingress routes on boot...');
+            await cloudflareService.syncAllCloudflareRoutes();
+            console.log('[TermuxPanel] Cloudflare Ingress routes synchronized.');
+          } catch (cfErr) {
+            console.warn('[TermuxPanel] Cloudflare boot sync notice:', cfErr.message);
+          }
+        }, 3000);
+      }
     });
   } catch (err) {
     console.error('[TermuxPanel] Startup failure:', err);
