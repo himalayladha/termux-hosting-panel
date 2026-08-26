@@ -9,6 +9,10 @@
   <meta property="og:description" content="Host HTML, Node.js, Python, & PHP apps directly on your Android phone with zero port forwarding.">
   <meta property="og:url" content="https://himalayladha.github.io/termux-hosting-panel/">
   <meta name="theme-color" content="#0b0f19">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <style>
     :root {
       --bg: #0b0f19;
@@ -39,6 +43,15 @@
       line-height: 1.6;
       font-size: 16px;
       overflow-x: hidden;
+    }
+
+    /* Lucide Icon Standard Styling */
+    .lucide {
+      width: 1.15em;
+      height: 1.15em;
+      vertical-align: -0.18em;
+      display: inline-block;
+      stroke-width: 2px;
     }
 
     /* Container */
@@ -82,10 +95,12 @@
       height: 38px;
       background: linear-gradient(135deg, var(--primary), #38bdf8);
       border-radius: 10px;
-      font-size: 16px;
-      font-weight: 800;
       color: #fff;
       box-shadow: 0 0 16px var(--primary-glow);
+    }
+    .brand-logo .lucide {
+      width: 20px;
+      height: 20px;
     }
     .nav-links {
       display: flex;
@@ -133,13 +148,6 @@
     .btn-secondary:hover {
       background: var(--bg-card-hover);
       border-color: var(--border-light);
-    }
-    .btn-outline {
-      border-color: var(--primary-light);
-      color: var(--primary-light);
-    }
-    .btn-outline:hover {
-      background: rgba(56, 189, 248, 0.1);
     }
     .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 6px; }
 
@@ -218,7 +226,7 @@
     .dot-red { background: #ef4444; }
     .dot-yellow { background: #f59e0b; }
     .dot-green { background: #10b981; }
-    .terminal-title { font-size: 12px; color: var(--text-muted); font-family: monospace; }
+    .terminal-title { font-size: 12px; color: var(--text-muted); font-family: monospace; display: flex; align-items: center; gap: 6px; }
     .terminal-body {
       padding: 24px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -243,6 +251,10 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     .section-title {
       font-size: 36px;
@@ -263,11 +275,6 @@
       grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
       gap: 32px;
     }
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
 
     /* Cards */
     .card {
@@ -283,10 +290,21 @@
       border-color: var(--border-light);
       transform: translateY(-4px);
     }
-    .card-icon {
-      font-size: 32px;
-      margin-bottom: 16px;
-      display: inline-block;
+    .card-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-light);
+      margin-bottom: 20px;
+    }
+    .card-icon-wrap .lucide {
+      width: 26px;
+      height: 26px;
     }
     .card-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #fff; }
     .card-text { color: var(--text-muted); font-size: 15px; line-height: 1.6; }
@@ -329,14 +347,17 @@
       border-color: var(--success);
       box-shadow: 0 0 25px var(--success-glow);
     }
-    .arch-node h4 { font-size: 17px; margin-bottom: 8px; }
+    .arch-node h4 { font-size: 17px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .arch-node p { font-size: 13px; color: var(--text-muted); }
     .arch-arrow {
       color: var(--primary-light);
-      font-size: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .arch-arrow .lucide {
+      width: 28px;
+      height: 28px;
     }
 
     /* Code Snippet Box */
@@ -356,10 +377,15 @@
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 12px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font);
+      font-weight: 500;
     }
     .copy-btn:hover { background: rgba(255,255,255,0.15); }
 
@@ -389,8 +415,10 @@
 
     /* Badge Pills */
     .badge {
-      display: inline-block;
-      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
@@ -470,7 +498,7 @@
   <nav class="navbar">
     <div class="container nav-inner">
       <a href="#" class="nav-brand">
-        <span class="brand-logo">TP</span>
+        <span class="brand-logo"><i data-lucide="smartphone"></i></span>
         <span>TermuxPanel</span>
       </a>
       <div class="nav-links">
@@ -480,7 +508,9 @@
         <a href="#cloudflare">Cloudflare Tunnel</a>
         <a href="#security">Security</a>
         <a href="#faq">FAQ</a>
-        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm">⭐ GitHub Repo</a>
+        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm">
+          <i data-lucide="star"></i> GitHub Repo
+        </a>
       </div>
     </div>
   </nav>
@@ -488,7 +518,9 @@
   <!-- Hero Section -->
   <header class="hero">
     <div class="container">
-      <div class="hero-badge">⚡ Turn Your Android Device into a Web Server</div>
+      <div class="hero-badge">
+        <i data-lucide="zap"></i> Turn Your Android Device into a Web Server
+      </div>
       <h1 class="hero-title">
         Self-Host Websites on Android<br>
         <span class="hero-highlight">With 24/7 Global HTTPS Access</span>
@@ -498,8 +530,12 @@
       </p>
 
       <div class="hero-actions">
-        <a href="#install" class="btn btn-primary">🚀 Install in 1-Click</a>
-        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-secondary">📂 View Source Code</a>
+        <a href="#install" class="btn btn-primary">
+          <i data-lucide="rocket"></i> Install in 1-Click
+        </a>
+        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-secondary">
+          <i data-lucide="folder-git-2"></i> View Source Code
+        </a>
       </div>
 
       <!-- Terminal Preview Box -->
@@ -510,8 +546,8 @@
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
           </div>
-          <span class="terminal-title">termux ~ termux-panel/installer</span>
-          <span class="badge badge-success">ONLINE</span>
+          <span class="terminal-title"><i data-lucide="terminal"></i> termux ~ termux-panel/installer</span>
+          <span class="badge badge-success"><i data-lucide="activity"></i> ONLINE</span>
         </div>
         <div class="terminal-body">
           <div><span class="terminal-prompt">$</span> git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel</div>
@@ -534,44 +570,44 @@
   <section id="features">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">CAPABILITIES</div>
+        <div class="section-tag"><i data-lucide="layers"></i> CAPABILITIES</div>
         <h2 class="section-title">Everything You Need to Host on Android</h2>
         <p class="section-desc">Engineered around mobile hardware constraints without compromising on features.</p>
       </div>
 
       <div class="grid-3">
         <div class="card">
-          <span class="card-icon">🌐</span>
+          <div class="card-icon-wrap"><i data-lucide="globe"></i></div>
           <h3 class="card-title">Multi-Runtime Engine</h3>
           <p class="card-text">Supervise static HTML websites, Node.js applications, Python services (Flask/FastAPI), and PHP scripts with automatic port allocation (8100–8999).</p>
         </div>
 
         <div class="card">
-          <span class="card-icon">🔒</span>
+          <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
           <h3 class="card-title">Zero-Trust Cloudflare Tunnel</h3>
           <p class="card-text">Expose your sites via outbound-only encrypted tunnels. Bypass carrier CGNAT and dynamic IPs without opening a single router port.</p>
         </div>
 
         <div class="card">
-          <span class="card-icon">📁</span>
+          <div class="card-icon-wrap"><i data-lucide="folder"></i></div>
           <h3 class="card-title">Sandboxed File Manager</h3>
           <p class="card-text">Path-traversal safe file browser with a built-in code editor, file uploader, and downloader. Edit HTML, JS, and Python directly in your browser.</p>
         </div>
 
         <div class="card">
-          <span class="card-icon">🗄️</span>
+          <div class="card-icon-wrap"><i data-lucide="database"></i></div>
           <h3 class="card-title">SQLite Database Explorer</h3>
           <p class="card-text">Inspect SQLite database files, view schemas, browse table rows with pagination, execute custom SQL statements, and export raw database files.</p>
         </div>
 
         <div class="card">
-          <span class="card-icon">⏱️</span>
+          <div class="card-icon-wrap"><i data-lucide="clock"></i></div>
           <h3 class="card-title">Visual Cron Scheduler</h3>
           <p class="card-text">Automate scheduled background tasks with preset schedules (every minute, hourly, daily) synchronized directly with the Android <code>crond</code> daemon.</p>
         </div>
 
         <div class="card">
-          <span class="card-icon">🔋</span>
+          <div class="card-icon-wrap"><i data-lucide="battery-charging"></i></div>
           <h3 class="card-title">24/7 Self-Healing Watchdog</h3>
           <p class="card-text">Continuous monitor resurrects Node.js and Cloudflare processes within 60 seconds if Android's memory manager ever kills them.</p>
         </div>
@@ -583,7 +619,7 @@
   <section id="architecture">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">NETWORKING CONCEPT</div>
+        <div class="section-tag"><i data-lucide="network"></i> NETWORKING CONCEPT</div>
         <h2 class="section-title">How Does It Connect Without Port Forwarding?</h2>
         <p class="section-desc">Bypass CGNAT and mobile firewalls through an outbound-only encrypted tunnel to Cloudflare.</p>
       </div>
@@ -591,28 +627,28 @@
       <div class="arch-container">
         <div class="arch-row">
           <div class="arch-node">
-            <h4>1. Global Visitor</h4>
+            <h4><i data-lucide="user"></i> 1. Global Visitor</h4>
             <p>Opens <code>https://panel.yourdomain.com</code> in any browser worldwide.</p>
           </div>
-          <div class="arch-arrow">➔</div>
+          <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
           <div class="arch-node cloudflare">
-            <h4>2. Cloudflare Edge Network</h4>
+            <h4><i data-lucide="cloud"></i> 2. Cloudflare Edge Network</h4>
             <p>Provides free SSL certificate (HTTPS), WAF protection, and DDoS mitigation.</p>
           </div>
         </div>
 
-        <div style="text-align: center; color: var(--primary-light); font-size: 20px;">
-          ⬇ (Secure Outbound-Only QUIC/TLS Tunnel)
+        <div style="text-align: center; color: var(--primary-light); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i data-lucide="lock"></i> Outbound-Only Encrypted QUIC/TLS Tunnel
         </div>
 
         <div class="arch-row">
           <div class="arch-node highlight">
-            <h4>3. Android Phone (cloudflared)</h4>
+            <h4><i data-lucide="smartphone"></i> 3. Android Phone (cloudflared)</h4>
             <p>Receives request via outbound tunnel and forwards locally to localhost.</p>
           </div>
-          <div class="arch-arrow">➔</div>
+          <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
           <div class="arch-node security">
-            <h4>4. TermuxPanel & Apps</h4>
+            <h4><i data-lucide="server"></i> 4. TermuxPanel & Apps</h4>
             <p>Control Plane (<code>:9000</code>) and Hosted Sites (<code>:8100..:8999</code>) respond instantly.</p>
           </div>
         </div>
@@ -624,7 +660,7 @@
   <section id="install">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">QUICK INSTALLATION</div>
+        <div class="section-tag"><i data-lucide="download"></i> QUICK INSTALLATION</div>
         <h2 class="section-title">Get Up and Running in 3 Easy Steps</h2>
         <p class="section-desc">Follow these instructions directly on your Android phone.</p>
       </div>
@@ -636,7 +672,9 @@
           <p class="text-muted">Download and install the official F-Droid release of Termux. <em>(Do not install from Google Play Store as it is deprecated).</em></p>
           <div class="code-box">
             <span>https://f-droid.org/packages/com.termux/</span>
-            <a href="https://f-droid.org/packages/com.termux/" target="_blank" class="copy-btn">Open F-Droid</a>
+            <a href="https://f-droid.org/packages/com.termux/" target="_blank" class="copy-btn">
+              <i data-lucide="external-link"></i> Open F-Droid
+            </a>
           </div>
         </div>
       </div>
@@ -648,7 +686,9 @@
           <p class="text-muted">Open Termux and paste this single command block:</p>
           <div class="code-box">
             <code>pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh</code>
-            <button class="copy-btn" onclick="navigator.clipboard.writeText('pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh'); alert('Command copied to clipboard!');">Copy</button>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh'); alert('Command copied to clipboard!');">
+              <i data-lucide="copy"></i> Copy
+            </button>
           </div>
         </div>
       </div>
@@ -667,14 +707,14 @@
   <section id="cloudflare">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">REMOTE ACCESS</div>
+        <div class="section-tag"><i data-lucide="shield"></i> REMOTE ACCESS</div>
         <h2 class="section-title">Cloudflare Zero Trust Setup (2 Methods)</h2>
         <p class="section-desc">Access your panel securely from anywhere in the world.</p>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <div class="badge badge-primary" style="margin-bottom: 12px;">OPTION 1: SEMI-AUTOMATIC</div>
+          <div class="badge badge-primary" style="margin-bottom: 12px;"><i data-lucide="key"></i> OPTION 1: SEMI-AUTOMATIC</div>
           <h3 class="card-title">Paste Tunnel Token (Easiest)</h3>
           <p class="card-text">
             1. Go to <a href="https://one.dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare Zero Trust</a> ➔ Networks ➔ Tunnels.<br>
@@ -685,7 +725,7 @@
         </div>
 
         <div class="card">
-          <div class="badge badge-success" style="margin-bottom: 12px;">OPTION 2: FULLY-AUTOMATIC</div>
+          <div class="badge badge-success" style="margin-bottom: 12px;"><i data-lucide="cpu"></i> OPTION 2: FULLY-AUTOMATIC</div>
           <h3 class="card-title">Cloudflare API Token (1-Click)</h3>
           <p class="card-text">
             1. Generate a Cloudflare API token with DNS & Tunnel edit permissions.<br>
@@ -702,24 +742,27 @@
   <section id="security">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">ENTERPRISE DEFENSE</div>
+        <div class="section-tag"><i data-lucide="lock"></i> ENTERPRISE DEFENSE</div>
         <h2 class="section-title">Two-Layer Security Architecture</h2>
         <p class="section-desc">Zero open ports. Bcrypt password encryption. Optional Cloudflare Access protection.</p>
       </div>
 
       <div class="grid-3">
         <div class="card">
-          <h3 class="card-title">🛡️ Layer 1: Cloudflare Access</h3>
+          <div class="card-icon-wrap"><i data-lucide="shield-alert"></i></div>
+          <h3 class="card-title">Layer 1: Cloudflare Access</h3>
           <p class="card-text">Put an identity gateway in front of your panel. Require a One-Time Email PIN code or Google login before anyone even sees your login page.</p>
         </div>
 
         <div class="card">
-          <h3 class="card-title">🔑 Layer 2: Admin Authentication</h3>
+          <div class="card-icon-wrap"><i data-lucide="key-round"></i></div>
+          <h3 class="card-title">Layer 2: Admin Authentication</h3>
           <p class="card-text">Strictly guarded with Bcrypt password hashing (10 salt rounds), secure HTTP-only cookies, and brute-force rate limiters.</p>
         </div>
 
         <div class="card">
-          <h3 class="card-title">📁 Layer 3: Path Sandboxing</h3>
+          <div class="card-icon-wrap"><i data-lucide="folder-lock"></i></div>
+          <h3 class="card-title">Layer 3: Path Sandboxing</h3>
           <p class="card-text">Path-traversal proof security ensures file operations cannot escape the assigned website root directory (blocks <code>../../etc/passwd</code>).</p>
         </div>
       </div>
@@ -730,7 +773,7 @@
   <section>
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">SPECIFICATIONS</div>
+        <div class="section-tag"><i data-lucide="cpu"></i> SPECIFICATIONS</div>
         <h2 class="section-title">Hardware & OS Requirements</h2>
       </div>
 
@@ -779,27 +822,27 @@
   <section id="faq">
     <div class="container">
       <div class="section-header">
-        <div class="section-tag">QUESTIONS & ANSWERS</div>
+        <div class="section-tag"><i data-lucide="help-circle"></i> QUESTIONS & ANSWERS</div>
         <h2 class="section-title">Frequently Asked Questions</h2>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Does this require rooting my Android phone? <span>+</span></div>
+        <div class="faq-question">Does this require rooting my Android phone? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer"><strong>NO.</strong> TermuxPanel runs 100% in user space inside Termux. You do NOT need root permissions or custom ROMs.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">What happens if my phone's IP address changes? <span>+</span></div>
+        <div class="faq-question">What happens if my phone's IP address changes? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer">Because Cloudflare Tunnel uses an <strong>outbound connection</strong>, your website stays online seamlessly even if your phone switches between Wi-Fi and 5G mobile data.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">How do I keep it running when my screen is off? <span>+</span></div>
+        <div class="faq-question">How do I keep it running when my screen is off? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer">TermuxPanel automatically acquires a CPU wake-lock (<code>termux-wake-lock</code>). Simply go to Android Settings ➔ Apps ➔ Termux ➔ Battery and select <strong>"Unrestricted"</strong> so Android doesn't kill it.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Can I host PHP, Python, and Node.js at the same time? <span>+</span></div>
+        <div class="faq-question">Can I host PHP, Python, and Node.js at the same time? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer"><strong>YES.</strong> TermuxPanel assigns each site an isolated local port (8100, 8101, 8102...) and supervises each process independently.</div>
       </div>
     </div>
@@ -808,10 +851,18 @@
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p style="margin-bottom: 8px;"><strong>TermuxPanel</strong> — Built with ❤️ for the Android, Termux & self-hosting community.</p>
+      <p style="margin-bottom: 8px;"><strong>TermuxPanel</strong> — Built for the Android, Termux & self-hosting community.</p>
       <p>Created by <a href="https://github.com/himalayladha" target="_blank" style="color: #38bdf8; text-decoration: none;">Himalay Ladha</a> • Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" style="color: var(--text-muted);">MIT License</a></p>
     </div>
   </footer>
 
+  <!-- Initialize Lucide Icons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
 </body>
 </html>
