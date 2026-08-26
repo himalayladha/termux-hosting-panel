@@ -48,7 +48,7 @@ if [ "$METHOD" == "1" ]; then
 
     if command -v cloudflared >/dev/null 2>&1; then
       pkill -x cloudflared || true
-      nohup cloudflared tunnel run --token-file "$PANEL_DIR/config/cloudflare-token" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
+      nohup cloudflared tunnel run --token "$TOKEN" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
       echo -e "${GREEN}✓ Cloudflare Tunnel launched in background (PID: $!)${NC}\n"
     fi
   else

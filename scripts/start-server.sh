@@ -32,7 +32,8 @@ if [ -d "$PANEL_DIR/backend" ]; then
   if [ -f "$PANEL_DIR/config/cloudflare-token" ]; then
     if command -v cloudflared >/dev/null 2>&1; then
       if ! pgrep -x "cloudflared" > /dev/null; then
-        nohup cloudflared tunnel run --token-file "$PANEL_DIR/config/cloudflare-token" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
+        CF_TOKEN=$(cat "$PANEL_DIR/config/cloudflare-token")
+        nohup cloudflared tunnel run --token "$CF_TOKEN" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
       fi
     fi
   fi

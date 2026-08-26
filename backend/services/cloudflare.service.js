@@ -127,7 +127,7 @@ async function saveTunnelToken(token) {
         await execPromise('pkill -x cloudflared || true');
       }
       const logFile = config.CLOUDFLARE_LOG_FILE;
-      const cmd = `cloudflared tunnel run --token-file "${config.CLOUDFLARE_TOKEN_FILE}" > "${logFile}" 2>&1 &`;
+      const cmd = `cloudflared tunnel run --token "${cleanToken}" > "${logFile}" 2>&1 &`;
       exec(cmd);
     }
   } catch (e) {
