@@ -14,10 +14,17 @@ const settingsManager = {
   async loadSettings() {
     try {
       const data = await API.get('/api/settings');
-      document.getElementById('settings-version').textContent = data.version;
-      document.getElementById('settings-host').textContent = data.host;
-      document.getElementById('settings-port').textContent = data.port;
-      document.getElementById('settings-root').textContent = data.rootDir;
+      const verEl = document.getElementById('settings-version');
+      const hostEl = document.getElementById('settings-host');
+      const portEl = document.getElementById('settings-port');
+      const rootEl = document.getElementById('settings-root');
+
+      if (verEl && data.version) verEl.textContent = data.version;
+      if (hostEl && data.host) hostEl.textContent = `${data.host} (All Interfaces)`;
+      if (portEl && data.port) portEl.textContent = data.port;
+      if (rootEl && data.rootDir) rootEl.textContent = data.rootDir;
+
+      if (window.lucide) lucide.createIcons();
     } catch (e) {}
   },
 

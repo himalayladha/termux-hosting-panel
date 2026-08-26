@@ -249,6 +249,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: calc(100% - var(--sidebar-width));
+  max-width: calc(100% - var(--sidebar-width));
 }
 
 .topbar {
@@ -296,9 +298,9 @@ body {
 
 .content-body {
   flex: 1;
-  padding: 24px;
-  max-width: 1400px;
+  padding: 24px 32px;
   width: 100%;
+  max-width: 100%;
 }
 
 .tab-view {

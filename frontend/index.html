@@ -737,43 +737,96 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
         </section>
 
         <!-- 9. SETTINGS VIEW -->
         <section id="view-settings" class="tab-view">
-          <div class="card">
-            <div class="card-header">
-              <h3>Administrator Security</h3>
+          <div class="view-header">
+            <h3>Server & Security Settings</h3>
+            <p class="text-muted">Manage administrator access, server configurations, and system maintenance</p>
+          </div>
+
+          <div class="grid grid-2 gap-4">
+            <!-- 1. Admin Security Card -->
+            <div class="card">
+              <div class="card-header flex-align gap-2">
+                <i data-lucide="shield" style="width: 18px; height: 18px; color: #38bdf8;"></i>
+                <h3>Administrator Security</h3>
+              </div>
+              <div class="card-body">
+                <form id="change-password-form">
+                  <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" required placeholder="Enter current password" autocomplete="current-password">
+                  </div>
+                  <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    <i data-lucide="key" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                    Update Password
+                  </button>
+                </form>
+              </div>
             </div>
-            <div class="card-body">
-              <form id="change-password-form">
-                <div class="form-group">
-                  <label for="current-password">Current Password</label>
-                  <input type="password" id="current-password" required autocomplete="current-password">
+
+            <!-- 2. Server Architecture Card -->
+            <div class="card">
+              <div class="card-header flex-align gap-2">
+                <i data-lucide="server" style="width: 18px; height: 18px; color: #10b981;"></i>
+                <h3>Server & Environment Details</h3>
+              </div>
+              <div class="card-body">
+                <div class="flex-between py-2 mb-2" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                  <span class="text-muted">Panel Version:</span>
+                  <strong id="settings-version">1.0.0</strong>
                 </div>
-                <div class="form-group">
-                  <label for="new-password">New Password</label>
-                  <input type="password" id="new-password" required minlength="6" autocomplete="new-password">
+                <div class="flex-between py-2 mb-2" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                  <span class="text-muted">Bound Host:</span>
+                  <code id="settings-host" style="color: #38bdf8;">0.0.0.0 (All Interfaces)</code>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                  <i data-lucide="key" style="width: 14px; height: 14px; margin-right: 4px;"></i>
-                  Update Password
-                </button>
-              </form>
+                <div class="flex-between py-2 mb-2" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                  <span class="text-muted">Local Port:</span>
+                  <code id="settings-port" style="color: #38bdf8;">9000</code>
+                </div>
+                <div class="flex-between py-2 mb-2" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                  <span class="text-muted">Storage Root Path:</span>
+                  <code id="settings-root" style="color: #f1f5f9;">~/termux-panel</code>
+                </div>
+                <div class="flex-between py-2" style="padding-top: 4px;">
+                  <span class="text-muted">Database Engine:</span>
+                  <span class="badge badge-success">Pure SQLite (C-Free / Zero Node-Gyp)</span>
+                </div>
+              </div>
             </div>
           </div>
 
+          <!-- Quick System Actions Card -->
           <div class="card mt-4">
-            <div class="card-header">
-              <h3>Server Details</h3>
+            <div class="card-header flex-align gap-2">
+              <i data-lucide="cpu" style="width: 18px; height: 18px; color: #f59e0b;"></i>
+              <h3>System Control & Diagnostics</h3>
             </div>
             <div class="card-body">
-              <p><strong>Panel Version:</strong> <span id="settings-version">1.0.0</span></p>
-              <p><strong>Local Bound Host:</strong> <code id="settings-host">0.0.0.0 (All Interfaces)</code></p>
-              <p><strong>Local Bound Port:</strong> <code id="settings-port">9000</code></p>
-              <p><strong>Storage Path:</strong> <code id="settings-root">~/termux-panel</code></p>
+              <p class="text-muted text-sm mb-3">Quick terminal shortcuts to manage your Termux background services:</p>
+              <div class="grid grid-3 gap-3">
+                <div class="card bg-darker p-3">
+                  <strong>Restart Panel</strong>
+                  <p class="text-muted text-sm mt-1">Run in Termux terminal:</p>
+                  <code class="text-sm" style="color: #38bdf8;">tp restart</code>
+                </div>
+                <div class="card bg-darker p-3">
+                  <strong>View Daemon Logs</strong>
+                  <p class="text-muted text-sm mt-1">Run in Termux terminal:</p>
+                  <code class="text-sm" style="color: #38bdf8;">tp logs</code>
+                </div>
+                <div class="card bg-darker p-3">
+                  <strong>Check Process Status</strong>
+                  <p class="text-muted text-sm mt-1">Run in Termux terminal:</p>
+                  <code class="text-sm" style="color: #38bdf8;">tp status</code>
+                </div>
+              </div>
             </div>
           </div>
         </section>
