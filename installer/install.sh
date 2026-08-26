@@ -125,10 +125,15 @@ else
   echo -e "  ${YELLOW}Notice: Server started with PID $SERVER_PID. Check $PANEL_DIR/logs/panel.log for details.${NC}"
 fi
 
+WIFI_IP=$(ip -4 addr show wlan0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' || hostname -I 2>/dev/null | awk '{print $1}' || echo "")
+
 echo -e "\n${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║               TERMUXPANEL SETUP COMPLETE!                ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
 echo -e "\n${BOLD}Access your control panel:${NC}"
-echo -e "  Local Dashboard:    ${CYAN}http://127.0.0.1:9000${NC}"
+echo -e "  On Phone:           ${CYAN}http://127.0.0.1:9000${NC}"
+if [ -n "$WIFI_IP" ]; then
+  echo -e "  On PC (Same Wi-Fi): ${GREEN}http://${WIFI_IP}:9000${NC}"
+fi
 echo -e "  Terminal Manager:   ${YELLOW}tp${NC} (Type ${YELLOW}tp${NC} anywhere in Termux)"
 echo -e "  Hosted Sites Dir:   ${CYAN}~/termux-panel/storage/websites/${NC}\n"

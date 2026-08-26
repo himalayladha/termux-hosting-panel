@@ -4,7 +4,7 @@ const ROOT_DIR = process.env.TERMUX_PANEL_ROOT || path.resolve(__dirname, '../..
 
 module.exports = {
   PORT: process.env.PORT || 9000,
-  HOST: process.env.HOST || '127.0.0.1',
+  HOST: process.env.HOST || '0.0.0.0',
   SESSION_SECRET: process.env.SESSION_SECRET || 'termux-panel-default-secret-change-in-production',
   ROOT_DIR,
   DATA_DIR: path.join(ROOT_DIR, 'data'),

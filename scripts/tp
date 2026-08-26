@@ -26,9 +26,16 @@ show_banner() {
 check_status() {
   echo -e "\n${BLUE}▶ Checking TermuxPanel Status...${NC}"
   
+  # Detect Wi-Fi LAN IP
+  WIFI_IP=$(ip -4 addr show wlan0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' || hostname -I 2>/dev/null | awk '{print $1}')
+  
   # Check Node server
   if pgrep -f "node.*server.js" > /dev/null; then
-    echo -e "  [Panel Service]     ${GREEN}RUNNING${NC} (http://127.0.0.1:9000)"
+    echo -e "  [Panel Service]     ${GREEN}RUNNING${NC}"
+    echo -e "    • Local Phone:    ${CYAN}http://127.0.0.1:9000${NC}"
+    if [ -n "$WIFI_IP" ]; then
+      echo -e "    • PC on same Wi-Fi: ${GREEN}http://${WIFI_IP}:9000${NC}"
+    fi
   else
     echo -e "  [Panel Service]     ${RED}STOPPED${NC}"
   fi
