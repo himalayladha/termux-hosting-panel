@@ -298,6 +298,26 @@ async function updateDomain(domainId, { domain, websiteId, sslEnabled, cnameTarg
     [cleanDomain, numericWebId, isSsl, targetCname, domainId]
   );
 
+  // Auto-sync with Cloudflare API if token is saved
+  const savedApiToken = cloudflareService.getSavedApiToken();
+  if (savedApiToken && cleanDomain && cleanDomain.includes('.')) {
+    try {
+      const rootZone = cleanDomain.split('.').slice(-2).join('.');
+      await cloudflareService.setupTunnelViaApi({
+        apiToken: savedApiToken,
+        domain: rootZone,
+        routes: [
+          {
+            hostname: cleanDomain,
+            service: `http://localhost:${targetPort}`
+          }
+        ]
+      });
+    } catch (cfErr) {
+      console.warn('[Domains] Cloudflare API auto-sync note:', cfErr.message);
+    }
+  }
+
   return {
     success: true,
     id: domainId,

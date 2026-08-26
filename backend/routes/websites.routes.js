@@ -257,6 +257,26 @@ router.put('/:id', requireAuth, async (req, res) => {
       } else {
         await db.run('INSERT INTO domains (domain, website_id, ssl_enabled) VALUES (?, ?, 1)', [finalDomain, site.id]);
       }
+
+      // Auto-sync with Cloudflare API if token is saved
+      const savedApiToken = cloudflareService.getSavedApiToken();
+      if (savedApiToken && finalDomain.includes('.')) {
+        try {
+          const rootZone = finalDomain.split('.').slice(-2).join('.');
+          await cloudflareService.setupTunnelViaApi({
+            apiToken: savedApiToken,
+            domain: rootZone,
+            routes: [
+              {
+                hostname: finalDomain,
+                service: `http://localhost:${finalPort}`
+              }
+            ]
+          });
+        } catch (cfErr) {
+          console.warn('[Websites] Cloudflare API auto-sync note:', cfErr.message);
+        }
+      }
     }
 
     // 4. Restart website process if it was running or if autostart
