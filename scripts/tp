@@ -74,6 +74,7 @@ check_status() {
 start_panel() {
   echo -e "\n${BLUE}▶ Starting TermuxPanel Server...${NC}"
   cd "$PANEL_DIR/backend" || exit 1
+  mkdir -p "$PANEL_DIR/logs" "$PANEL_DIR/data" "$PANEL_DIR/config"
 
   # Acquire wake lock if in Termux
   if command -v termux-wake-lock >/dev/null 2>&1; then
@@ -86,26 +87,32 @@ start_panel() {
     pgrep -x crond >/dev/null || crond
   fi
 
-  # Stop any stale instance
+  # Stop any stale instance & free port 9000
   pkill -9 -f "server.js" 2>/dev/null || true
+  if command -v fuser >/dev/null 2>&1; then
+    fuser -k 9000/tcp 2>/dev/null || true
+  fi
   sleep 1
 
   # Start node server in background
   nohup node server.js > "$PANEL_DIR/logs/panel.log" 2>&1 &
   SERVER_PID=$!
-  sleep 1
+  sleep 2
 
   if pgrep -f "server.js" > /dev/null; then
-    echo -e "  ${GREEN}✓${NC} TermuxPanel server started (PID: $SERVER_PID)"
+    echo -e "  ${GREEN}✓${NC} TermuxPanel server is RUNNING (PID: $SERVER_PID)"
   else
-    echo -e "  ${YELLOW}Notice: Check logs with 'tp logs' or cat logs/panel.log${NC}"
+    echo -e "  ${RED}✗ Server failed to start! Last logs:${NC}"
+    tail -n 10 "$PANEL_DIR/logs/panel.log" 2>/dev/null
   fi
 
   # Check if cloudflared token configured
   if [ -f "$PANEL_DIR/config/cloudflare-token" ]; then
     if command -v cloudflared >/dev/null 2>&1; then
-      if ! pgrep -x "cloudflared" > /dev/null; then
-        CF_TOKEN=$(cat "$PANEL_DIR/config/cloudflare-token")
+      CF_TOKEN=$(cat "$PANEL_DIR/config/cloudflare-token" | tr -d '\r\n')
+      if [ -n "$CF_TOKEN" ]; then
+        pkill -9 -x "cloudflared" 2>/dev/null || true
+        sleep 1
         nohup cloudflared tunnel run --token "$CF_TOKEN" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
         echo -e "  ${GREEN}✓${NC} Cloudflare Tunnel launched (PID: $!)"
       fi
@@ -113,7 +120,7 @@ start_panel() {
   fi
 
   WIFI_IP=$(get_wifi_ip)
-  echo -e "\n${GREEN}TermuxPanel is live at:${NC}"
+  echo -e "\n${GREEN}TermuxPanel is LIVE at:${NC}"
   echo -e "  • Local Phone:      ${CYAN}http://127.0.0.1:9000${NC}"
   if [ -n "$WIFI_IP" ]; then
     echo -e "  • PC on same Wi-Fi: ${GREEN}http://${WIFI_IP}:9000${NC}\n"
@@ -126,6 +133,9 @@ stop_panel() {
   echo -e "\n${BLUE}▶ Stopping TermuxPanel Server...${NC}"
   pkill -9 -f "server.js" 2>/dev/null || true
   pkill -9 -x "cloudflared" 2>/dev/null || true
+  if command -v fuser >/dev/null 2>&1; then
+    fuser -k 9000/tcp 2>/dev/null || true
+  fi
   if command -v sv >/dev/null 2>&1 && [ -d "$PREFIX/var/service/termux-panel" ]; then
     sv down termux-panel 2>/dev/null || true
   fi

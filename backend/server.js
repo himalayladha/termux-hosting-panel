@@ -114,7 +114,7 @@ async function startServer() {
     // Start Android Hardware & Battery Guard Watchdog
     hardwareService.startWatchdog(60);
 
-    server.listen(config.PORT, async () => {
+    server.listen(config.PORT, config.HOST || '0.0.0.0', async () => {
       const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;
       console.log(`[TermuxPanel] Server is LIVE & Listening on 0.0.0.0:${config.PORT}`);
       console.log(`  • On Phone:           http://127.0.0.1:${config.PORT}`);
