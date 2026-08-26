@@ -125,7 +125,9 @@ else
   echo -e "  ${YELLOW}Notice: Server started with PID $SERVER_PID. Check $PANEL_DIR/logs/panel.log for details.${NC}"
 fi
 
-WIFI_IP=$(ip -4 addr show wlan0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' || hostname -I 2>/dev/null | awk '{print $1}' || echo "")
+# Dynamically detect Wi-Fi IP on any user's device
+WIFI_IP=$(ifconfig wlan0 2>/dev/null | grep 'inet ' | awk '{print $2}')
+[ -z "$WIFI_IP" ] && WIFI_IP=$(node -e "const n=require('os').networkInterfaces();for(const k in n){for(const i of n[k]){if(i.family==='IPv4'&&!i.internal){console.log(i.address);process.exit(0);}}}" 2>/dev/null || echo "")
 
 echo -e "\n${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║               TERMUXPANEL SETUP COMPLETE!                ║${NC}"
