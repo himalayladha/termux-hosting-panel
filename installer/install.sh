@@ -45,12 +45,8 @@ bash "$PANEL_DIR/installer/security.sh"
 # Step 4: Backend NPM Dependencies
 echo -e "\n${BLUE}[4/8] Installing backend dependencies...${NC}"
 cd "$PANEL_DIR/backend"
-if [ ! -d "node_modules" ] || [ ! -f "package-lock.json" ]; then
-  npm install --production --no-audit --no-fund
-  echo -e "  ${GREEN}✓ Backend dependencies installed successfully!${NC}"
-else
-  echo -e "  ${GREEN}✓ Backend dependencies already up-to-date.${NC}"
-fi
+npm install --omit=dev --no-audit --no-fund
+echo -e "  ${GREEN}✓ Backend dependencies installed successfully!${NC}"
 
 # Step 5: Boot & Services Integration
 echo -e "\n${BLUE}[5/8] Configuring Termux:Boot and termux-services...${NC}"

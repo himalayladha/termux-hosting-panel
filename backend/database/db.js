@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const initSqlJs = require('sql.js');
 const config = require('../config/app.config');
 
 // Ensure data directory exists
@@ -8,79 +8,141 @@ if (!fs.existsSync(config.DATA_DIR)) {
   fs.mkdirSync(config.DATA_DIR, { recursive: true });
 }
 
+let SQL = null;
 let dbInstance = null;
+let saveTimeout = null;
 
-function getDb() {
-  if (!dbInstance) {
-    dbInstance = new sqlite3.Database(config.DB_PATH, (err) => {
-      if (err) {
-        console.error('[Database] Failed to connect to SQLite:', err.message);
-      } else {
-        // Enable WAL mode for high concurrency and performance
-        dbInstance.run('PRAGMA journal_mode = WAL;');
-        dbInstance.run('PRAGMA foreign_keys = ON;');
-      }
-    });
+/**
+ * Save database to disk
+ */
+function persistDb() {
+  if (dbInstance && config.DB_PATH) {
+    try {
+      const data = dbInstance.export();
+      const buffer = Buffer.from(data);
+      fs.writeFileSync(config.DB_PATH, buffer);
+    } catch (err) {
+      console.error('[Database] Failed to persist SQLite to disk:', err.message);
+    }
   }
+}
+
+/**
+ * Schedule a debounced save to reduce flash writes
+ */
+function schedulePersist() {
+  persistDb();
+}
+
+/**
+ * Initialize SQL.js and load DB from file
+ */
+async function getDb() {
+  if (!SQL) {
+    SQL = await initSqlJs();
+  }
+
+  if (!dbInstance) {
+    if (fs.existsSync(config.DB_PATH)) {
+      try {
+        const fileBuffer = fs.readFileSync(config.DB_PATH);
+        dbInstance = new SQL.Database(fileBuffer);
+      } catch (err) {
+        console.error('[Database] Error reading existing DB, initializing new:', err.message);
+        dbInstance = new SQL.Database();
+      }
+    } else {
+      dbInstance = new SQL.Database();
+      persistDb();
+    }
+  }
+
   return dbInstance;
 }
 
 /**
- * Execute a SQL query that doesn't return rows (INSERT, UPDATE, DELETE)
+ * Helper to normalize query parameters
  */
-function run(sql, params = []) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ lastID: this.lastID, changes: this.changes });
+function normalizeParams(params) {
+  if (!params) return [];
+  if (Array.isArray(params)) return params;
+  return [params];
+}
+
+/**
+ * Execute an INSERT, UPDATE, DELETE query
+ */
+async function run(sql, params = []) {
+  const db = await getDb();
+  const normParams = normalizeParams(params);
+
+  try {
+    if (normParams.length > 0) {
+      db.run(sql, normParams);
+    } else {
+      db.run(sql);
+    }
+
+    // Retrieve lastID and changes
+    let lastID = 0;
+    let changes = 0;
+    try {
+      const res = db.exec('SELECT last_insert_rowid() as lastID, changes() as changes');
+      if (res && res.length > 0 && res[0].values && res[0].values.length > 0) {
+        lastID = res[0].values[0][0] || 0;
+        changes = res[0].values[0][1] || 0;
       }
-    });
-  });
+    } catch (_) {}
+
+    schedulePersist();
+    return { lastID, changes };
+  } catch (err) {
+    throw err;
+  }
 }
 
 /**
  * Fetch a single row
  */
-function get(sql, params = []) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+async function get(sql, params = []) {
+  const rows = await all(sql, params);
+  return rows.length > 0 ? rows[0] : null;
 }
 
 /**
- * Fetch all matching rows
+ * Fetch all matching rows as array of objects
  */
-function all(sql, params = []) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows || []);
-      }
-    });
-  });
+async function all(sql, params = []) {
+  const db = await getDb();
+  const normParams = normalizeParams(params);
+
+  try {
+    const stmt = db.prepare(sql);
+    if (normParams.length > 0) {
+      stmt.bind(normParams);
+    }
+
+    const results = [];
+    while (stmt.step()) {
+      results.push(stmt.getAsObject());
+    }
+    stmt.free();
+    return results;
+  } catch (err) {
+    throw err;
+  }
 }
 
 /**
- * Run database schema migrations
+ * Run database schema initialization
  */
 async function initDb() {
+  await getDb();
+
   const schemaPath = path.join(__dirname, 'schema.sql');
   const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
-  // Split schema statements
+  // Split schema statements by semicolon
   const statements = schemaSql
     .split(';')
     .map((s) => s.trim())
@@ -101,7 +163,8 @@ async function initDb() {
     await run('INSERT INTO settings (key, value) VALUES (?, ?)', ['panel_hostname', 'panel.local']);
   }
 
-  console.log('[Database] SQLite schema verified and ready at', config.DB_PATH);
+  persistDb();
+  console.log('[Database] Pure SQLite schema verified and ready at', config.DB_PATH);
 }
 
 module.exports = {
@@ -109,5 +172,6 @@ module.exports = {
   run,
   get,
   all,
-  initDb
+  initDb,
+  persistDb
 };

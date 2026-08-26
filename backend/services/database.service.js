@@ -1,7 +1,16 @@
 const fs = require('fs');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const initSqlJs = require('sql.js');
 const config = require('../config/app.config');
+
+let SQL = null;
+
+async function getSqlEngine() {
+  if (!SQL) {
+    SQL = await initSqlJs();
+  }
+  return SQL;
+}
 
 /**
  * Scan filesystem for SQLite databases (.db, .sqlite, .sqlite3)
@@ -64,18 +73,33 @@ function scanDirForDatabases(dirPath, siteName, resultList) {
 }
 
 /**
- * Get an isolated SQLite connection for a specific DB file
+ * Open SQLite database from path using sql.js
  */
-function openDb(dbPath) {
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(dbPath)) {
-      return reject(new Error('Database file does not exist'));
-    }
-    const db = new sqlite3.Database(dbPath, (err) => {
-      if (err) reject(err);
-      else resolve(db);
-    });
-  });
+async function openDb(dbPath) {
+  if (!fs.existsSync(dbPath)) {
+    throw new Error('Database file does not exist');
+  }
+
+  const sqlEngine = await getSqlEngine();
+  const fileBuffer = fs.readFileSync(dbPath);
+  const db = new sqlEngine.Database(fileBuffer);
+  return db;
+}
+
+/**
+ * Helper to query all rows as objects from a sql.js instance
+ */
+function queryAllFromDb(db, sql, params = []) {
+  const stmt = db.prepare(sql);
+  if (params && params.length > 0) {
+    stmt.bind(params);
+  }
+  const rows = [];
+  while (stmt.step()) {
+    rows.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return rows;
 }
 
 /**
@@ -83,33 +107,29 @@ function openDb(dbPath) {
  */
 async function listTables(dbPath) {
   const db = await openDb(dbPath);
-  return new Promise((resolve, reject) => {
-    db.all(
-      `SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name`,
-      [],
-      (err, rows) => {
-        db.close();
-        if (err) reject(err);
-        else resolve(rows || []);
-      }
+  try {
+    const rows = queryAllFromDb(
+      db,
+      `SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name`
     );
-  });
+    return rows;
+  } finally {
+    db.close();
+  }
 }
 
 /**
  * Get table schema information (columns, types, pk)
  */
 async function getTableSchema(dbPath, tableName) {
-  // Sanitize tableName
   const cleanName = tableName.replace(/[^a-zA-Z0-9_]/g, '');
   const db = await openDb(dbPath);
-  return new Promise((resolve, reject) => {
-    db.all(`PRAGMA table_info("${cleanName}")`, [], (err, rows) => {
-      db.close();
-      if (err) reject(err);
-      else resolve(rows || []);
-    });
-  });
+  try {
+    const rows = queryAllFromDb(db, `PRAGMA table_info("${cleanName}")`);
+    return rows;
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -120,30 +140,22 @@ async function getTableData(dbPath, tableName, page = 1, limit = 50) {
   const offset = (Math.max(1, page) - 1) * limit;
   const db = await openDb(dbPath);
 
-  return new Promise((resolve, reject) => {
-    db.get(`SELECT COUNT(*) as total FROM "${cleanName}"`, [], (countErr, countRow) => {
-      if (countErr) {
-        db.close();
-        return reject(countErr);
-      }
+  try {
+    const countRows = queryAllFromDb(db, `SELECT COUNT(*) as total FROM "${cleanName}"`);
+    const totalRows = countRows.length > 0 ? countRows[0].total : 0;
 
-      const totalRows = countRow ? countRow.total : 0;
+    const rows = queryAllFromDb(db, `SELECT * FROM "${cleanName}" LIMIT ? OFFSET ?`, [limit, offset]);
 
-      db.all(`SELECT * FROM "${cleanName}" LIMIT ? OFFSET ?`, [limit, offset], (err, rows) => {
-        db.close();
-        if (err) reject(err);
-        else {
-          resolve({
-            rows: rows || [],
-            total: totalRows,
-            page,
-            limit,
-            totalPages: Math.ceil(totalRows / limit)
-          });
-        }
-      });
-    });
-  });
+    return {
+      rows: rows || [],
+      total: totalRows,
+      page,
+      limit,
+      totalPages: Math.ceil(totalRows / limit)
+    };
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -154,33 +166,39 @@ async function executeSql(dbPath, sqlQuery) {
   const isSelect = /^SELECT\b/i.test(trimmed) || /^PRAGMA\b/i.test(trimmed) || /^EXPLAIN\b/i.test(trimmed);
 
   const db = await openDb(dbPath);
-  return new Promise((resolve, reject) => {
+  try {
     if (isSelect) {
-      db.all(trimmed, [], (err, rows) => {
-        db.close();
-        if (err) reject(err);
-        else {
-          resolve({
-            type: 'select',
-            rows: rows || [],
-            rowCount: (rows || []).length
-          });
-        }
-      });
+      const rows = queryAllFromDb(db, trimmed);
+      return {
+        type: 'select',
+        rows: rows || [],
+        rowCount: (rows || []).length
+      };
     } else {
-      db.run(trimmed, [], function (err) {
-        db.close();
-        if (err) reject(err);
-        else {
-          resolve({
-            type: 'mutation',
-            changes: this.changes,
-            lastID: this.lastID
-          });
+      db.run(trimmed);
+      let changes = 0;
+      let lastID = 0;
+      try {
+        const info = queryAllFromDb(db, 'SELECT last_insert_rowid() as lastID, changes() as changes');
+        if (info.length > 0) {
+          lastID = info[0].lastID || 0;
+          changes = info[0].changes || 0;
         }
-      });
+      } catch (_) {}
+
+      // Save changes back to file
+      const data = db.export();
+      fs.writeFileSync(dbPath, Buffer.from(data));
+
+      return {
+        type: 'mutation',
+        changes,
+        lastID
+      };
     }
-  });
+  } finally {
+    db.close();
+  }
 }
 
 module.exports = {
