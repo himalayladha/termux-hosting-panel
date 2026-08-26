@@ -235,27 +235,21 @@ async function runTests() {
 
   console.log('  ✓ Multi-Tunnel provider abstraction, token storage, and log tailing verified.');
 
-  // 10. Developer Workflow & CI/CD Suite (Webhooks, App Catalog, Web Terminal)
-  console.log('[10/10] Testing Developer Workflow & CI/CD Suite...');
+  // 10. Developer Workflow & CI/CD Suite (GitHub Auto-Deploy Webhooks, Web Terminal)
+  console.log('[10/10] Testing Developer Workflow & CI/CD Suite (Webhooks, Web Terminal)...');
   const webhookService = require('../services/webhook.service');
-  const catalogService = require('../services/catalog.service');
   const terminalService = require('../services/terminal.service');
 
-  // Test App Catalog Listing & 1-Click Deployment
-  const catalogApps = catalogService.listCatalogApps();
-  assert(catalogApps.length >= 5, 'Catalog apps list should contain at least 5 apps');
-  assert(catalogApps.some((a) => a.id === 'pocketbase'), 'PocketBase missing in catalog');
-  assert(catalogApps.some((a) => a.id === 'wordpress_sqlite'), 'WordPress SQLite missing in catalog');
-  assert(catalogApps.some((a) => a.id === 'sqlite_web'), 'SQLite Web missing in catalog');
+  // Create temporary website for webhook test
+  const webhookSiteName = `test-wh-${Date.now().toString().slice(-4)}`;
+  const webhookTestDir = path.join(process.env.TERMUX_PANEL_ROOT, 'storage', 'websites', webhookSiteName);
+  if (!fs.existsSync(webhookTestDir)) fs.mkdirSync(webhookTestDir, { recursive: true });
 
-  const catalogDeployRes = await catalogService.deployApp({
-    appId: 'pocketbase',
-    name: `test-pb-${Date.now().toString().slice(-4)}`
-  });
-  assert(catalogDeployRes.success, 'Catalog app deployment failed');
-  assert(catalogDeployRes.website && catalogDeployRes.website.id > 0, 'Deployed catalog website record missing');
-
-  const deployedSiteId = catalogDeployRes.website.id;
+  const siteInsert = await db.run(
+    "INSERT INTO websites (name, type, root_path, entry_file, port, status) VALUES (?, 'html', ?, 'public/index.html', 8199, 'stopped')",
+    [webhookSiteName, webhookTestDir]
+  );
+  const deployedSiteId = siteInsert.lastID;
 
   // Test GitHub Webhook Generation & Signature Verification
   const webhookRes = await webhookService.createOrUpdateWebhook(deployedSiteId, {
@@ -291,19 +285,15 @@ async function runTests() {
   const defaultShell = terminalService.getDefaultShell();
   assert(defaultShell && typeof defaultShell === 'string', 'Terminal default shell detection failed');
 
-  // Cleanup test catalog site
-  const processService = require('../services/process.service');
-  await processService.stopWebsite(deployedSiteId);
+  // Cleanup test site
   await db.run('DELETE FROM websites WHERE id = ?', [deployedSiteId]);
-
-  const siteDir = catalogDeployRes.website.root_path;
-  if (fs.existsSync(siteDir)) {
+  if (fs.existsSync(webhookTestDir)) {
     try {
-      fs.rmSync(siteDir, { recursive: true, force: true });
+      fs.rmSync(webhookTestDir, { recursive: true, force: true });
     } catch (_) {}
   }
 
-  console.log('  ✓ GitHub Auto-Deploy Webhooks, App Catalog, and Web Terminal verified successfully.');
+  console.log('  ✓ GitHub Auto-Deploy Webhooks and Web Terminal verified successfully.');
 
   console.log('--------------------------------------------------');
   console.log('  All TermuxPanel 10/10 Verifications Passed!     ');

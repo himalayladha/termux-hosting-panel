@@ -24,7 +24,6 @@ const tunnelRoutes = require('./routes/tunnel.routes');
 const domainsRoutes = require('./routes/domains.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const webhooksRoutes = require('./routes/webhooks.routes');
-const catalogRoutes = require('./routes/catalog.routes');
 
 const app = express();
 const server = http.createServer(app);
@@ -74,7 +73,6 @@ app.use('/api/backups', backupsRoutes);
 app.use('/api/tunnel', tunnelRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
-app.use('/api/catalog', catalogRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');

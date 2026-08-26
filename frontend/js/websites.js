@@ -60,12 +60,9 @@ const websites = {
       grid.innerHTML = `
         <div class="card p-4 text-center">
           <p class="text-muted">No websites or applications deployed yet.</p>
-          <div class="mt-3 flex-align gap-2" style="justify-content: center;">
+          <div class="mt-3">
             <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">
               <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Create Website
-            </button>
-            <button class="btn btn-secondary" onclick="app.switchTab('catalog')">
-              <i data-lucide="grid" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Browse App Catalog
             </button>
           </div>
         </div>

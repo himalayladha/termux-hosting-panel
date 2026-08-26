@@ -90,10 +90,6 @@
           <i data-lucide="globe" class="nav-icon"></i>
           <span class="nav-label">Websites</span>
         </button>
-        <button class="nav-item" data-tab="catalog">
-          <i data-lucide="grid" class="nav-icon"></i>
-          <span class="nav-label">App Catalog</span>
-        </button>
         <button class="nav-item" data-tab="domains">
           <i data-lucide="globe-2" class="nav-icon"></i>
           <span class="nav-label">Domains</span>
@@ -275,20 +271,6 @@
 
           <div class="websites-grid mt-4" id="websites-list">
             <!-- Rendered dynamically -->
-          </div>
-        </section>
-
-        <!-- 2.2. APP CATALOG VIEW -->
-        <section id="view-catalog" class="tab-view">
-          <div class="view-header flex-between flex-wrap gap-2">
-            <div>
-              <h3>1-Click App Catalog</h3>
-              <p class="text-muted">Deploy pre-configured lightweight web apps, CMS platforms, and databases on Android with zero setup</p>
-            </div>
-          </div>
-
-          <div class="grid grid-3 gap-3 mt-4" id="catalog-grid">
-            <!-- Rendered dynamically by catalog.js -->
           </div>
         </section>
 
@@ -1805,37 +1787,6 @@
   </div>
 
   <!-- 1-Click App Catalog Deploy Modal -->
-  <div id="modal-deploy-catalog" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="deploy-app-title">Deploy Application</h3>
-        <button class="modal-close-btn">&times;</button>
-      </div>
-      <form id="deploy-catalog-form">
-        <input type="hidden" id="deploy-app-id">
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="deploy-site-name"><strong>Application Name / Directory</strong></label>
-            <input type="text" id="deploy-site-name" class="form-control" required placeholder="e.g. pocketbase-demo">
-            <small class="text-muted">Unique folder identifier under <code>~/termux-panel/storage/websites/</code></small>
-          </div>
-          <div class="form-group mb-0">
-            <label for="deploy-site-domain"><strong>Optional Custom Domain</strong></label>
-            <input type="text" id="deploy-site-domain" class="form-control" placeholder="e.g. app.example.com">
-            <small class="text-muted">You can also connect and route domains later in the Domains tab.</small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
-          <button type="submit" id="btn-submit-catalog-deploy" class="btn btn-primary">
-            <i data-lucide="rocket" style="width: 14px; height: 14px; margin-right: 4px;"></i>
-            Deploy & Launch
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- GitHub Auto-Deploy Webhook Modal -->
   <div id="modal-site-webhook" class="modal-overlay hidden">
     <div class="modal-card modal-lg" style="max-width: 650px;">
@@ -1932,7 +1883,6 @@
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/websites.js"></script>
-  <script src="js/catalog.js"></script>
   <script src="js/domains.js"></script>
   <script src="js/filemanager.js"></script>
   <script src="js/databases.js"></script>

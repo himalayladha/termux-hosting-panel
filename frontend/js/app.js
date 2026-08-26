@@ -133,7 +133,6 @@ const app = {
     // Initialize all modules
     dashboard.init();
     websites.init();
-    catalogManager.init();
     domainsManager.init();
     fileManager.init();
     databases.init();
@@ -198,7 +197,6 @@ const app = {
     const titles = {
       dashboard: 'Dashboard',
       websites: 'Websites & Applications',
-      catalog: '1-Click App Catalog',
       domains: 'Custom Domain Management',
       filemanager: 'File Manager',
       databases: 'SQLite Database Explorer',
@@ -216,7 +214,6 @@ const app = {
     // Trigger tab-specific refresh
     if (tabId === 'dashboard') dashboard.loadSummary();
     if (tabId === 'websites') websites.loadWebsites();
-    if (tabId === 'catalog') catalogManager.loadCatalog();
     if (tabId === 'domains') domainsManager.loadDomains();
     if (tabId === 'filemanager') fileManager.populateSiteSelector();
     if (tabId === 'databases') databases.loadDatabases();
