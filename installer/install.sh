@@ -64,6 +64,20 @@ if [ -d "$HOME/.termux" ] || [ -n "$TERMUX_VERSION" ]; then
   echo -e "  ${GREEN}✓ Termux:Boot startup script installed in $BOOT_DIR/start-server${NC}"
 fi
 
+# Acquire wake lock immediately to prevent CPU sleep
+if command -v termux-wake-lock >/dev/null 2>&1; then
+  termux-wake-lock
+  echo -e "  ${GREEN}✓ Termux wake-lock acquired (24/7 background CPU active)${NC}"
+fi
+
+# Configure 24/7 Auto-Healing Watchdog in crontab
+if command -v crontab >/dev/null 2>&1; then
+  chmod +x "$PANEL_DIR/scripts/watchdog.sh"
+  WATCHDOG_CMD="* * * * * bash $PANEL_DIR/scripts/watchdog.sh"
+  (crontab -l 2>/dev/null | grep -v "watchdog.sh"; echo "$WATCHDOG_CMD") | crontab -
+  echo -e "  ${GREEN}✓ 24/7 Watchdog monitor registered (auto-recovers dead processes every minute)${NC}"
+fi
+
 # Termux-services integration
 if [ -n "$PREFIX" ] && [ -d "$PREFIX/var/service" ]; then
   # termux-panel service

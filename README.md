@@ -82,6 +82,18 @@ tp backup    # Create a full backup archive
 
 ---
 
+## 🔋 24/7 Continuous Operation & Worldwide Remote Access
+
+TermuxPanel is engineered to stay online **24/7/365** as a lightweight home or mobile microserver:
+- **`termux-wake-lock`**: Automatically prevents Android CPU sleep when the screen is locked.
+- **Auto-Healing Watchdog**: A background monitor (`scripts/watchdog.sh`) runs every minute via `crond` to automatically resurrect any dead processes.
+- **Cloudflare Zero Trust Tunnel**: Handles dynamic IP changes and mobile network handoffs (Wi-Fi to 4G/5G) with automatic reconnects.
+- **Termux:Boot Integration**: Automatically boots TermuxPanel and all active websites on Android device reboot.
+
+👉 Read the full **[24/7 Android Survival Guide](docs/ANDROID_247_GUIDE.md)** for device-specific battery optimization settings (Samsung, Xiaomi, Pixel, OnePlus).
+
+---
+
 ## 📂 Project Structure
 
 ```
