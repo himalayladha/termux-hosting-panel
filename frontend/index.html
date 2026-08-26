@@ -64,6 +64,26 @@
           Log In
         </button>
       </form>
+
+      <!-- Two-Factor Authentication (2FA) Step Form -->
+      <form id="login-2fa-form" class="auth-form hidden">
+        <div class="alert alert-info text-center" style="background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3); color: #c084fc;">
+          <i data-lucide="shield-alert" style="width: 18px; height: 18px; margin: 0 auto 6px auto; display: block;"></i>
+          Two-Factor Authentication Active
+        </div>
+        <div class="form-group text-center">
+          <label for="login-2fa-code">Enter 6-Digit Authenticator / Backup Code</label>
+          <input type="text" id="login-2fa-code" required placeholder="000 000" autocomplete="one-time-code" maxlength="9" style="text-align: center; font-size: 22px; font-weight: 700; letter-spacing: 4px; font-family: monospace;">
+          <small class="text-muted">Open Google Authenticator / Authy or enter an 8-character recovery code.</small>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mb-2">
+          <i data-lucide="check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          Verify & Sign In
+        </button>
+        <button type="button" id="btn-back-to-login" class="btn btn-secondary btn-block">
+          <i data-lucide="arrow-left" style="width: 14px; height: 14px; margin-right: 4px;"></i> Back to Login
+        </button>
+      </form>
     </div>
   </div>
 
@@ -1341,6 +1361,91 @@
             </div>
           </div>
 
+          <!-- 4. Security & Zero-Trust Defense Section -->
+          <div class="grid grid-2 gap-4 mt-4">
+            <!-- 2FA Authenticator Card -->
+            <div class="card">
+              <div class="card-header flex-between">
+                <div class="flex-align gap-2">
+                  <i data-lucide="shield-check" style="width: 18px; height: 18px; color: #10b981;"></i>
+                  <h3 style="margin: 0; font-size: 16px;">Two-Factor Authentication (2FA)</h3>
+                </div>
+                <span id="badge-2fa-status" class="badge badge-secondary">DISABLED</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted text-sm mb-3">
+                  Protect your TermuxPanel login with standard Google Authenticator or Authy TOTP 6-digit codes.
+                </p>
+                <div id="container-2fa-disabled">
+                  <div class="alert alert-info mb-3">
+                    <i data-lucide="info" style="width: 15px; height: 15px; margin-right: 6px;"></i>
+                    2FA is currently not active. Enable it to require an authenticator code on login.
+                  </div>
+                  <button type="button" id="btn-start-2fa-setup" class="btn btn-primary">
+                    <i data-lucide="qr-code" style="width: 14px; height: 14px; margin-right: 4px;"></i> Setup 2FA Authenticator
+                  </button>
+                </div>
+                <div id="container-2fa-enabled" class="hidden">
+                  <div class="alert alert-success mb-3" style="background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.3); color: #4ade80;">
+                    <i data-lucide="check-circle-2" style="width: 15px; height: 15px; margin-right: 6px;"></i>
+                    2FA is Active & Protecting your Administrator login.
+                  </div>
+                  <button type="button" id="btn-disable-2fa" class="btn btn-danger btn-sm">
+                    <i data-lucide="shield-off" style="width: 13px; height: 13px; margin-right: 4px;"></i> Disable 2FA
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cloudflare Access Edge Lockdown Card -->
+            <div class="card">
+              <div class="card-header flex-between">
+                <div class="flex-align gap-2">
+                  <i data-lucide="lock" style="width: 18px; height: 18px; color: #38bdf8;"></i>
+                  <h3 style="margin: 0; font-size: 16px;">Cloudflare Access (Zero Trust)</h3>
+                </div>
+                <span id="badge-cf-access-status" class="badge badge-secondary">EDGE GUARD</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted text-sm mb-3">
+                  Lock down your panel at Cloudflare's global edge so only verified Google/email accounts can reach your phone.
+                </p>
+                <form id="cloudflare-access-form">
+                  <div class="form-group mb-2">
+                    <label for="cf-access-emails"><strong>Allowed Administrator Emails</strong></label>
+                    <input type="text" id="cf-access-emails" class="form-control" placeholder="e.g. admin@gmail.com, dev@company.com">
+                    <small class="text-muted">Comma-separated emails authorized to authenticate via Cloudflare Access.</small>
+                  </div>
+                  <button type="submit" id="btn-apply-cf-access" class="btn btn-primary btn-sm mt-2">
+                    <i data-lucide="cloud-lightning" style="width: 14px; height: 14px; margin-right: 4px;"></i> 1-Click Deploy Access Policy
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Brute-Force IP Jail & Rate Limiter Card -->
+          <div class="card mt-4">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <i data-lucide="shield-alert" style="width: 18px; height: 18px; color: #ef4444;"></i>
+                <h3 style="margin: 0; font-size: 16px;">Brute-Force IP Jail & Rate Limiter</h3>
+                <span id="badge-active-bans-count" class="badge badge-danger">0 BANNED</span>
+              </div>
+              <button type="button" id="btn-clear-all-bans" class="btn btn-secondary btn-sm">
+                <i data-lucide="unlock" style="width: 13px; height: 13px; margin-right: 4px;"></i> Clear All Bans
+              </button>
+            </div>
+            <div class="card-body">
+              <p class="text-muted text-sm mb-3">
+                IPs attempting password brute-force or malicious 404 scanning are automatically blocked for 60 minutes.
+              </p>
+              <div id="ip-bans-table-container">
+                <p class="text-muted text-sm">Loading security jail status...</p>
+              </div>
+            </div>
+          </div>
+
           <!-- Quick System Actions Card -->
           <div class="card mt-4">
             <div class="card-header flex-align gap-2">
@@ -2031,6 +2136,62 @@
           <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
           <button type="submit" class="btn btn-primary">
             <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i> Save & Generate Webhook
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2FA Setup Modal -->
+  <div id="modal-2fa-setup" class="modal-overlay hidden">
+    <div class="modal-card modal-lg" style="max-width: 580px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="shield-check" style="width: 20px; height: 20px; color: #10b981;"></i>
+          <h3>Two-Factor Authentication Setup</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-2fa-verify-enable">
+        <div class="modal-body">
+          <p class="text-muted text-sm mb-3">
+            Enhance your TermuxPanel security with Google Authenticator, Authy, or 1Password.
+          </p>
+
+          <!-- Step 1: QR Code -->
+          <div class="card bg-darker p-3 text-center mb-3">
+            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 8px;">Step 1: Scan QR Code with Authenticator App</div>
+            <div id="qr-code-image-container" style="background: #fff; padding: 12px; border-radius: 10px; display: inline-block; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+              <img id="qr-code-img" src="" alt="2FA QR Code" style="width: 180px; height: 180px; display: block;">
+            </div>
+            <div class="text-muted text-sm">Or manually enter key: <code id="manual-2fa-secret" style="color: #38bdf8; font-weight: 700; user-select: all;"></code></div>
+          </div>
+
+          <!-- Step 2: Backup Codes -->
+          <div class="card bg-darker p-3 mb-3">
+            <div class="flex-between mb-2">
+              <span style="font-weight: 600; font-size: 13.5px;">Step 2: Save Emergency Recovery Codes</span>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('backup-codes-display').innerText).then(() => API.toast('Backup codes copied!', 'success'))">
+                <i data-lucide="copy" style="width: 12px; height: 12px; margin-right: 3px;"></i> Copy Codes
+              </button>
+            </div>
+            <p class="text-muted text-sm" style="font-size: 11.5px; margin-bottom: 8px;">
+              If you lose your phone or authenticator app, each recovery code can be used once to log in.
+            </p>
+            <div id="backup-codes-display" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-family: monospace; font-size: 12px; color: #a855f7; background: #070a14; padding: 10px; border-radius: 6px; text-align: center;">
+            </div>
+          </div>
+
+          <!-- Step 3: Confirmation -->
+          <div class="form-group mb-0">
+            <label for="input-2fa-verify-code"><strong>Step 3: Enter 6-Digit Code from App to Confirm</strong></label>
+            <input type="text" id="input-2fa-verify-code" class="form-control" placeholder="000 000" maxlength="6" required style="font-size: 18px; text-align: center; letter-spacing: 4px; font-family: monospace;">
+          </div>
+        </div>
+        <div class="modal-footer flex-between">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check-circle" style="width: 14px; height: 14px; margin-right: 4px;"></i> Confirm & Enable 2FA
           </button>
         </div>
       </form>

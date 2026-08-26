@@ -73,6 +73,21 @@ const app = {
       loginForm.addEventListener('submit', (e) => this.handleLogin(e));
     }
 
+    // 2FA Login form submit
+    const login2faForm = document.getElementById('login-2fa-form');
+    if (login2faForm) {
+      login2faForm.addEventListener('submit', (e) => this.handleLogin2FA(e));
+    }
+
+    // Back to password button
+    const backBtn = document.getElementById('btn-back-to-login');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        document.getElementById('login-2fa-form').classList.add('hidden');
+        document.getElementById('login-form').classList.remove('hidden');
+      });
+    }
+
     // Logout button
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -106,6 +121,7 @@ const app = {
     document.getElementById('app-container').classList.add('hidden');
     document.getElementById('setup-form').classList.remove('hidden');
     document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('login-2fa-form').classList.add('hidden');
     document.getElementById('auth-title').textContent = 'TermuxPanel Setup';
     document.getElementById('auth-subtitle').textContent = 'Create Primary Admin Account';
     if (window.lucide) lucide.createIcons();
@@ -116,6 +132,7 @@ const app = {
     document.getElementById('app-container').classList.add('hidden');
     document.getElementById('setup-form').classList.add('hidden');
     document.getElementById('login-form').classList.remove('hidden');
+    document.getElementById('login-2fa-form').classList.add('hidden');
     document.getElementById('auth-title').textContent = 'TermuxPanel';
     document.getElementById('auth-subtitle').textContent = 'Sign in to your control panel';
     if (window.lucide) lucide.createIcons();
@@ -168,7 +185,33 @@ const app = {
 
     try {
       const data = await API.post('/api/auth/login', { username, password });
+      if (data.requires2FA) {
+        this.temp2FAToken = data.tempToken;
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('login-2fa-form').classList.remove('hidden');
+        document.getElementById('login-2fa-code').value = '';
+        setTimeout(() => document.getElementById('login-2fa-code').focus(), 100);
+        API.toast('Enter your 6-digit Google Authenticator / 2FA code', 'info');
+        return;
+      }
+
       API.toast('Logged in successfully', 'success');
+      this.currentUser = data.user;
+      this.showApp();
+    } catch (e) {}
+  },
+
+  async handleLogin2FA(e) {
+    e.preventDefault();
+    const code = document.getElementById('login-2fa-code').value.trim();
+    if (!code) return;
+
+    try {
+      const data = await API.post('/api/auth/login/2fa', {
+        tempToken: this.temp2FAToken,
+        code
+      });
+      API.toast('Two-Factor Authentication verified!', 'success');
       this.currentUser = data.user;
       this.showApp();
     } catch (e) {}

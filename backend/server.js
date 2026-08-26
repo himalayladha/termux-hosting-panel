@@ -26,6 +26,8 @@ const settingsRoutes = require('./routes/settings.routes');
 const webhooksRoutes = require('./routes/webhooks.routes');
 const hardwareRoutes = require('./routes/hardware.routes');
 const hardwareService = require('./services/hardware.service');
+const securityRoutes = require('./routes/security.routes');
+const { ipBanGuard } = require('./auth/ipban.middleware');
 
 const app = express();
 const server = http.createServer(app);
@@ -53,6 +55,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
+// IP Ban & Brute-Force Guard (Blocks banned IPs immediately)
+app.use(ipBanGuard);
+
 // Rate Limiting for Auth Endpoints (Brute Force Protection)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -76,6 +81,7 @@ app.use('/api/tunnel', tunnelRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/hardware', hardwareRoutes);
+app.use('/api/security', securityRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');

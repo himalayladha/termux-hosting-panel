@@ -350,8 +350,73 @@ async function runTests() {
 
   console.log('  ✓ Battery/thermal parsing, WakeLock manager, and notification settings verified.');
 
+  // 12. Security & Zero-Trust Defense Suite (2FA TOTP, Backup Codes, IP Jail)
+  console.log('[12/12] Testing Security & Zero-Trust Defense Suite...');
+  const totpService = require('../services/totp.service');
+  const securityService = require('../services/security.service');
+
+  // Test 1: Base32 Secret & TOTP Code Generation
+  const secret = totpService.generateSecret();
+  assert(secret && secret.length >= 16, 'Base32 secret generation failed');
+  const otpUrl = totpService.getOtpAuthUrl('admin', secret);
+  assert(otpUrl.startsWith('otpauth://totp/'), 'OTP Auth URL format invalid');
+  assert(otpUrl.includes(`secret=${secret}`), 'Secret missing in OTP Auth URL');
+
+  // Test 2: TOTP Code Verification Window
+  const isValidSecret = totpService.verifyToken(secret, '000000');
+  assert(isValidSecret === false, 'Invalid TOTP code should not pass');
+
+  // Test 3: Emergency Backup Codes
+  const backupCodes = totpService.generateBackupCodes(8);
+  assert(backupCodes.length === 8, 'Should generate exactly 8 backup codes');
+  assert(backupCodes[0].includes('-'), 'Backup code format should be xxxx-xxxx');
+
+  // Test 4: 2FA Lifecycle (Initiate -> Verify/Enable -> Validate Login -> Disable)
+  const secTestUser = await db.get('SELECT id, username FROM users LIMIT 1');
+  if (secTestUser) {
+    const init2FA = await totpService.initiate2FASetup(secTestUser.id, secTestUser.username);
+    assert(init2FA.secret && init2FA.backupCodes.length === 8, '2FA setup initiation failed');
+
+    // Simulate direct DB enable
+    await db.run('UPDATE security_2fa SET enabled = 1 WHERE user_id = ?', [secTestUser.id]);
+    const status2FA = await totpService.get2FAStatus(secTestUser.id);
+    assert(status2FA.isEnabled === true, '2FA status should be enabled');
+
+    // Test Backup Code Login Validation & Single-Use Consumption
+    const testCode = init2FA.backupCodes[0];
+    const isBackupValid = await totpService.validateLogin2FA(secTestUser.id, testCode);
+    assert(isBackupValid === true, 'Valid backup code should pass login validation');
+
+    // Test that the consumed backup code cannot be used again
+    const isReusedValid = await totpService.validateLogin2FA(secTestUser.id, testCode);
+    assert(isReusedValid === false, 'Consumed backup code must be invalidated');
+
+    // Disable 2FA
+    await totpService.disable2FA(secTestUser.id);
+    const disabledStatus = await totpService.get2FAStatus(secTestUser.id);
+    assert(disabledStatus.isEnabled === false, '2FA disable failed');
+  }
+
+  // Test 5: Brute-Force IP Ban & Whitelist Protection
+  const testIp = '203.0.113.42'; // RFC 5737 Test Net IP
+  await securityService.banIp(testIp, 'Automated test brute-force trigger', 30);
+  const banCheck = await securityService.isIpBanned(testIp);
+  assert(banCheck.isBanned === true, 'Test IP should be banned');
+
+  // Whitelist test (Localhost & LAN should NEVER be banned)
+  assert(securityService.isWhitelisted('127.0.0.1') === true, '127.0.0.1 must be whitelisted');
+  assert(securityService.isWhitelisted('192.168.1.50') === true, '192.168.x.x must be whitelisted');
+
+  // Unban test
+  const unbanRes = await securityService.unbanIp(testIp);
+  assert(unbanRes.success === true, 'Unban failed');
+  const postUnbanCheck = await securityService.isIpBanned(testIp);
+  assert(postUnbanCheck.isBanned === false, 'Test IP should no longer be banned');
+
+  console.log('  ✓ RFC 6238 TOTP engine, backup recovery codes, and brute-force IP jail verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 11/11 Verifications Passed!     ');
+  console.log('  All TermuxPanel 12/12 Verifications Passed!     ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }
