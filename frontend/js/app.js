@@ -13,7 +13,10 @@ const app = {
         const tab = btn.dataset.tab;
         this.switchTab(tab);
         // On mobile, close sidebar after clicking nav item
-        document.getElementById('sidebar').classList.remove('open');
+        const sidebarEl = document.getElementById('sidebar');
+        const backdropEl = document.getElementById('sidebar-backdrop');
+        if (sidebarEl) sidebarEl.classList.remove('open');
+        if (backdropEl) backdropEl.classList.remove('active');
       });
     });
 
@@ -21,19 +24,40 @@ const app = {
     const toggleBtn = document.getElementById('sidebar-toggle-btn');
     const closeBtn = document.getElementById('sidebar-close-btn');
     const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => sidebar.classList.add('open'));
+    if (toggleBtn && sidebar && backdrop) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        backdrop.classList.add('active');
+      });
     }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => sidebar.classList.remove('open'));
+    if (closeBtn && sidebar && backdrop) {
+      closeBtn.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('active');
+      });
+    }
+    if (backdrop && sidebar) {
+      backdrop.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('active');
+      });
     }
 
-    // Modal close buttons
+    // Modal close buttons & backdrop clicking
     document.querySelectorAll('.modal-close-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const modal = e.target.closest('.modal-overlay');
         if (modal) modal.classList.add('hidden');
+      });
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach((overlay) => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay && overlay.id !== 'modal-app-dialog') {
+          overlay.classList.add('hidden');
+        }
       });
     });
 
