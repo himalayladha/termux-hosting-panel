@@ -132,8 +132,13 @@ const dashboard = {
     const cpuBar = document.getElementById('bar-cpu');
     const cpuCores = document.getElementById('metric-cpu-cores');
     if (cpuEl) cpuEl.textContent = `${m.cpu.percentage}%`;
-    if (cpuBar) cpuBar.style.width = `${m.cpu.percentage}%`;
-    if (cpuCores) cpuCores.textContent = `${m.cpu.cores} CPU Cores (${m.cpu.model.substring(0, 20)}...)`;
+    if (cpuBar) cpuBar.style.width = `${Math.min(100, Math.max(0, m.cpu.percentage))}%`;
+    if (cpuCores) {
+      const modelStr = m.cpu.model && m.cpu.model.toLowerCase() !== 'unknown'
+        ? (m.cpu.model.length > 25 ? m.cpu.model.substring(0, 22) + '...' : m.cpu.model)
+        : 'ARM Processor';
+      cpuCores.textContent = `${m.cpu.cores || 8} CPU Cores (${modelStr})`;
+    }
 
     // RAM
     const ramEl = document.getElementById('metric-ram');
