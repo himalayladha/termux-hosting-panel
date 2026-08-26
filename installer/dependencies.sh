@@ -39,43 +39,56 @@ if [ -n "$PKG_CMD" ]; then
   done
 fi
 
-# Install / verify cloudflared binary
-echo -e "\n${BLUE}▶ Checking Cloudflare Tunnel (cloudflared) binary...${NC}"
+# Install / verify cloudflared binary on very first setup
+echo -e "\n${BLUE}▶ Checking and installing Cloudflare Tunnel (cloudflared)...${NC}"
 if ! command -v cloudflared >/dev/null 2>&1; then
-  echo -e "  Installing cloudflared for architecture $(uname -m)..."
-  ARCH=$(uname -m)
-  CLOUDFLARED_URL=""
-
-  case "$ARCH" in
-    aarch64|arm64)
-      CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"
-      ;;
-    armv7l|arm)
-      CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm"
-      ;;
-    x86_64|amd64)
-      CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
-      ;;
-    i686|386)
-      CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-386"
-      ;;
-  esac
-
-  if [ -n "$CLOUDFLARED_URL" ]; then
-    BIN_DEST="$PREFIX/bin/cloudflared"
-    [ -z "$PREFIX" ] && BIN_DEST="/usr/local/bin/cloudflared"
-    
-    echo -e "  Downloading from $CLOUDFLARED_URL..."
-    curl -fsSL "$CLOUDFLARED_URL" -o "$BIN_DEST" || wget -q "$CLOUDFLARED_URL" -O "$BIN_DEST" || true
-    if [ -f "$BIN_DEST" ]; then
-      chmod +x "$BIN_DEST"
-      echo -e "  ${GREEN}✓ cloudflared installed successfully!${NC}"
-    fi
-  else
-    echo -e "  ${YELLOW}Notice: Automatic cloudflared download unsupported for $ARCH. Please install cloudflared manually.${NC}"
+  echo -e "  Attempting native installation of cloudflared via package manager..."
+  
+  # Method 1: pkg install cloudflared
+  if command -v pkg >/dev/null 2>&1; then
+    pkg install -y cloudflared 2>/dev/null || (pkg install -y tur-repo 2>/dev/null && pkg install -y cloudflared 2>/dev/null) || true
   fi
+
+  # Method 2: Direct architecture binary download from Cloudflare Official Releases
+  if ! command -v cloudflared >/dev/null 2>&1; then
+    ARCH=$(uname -m)
+    echo -e "  Downloading official cloudflared binary for architecture: $ARCH..."
+    CLOUDFLARED_URL=""
+
+    case "$ARCH" in
+      aarch64|arm64)
+        CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"
+        ;;
+      armv7l|arm|armhf)
+        CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm"
+        ;;
+      x86_64|amd64)
+        CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+        ;;
+      i686|386)
+        CLOUDFLARED_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-386"
+        ;;
+    esac
+
+    if [ -n "$CLOUDFLARED_URL" ]; then
+      BIN_DEST="$PREFIX/bin/cloudflared"
+      [ -z "$PREFIX" ] && BIN_DEST="/usr/local/bin/cloudflared"
+      
+      echo -e "  Downloading binary from $CLOUDFLARED_URL..."
+      curl -fsSL "$CLOUDFLARED_URL" -o "$BIN_DEST" || wget -q "$CLOUDFLARED_URL" -O "$BIN_DEST" || true
+      if [ -f "$BIN_DEST" ]; then
+        chmod +x "$BIN_DEST"
+        echo -e "  ${GREEN}✓ cloudflared installed successfully at $BIN_DEST!${NC}"
+      fi
+    fi
+  fi
+fi
+
+# Final cloudflared check
+if command -v cloudflared >/dev/null 2>&1; then
+  echo -e "  ${GREEN}✓ cloudflared is ready:${NC} $(cloudflared --version 2>/dev/null || echo 'Installed')"
 else
-  echo -e "  ${GREEN}✓ cloudflared is already installed (${NC}$(cloudflared --version)${GREEN})${NC}"
+  echo -e "  ${YELLOW}Notice: cloudflared could not be auto-installed. You can install it anytime using: pkg install cloudflared${NC}"
 fi
 
 echo -e "\n${GREEN}✓ Dependencies verification complete!${NC}\n"
