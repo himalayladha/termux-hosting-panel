@@ -32,6 +32,9 @@ const { ipBanGuard } = require('./auth/ipban.middleware');
 const app = express();
 const server = http.createServer(app);
 
+// Trust Proxy (Essential for Cloudflare Tunnel HTTPS and correct Client IP)
+app.set('trust proxy', true);
+
 // Initialize WebSocket Terminal Server
 terminalService.initTerminalServer(server);
 
@@ -58,12 +61,15 @@ app.use(cookieParser());
 // IP Ban & Brute-Force Guard (Blocks banned IPs immediately)
 app.use(ipBanGuard);
 
-// Rate Limiting for Auth Endpoints (Brute Force Protection)
+const securityService = require('./services/security.service');
+
+// Rate Limiting for Auth Endpoints (Brute Force Protection with proper Client IP)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 requests per window
+  max: 100, // Limit each client IP to 100 requests per window
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => securityService.getClientIp(req),
   message: { error: 'Too many authentication attempts. Please try again in 15 minutes.' }
 });
 

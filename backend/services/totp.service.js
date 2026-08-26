@@ -93,9 +93,9 @@ const totpService = {
   },
 
   /**
-   * Verify TOTP code with time drift window (±1 step = ±30 seconds)
+   * Verify TOTP code with time drift window (±2 steps = ±60 seconds)
    */
-  verifyToken(secret, token, window = 1) {
+  verifyToken(secret, token, window = 2) {
     if (!secret || !token) return false;
     const cleanToken = token.toString().trim().replace(/\s+/g, '');
     if (cleanToken.length !== 6) return false;

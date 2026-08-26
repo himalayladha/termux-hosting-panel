@@ -43,6 +43,7 @@ router.post('/setup', async (req, res) => {
     res.cookie('tp_session', loginResult.token, {
       httpOnly: true,
       sameSite: 'lax',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
       maxAge: 7 * 24 * 3600 * 1000
     });
 
@@ -102,6 +103,7 @@ router.post('/login', async (req, res) => {
     res.cookie('tp_session', loginResult.token, {
       httpOnly: true,
       sameSite: 'lax',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
       maxAge: 7 * 24 * 3600 * 1000
     });
 
@@ -154,6 +156,7 @@ router.post('/login/2fa', async (req, res) => {
     res.cookie('tp_session', token, {
       httpOnly: true,
       sameSite: 'lax',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
       maxAge: 7 * 24 * 3600 * 1000
     });
 
