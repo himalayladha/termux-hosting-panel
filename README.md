@@ -107,22 +107,146 @@ The idempotent installer will:
 
 ---
 
-## ☁️ Cloudflare Zero Trust Setup
+## ☁️ Cloudflare Zero Trust Setup (Complete Step-by-Step Guide)
 
-To access your panel and websites securely from anywhere over HTTPS:
+Cloudflare Zero Trust gives your Android server an enterprise-grade HTTPS endpoint with global DDoS protection without exposing your phone or home IP.
 
-1. Open [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) > **Networks** > **Tunnels**.
-2. Create a tunnel named `android-host`.
-3. Copy your tunnel token and run:
+Choose **Method 1 (Semi-Automatic)** if you want to create the tunnel in Cloudflare's web dashboard, or **Method 2 (Fully-Automatic)** if you want TermuxPanel to configure everything via Cloudflare's API.
+
+---
+
+### 📋 Prerequisites
+1. A **Cloudflare Account** ([Sign up free](https://dash.cloudflare.com/sign-up)).
+2. A **Domain Name** active on Cloudflare (e.g., `yourdomain.com`).
+3. Access to the **Cloudflare Zero Trust Dashboard** ([one.dash.cloudflare.com](https://one.dash.cloudflare.com/)).
+
+---
+
+### 🟢 Method 1: Semi-Automatic Setup (Recommended for Beginners)
+
+#### Step 1: Create the Tunnel in Cloudflare
+1. Go to the [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/).
+2. In the left sidebar, click **Networks** ➔ **Tunnels**.
+3. Click the blue **Add a tunnel** (or **Create a tunnel**) button.
+4. Select **Cloudflared** as the connector type and click **Next**.
+5. Enter a name for your tunnel (e.g., `android-host` or `termux-server`) and click **Save tunnel**.
+
+#### Step 2: Copy Your Tunnel Token
+1. On the "Install and run a connector" page, you will see installation commands for different operating systems.
+2. Look for the command under the Linux/Docker tab. It will look like this:
    ```bash
-   tp cloudflare
+   cloudflared.exe service install eyJhIjoiYmNm... (long token string)
    ```
-4. Add your Public Hostname routes in the Cloudflare dashboard:
-   - `panel.yourdomain.com` ➔ `HTTP 127.0.0.1:9000` (Control Panel)
-   - `example.com` ➔ `HTTP 127.0.0.1:8100` (Hosted Website)
-   - `api.yourdomain.com` ➔ `HTTP 127.0.0.1:8101` (Node/Python API)
+3. Copy **ONLY the long token string** starting with `eyJh...` (do not include the words before it).
 
-See [docs/CLOUDFLARE_GUIDE.md](docs/CLOUDFLARE_GUIDE.md) for full instructions.
+#### Step 3: Save the Token in TermuxPanel
+You can enter the token using either the Web Dashboard or the Terminal:
+
+- **Via Web Dashboard**:
+  1. Open `http://127.0.0.1:9000` in your browser.
+  2. Click the **Cloudflare Tunnel** tab on the left menu.
+  3. Under **Option 1: Semi-Automatic**, paste your token into the **Tunnel Token** field.
+  4. Click **Save & Launch Tunnel**.
+
+- **Via Termux Terminal**:
+  ```bash
+  tp cloudflare
+  ```
+  Select **1 (Semi-Automatic)** and paste your token when prompted.
+
+The token is saved securely in `~/termux-panel/config/cloudflare-token` (`chmod 600`), and the tunnel process starts immediately.
+
+#### Step 4: Configure Public Hostname Routes
+Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/):
+1. Navigate to **Networks** ➔ **Tunnels** ➔ Click on your tunnel (`android-host`) ➔ Click **Configure** (or **Edit**).
+2. Go to the **Public Hostname** tab.
+3. Click **Add a public hostname**.
+
+##### Route 1: The Control Panel
+- **Subdomain**: `panel`
+- **Domain**: Select `yourdomain.com` from the dropdown
+- **Path**: *(leave empty)*
+- **Service Type**: `HTTP`
+- **URL**: `127.0.0.1:9000`
+- Click **Save hostname**.
+
+##### Route 2: Your Hosted Website (HTML, Node, Python, or PHP)
+- **Subdomain**: `@` *(or leave blank for root domain, or enter `www` / `app`)*
+- **Domain**: Select `yourdomain.com`
+- **Service Type**: `HTTP`
+- **URL**: `127.0.0.1:8100` *(matches the port assigned to the site in TermuxPanel)*
+- Click **Save hostname**.
+
+---
+
+### ⚡ Method 2: Fully-Automatic Setup (Using Cloudflare API)
+
+This method lets TermuxPanel talk directly to Cloudflare to automatically create the tunnel, configure routing rules, and create the DNS CNAME records in one click.
+
+#### Step 1: Create a Cloudflare API Token
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
+2. Click **Create Token**.
+3. Scroll down to **Custom token** and click **Get started**.
+4. Set Token name to: `TermuxPanel Tunnel Token`.
+5. Under **Permissions**, add these 3 permissions:
+   - **Account** ➔ **Cloudflare Tunnel** ➔ **Edit**
+   - **Zone** ➔ **DNS** ➔ **Edit**
+   - **Zone** ➔ **Zone** ➔ **Read**
+6. Under **Account Resources**, choose **Include** ➔ **All accounts**.
+7. Under **Zone Resources**, choose **Include** ➔ **All zones** (or select your specific domain).
+8. Click **Continue to summary** ➔ **Create Token**.
+9. Copy your generated API Token.
+
+#### Step 2: Run Auto-Setup
+- **In Web Dashboard**:
+  1. Go to `http://127.0.0.1:9000` ➔ **Cloudflare Tunnel** tab.
+  2. Click **Option 2: Fully-Automatic (Cloudflare API)**.
+  3. Enter your **Cloudflare API Token**, **Domain Name** (e.g. `yourdomain.com`), and **Panel Subdomain** (e.g. `panel`).
+  4. Click **⚡ Run Fully-Automatic Setup**.
+
+- **In Termux Terminal**:
+  ```bash
+  tp cloudflare
+  ```
+  Select **2 (Fully-Automatic)**, enter your API token and domain, and let TermuxPanel configure everything.
+
+TermuxPanel will automatically create the tunnel, create DNS CNAME records, upload ingress mappings, save the credentials, and start the tunnel!
+
+---
+
+### 🌍 Step 5: Access Your Server Globally via HTTPS
+
+Once your tunnel is running:
+1. Open any browser on your laptop, another phone, or anywhere in the world.
+2. Visit:
+   ```
+   https://panel.yourdomain.com
+   ```
+3. You will see your TermuxPanel login dashboard secured with valid Cloudflare SSL (Green Padlock 🔒)!
+4. Visit your website at `https://yourdomain.com` or `https://app.yourdomain.com`.
+
+---
+
+### 🛡️ Optional Extra Layer: Cloudflare Zero Trust Access Policy
+To protect your admin panel with email PIN or Google/GitHub login before anyone even sees the login screen:
+1. Go to [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) ➔ **Access** ➔ **Applications** ➔ **Add an application**.
+2. Select **Self-hosted**.
+3. Set Application name: `TermuxPanel Admin`.
+4. Set Application domain: `panel.yourdomain.com`.
+5. Under **Policies**, create a rule allowing only your email address (`name@example.com`).
+6. Click **Save application**.
+7. Now, only you can access the admin dashboard!
+
+---
+
+### ❓ Cloudflare Tunnel Troubleshooting
+
+| Issue / Error | Cause | Solution |
+|---|---|---|
+| **Error 1033 (Tunnel error)** | `cloudflared` is not running on your phone | Run `tp start` in Termux, or check `tp status`. Ensure `termux-wake-lock` is enabled. |
+| **HTTP 502 Bad Gateway** | Local port is unreachable | Ensure Service Type is set to **`HTTP`** and URL is **`127.0.0.1:9000`** (not `localhost` or `https`). |
+| **DNS Resolution Error** | DNS CNAME record missing | In Cloudflare DNS, ensure a CNAME record exists for `panel` pointing to `<tunnel_id>.cfargotunnel.com` with Proxied (Orange Cloud) enabled. |
+| **Tunnel disconnects on screen lock** | Android battery saver killed Termux | Follow the **[24/7 Android Survival Guide](docs/ANDROID_247_GUIDE.md)** to set Termux battery to "Unrestricted". |
 
 ---
 
