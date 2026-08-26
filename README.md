@@ -7,341 +7,393 @@
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Zero%20Trust%20Tunnel-orange.svg)](https://www.cloudflare.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite3-blue.svg)](https://www.sqlite.org/)
 
-> **A lightweight, production-grade web hosting control panel and multi-runtime application supervisor engineered specifically for Android devices via Termux. Expose your hosted websites to the global internet over HTTPS with Cloudflare Zero Trust Tunnels — zero router port-forwarding, zero dynamic DNS, and zero exposed public IPs required.**
+> **A complete, beginner-friendly web hosting control panel that turns any Android phone or tablet into a secure, self-hosted web server.**
+> Host your HTML, Node.js, Python, and PHP applications, manage SQLite databases, edit files in your browser, and access your server from anywhere in the world over HTTPS using Cloudflare Zero Trust — **no router port-forwarding, no static IP, and zero advanced server knowledge required.**
 
 ---
 
-## 📑 Table of Contents
+## 📖 Zero-Assumption Table of Contents
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Minimum Hardware & OS Requirements](#-minimum-hardware--os-requirements)
-- [How It Works (Networking & Architecture Concept)](#-how-it-works-networking--architecture-concept)
-- [Quick Start: One-Tap Installation](#-quick-start-one-tap-installation)
-- [Cloudflare Zero Trust Setup Guide](#-cloudflare-zero-trust-setup-guide)
-  - [Method 1: Semi-Automatic (Paste Token)](#-method-1-semi-automatic-setup-recommended-for-beginners)
-  - [Method 2: Fully-Automatic (Cloudflare API)](#-method-2-fully-automatic-setup-using-cloudflare-api)
-  - [Cloudflare Access Zero Trust Security](#-optional-extra-security-cloudflare-access-zero-trust-layer)
-- [Panel Modules & Feature Guide](#-panel-modules--feature-guide)
-  - [1. Real-time Dashboard](#1-real-time-dashboard)
-  - [2. Multi-Runtime Website & App Engine](#2-multi-runtime-website--app-engine)
-  - [3. Sandboxed File Manager & In-Browser Code Editor](#3-sandboxed-file-manager--in-browser-code-editor)
-  - [4. SQLite Database Explorer & SQL Query Runner](#4-sqlite-database-explorer--sql-query-runner)
-  - [5. Scheduled Cron Job Manager](#5-scheduled-cron-job-manager)
-  - [6. Multi-Source Log Viewer](#6-multi-source-log-viewer)
-  - [7. Backup & Restore Engine](#7-backup--restore-engine)
-- [Terminal CLI (`tp`) Reference](#-terminal-cli-tp-reference)
-- [24/7 Continuous Operation & Android Background Survival](#-247-continuous-operation--android-background-survival)
-- [Directory Structure](#-directory-structure)
-- [Security & Sandboxing Model](#-security--sandboxing-model)
-- [Troubleshooting & FAQs](#-troubleshooting--faqs)
-- [License](#-license)
-
----
-
-## 🌟 Overview
-
-TermuxPanel transforms any Android smartphone, tablet, or Android TV box into a standalone micro-server. Traditional web hosting on residential or mobile connections is notoriously difficult due to **CGNAT (Carrier-Grade NAT)**, dynamic IP churn, and firewall restrictions. 
-
-TermuxPanel solves this elegantly by separating the **Control Plane** (`127.0.0.1:9000`) from the **Application Plane** (`127.0.0.1:8100–8999`) and bridging them to Cloudflare's global edge network via an outbound-only encrypted **Cloudflare Tunnel**.
+1. [What is TermuxPanel? (Explained in Plain English)](#1-what-is-termuxpanel-explained-in-plain-english)
+2. [How Does It Connect to the Internet? (No Port Forwarding)](#2-how-does-it-connect-to-the-internet-no-port-forwarding)
+3. [What You Need Before Starting](#3-what-you-need-before-starting)
+4. [Step-by-Step Installation Guide (From Scratch)](#4-step-by-step-installation-guide-from-scratch)
+5. [First-Time Setup: Creating Your Admin Account](#5-first-time-setup-creating-your-admin-account)
+6. [Cloudflare Zero Trust Setup (Access from Anywhere)](#6-cloudflare-zero-trust-setup-access-from-anywhere)
+   - [Option A: Semi-Automatic Setup (Copy & Paste Token)](#option-a-semi-automatic-setup-copy--paste-token---easiest)
+   - [Option B: Fully-Automatic Setup (Using Cloudflare API)](#option-b-fully-automatic-setup-using-cloudflare-api)
+   - [Adding Extra Security: Password Protect Before Login (Cloudflare Access)](#adding-extra-security-password-protect-before-login-cloudflare-access)
+7. [How to Deploy Websites & Apps (Step-by-Step)](#7-how-to-deploy-websites--apps-step-by-step)
+   - [Deploying a Static HTML/CSS/JS Website](#deploying-a-static-htmlcssjs-website)
+   - [Deploying a Node.js Application](#deploying-a-nodejs-application)
+   - [Deploying a Python App (Flask / FastAPI)](#deploying-a-python-app-flask--fastapi)
+   - [Deploying a PHP Application](#deploying-a-php-application)
+8. [How to Use the Panel Features](#8-how-to-use-the-panel-features)
+   - [File Manager & Code Editor](#file-manager--in-browser-code-editor)
+   - [SQLite Database Explorer & SQL Query Runner](#sqlite-database-explorer--sql-query-runner)
+   - [Automated Cron Jobs](#automated-cron-jobs)
+   - [Viewing Live Server Logs](#viewing-live-server-logs)
+   - [Creating & Downloading Backups](#creating--downloading-backups)
+9. [Terminal CLI (`tp`) - Control via Phone Terminal](#9-terminal-cli-tp---control-via-phone-terminal)
+10. [How to Keep It Running 24/7 (Prevent Android from Killing It)](#10-how-to-keep-it-running-247-prevent-android-from-killing-it)
+11. [Understanding the Project Folder Structure](#11-understanding-the-project-folder-structure)
+12. [Troubleshooting & Common Errors Solved](#12-troubleshooting--common-errors-solved)
+13. [License](#13-license)
 
 ---
 
-## 🚀 Key Features
+## 1. What is TermuxPanel? (Explained in Plain English)
 
-- 📊 **Live System Metrics**: Monitor real-time CPU utilization, RAM usage, storage disk space, uptime, and app health.
-- 🌐 **Multi-Runtime Hosting Engine**:
-  - **Static HTML/CSS/JS**: Embedded high-performance static HTTP server.
-  - **Node.js**: Full child process supervisor (`node server.js`) with crash recovery and log capture.
-  - **Python**: Support for WSGI/ASGI apps (**Flask**, **FastAPI**, **Django**) with virtualenv support.
-  - **PHP**: Per-website PHP CLI server runtime.
-- 🔒 **Zero-Trust Network Model**: Binds strictly to `127.0.0.1`. All external HTTPS traffic is routed through a single remotely managed Cloudflare Tunnel (`android-host`). No open router ports.
-- 📁 **Sandboxed File Manager**: Path-traversal proof file explorer, in-browser code editor, file uploader, downloader, and directory manager.
-- 🗄️ **SQLite Database Explorer**: In-panel database inspection, table browsing, schema viewer, paginated rows, and custom SQL runner.
-- ⏱️ **Cron Jobs**: Visual scheduler with presets (every minute, hourly, daily, weekly) synchronized with system `crond`.
-- 📜 **Log Viewer**: Stream and search panel logs, cloudflared tunnel logs, and website access/error logs with search filters.
-- 💾 **Backup Engine**: One-click creation of `.tar.gz` archives for full server, websites, or databases with download and deletion support.
-- 🚀 **Termux:Boot & Wake Lock**: Automatic background startup on Android device boot with CPU wake lock integration.
-- ⚡ **`tp` Terminal CLI**: Fast command-line helper for status, restarts, logs, backups, and interactive menus.
-- 🔋 **Auto-Healing Watchdog**: Background watchdog daemon (`scripts/watchdog.sh`) resurrects dead processes every minute.
+Normally, if you want to host a website, you have to pay a hosting company every month. 
+
+**TermuxPanel lets you use your Android smartphone as your hosting server for free.**
+
+- You get a **modern web dashboard** that looks and feels like cPanel / aaPanel.
+- You can create websites, edit code files in your browser, upload files, manage databases, and view server performance (CPU, RAM, and Storage).
+- It runs inside **Termux**, which is a free Linux environment application for Android.
+- It connects to **Cloudflare**, which gives your website a fast, free, secure HTTPS address (`https://yourdomain.com`) that anyone in the world can visit on their computer or phone.
 
 ---
 
-## 📱 Minimum Hardware & OS Requirements
+## 2. How Does It Connect to the Internet? (No Port Forwarding)
 
-| Component | Minimum Specification | Recommended Specification |
-|---|---|---|
-| **Android Version** | **Android 7.0 (Nougat)** or higher | **Android 10.0+** |
-| **RAM** | **2 GB** | **3 GB – 4 GB+** |
-| **Free Storage** | **1 GB** | **4 GB+** (for website storage, database files & backups) |
-| **Processor Architecture** | **ARM64 (`aarch64`)**, ARMv7 (`arm`), or `x86_64` | **ARM64** |
-| **Termux App** | [Termux from F-Droid](https://f-droid.org/packages/com.termux/) *(⚠️ Do **NOT** use Google Play version)* | F-Droid release |
-| **Autostart App** | [Termux:Boot from F-Droid](https://f-droid.org/packages/com.termux.boot/) (Optional, for auto-boot) | F-Droid release |
-| **Internet** | Any active Wi-Fi or 4G/5G connection | Stable Wi-Fi / Hotspot |
+### The Problem with Traditional Hosting on Phones
+Normally, hosting a server at home requires:
+- Opening ports on your home Wi-Fi router ("Port Forwarding").
+- Buying an expensive "Static IP address" from your Internet provider.
+- Dealing with mobile networks (4G/5G) that block incoming traffic using **CGNAT**.
 
----
-
-## 🧠 How It Works (Networking & Architecture Concept)
-
-### ❌ Does it need Port Forwarding or a Static IP?
-**NO.** You do **NOT** need:
-- ❌ Port Forwarding on your Wi-Fi router.
-- ❌ A Static Public IP from your ISP or telecom carrier.
-- ❌ Dynamic DNS (DDNS) services like No-IP or DuckDNS.
-- ❌ Any open inbound ports on your Android phone.
-
----
-
-### 🌐 The Cloudflare Tunnel Concept: Outbound-Only Magic
-
-Most mobile networks and home ISPs use **CGNAT (Carrier-Grade NAT)** or dynamic IPs that block incoming connections, preventing you from hosting traditional servers on a phone.
-
-TermuxPanel solves this using a **Remotely Managed Cloudflare Zero Trust Tunnel**:
+### How TermuxPanel Solves This (The Cloudflare Tunnel Solution)
+TermuxPanel uses **Cloudflare Zero Trust Tunnel**:
 
 ```
  ┌─────────────────────────────────────────────────────────┐
  │               VISITOR ANYWHERE IN THE WORLD             │
  └────────────────────────────┬────────────────────────────┘
                               │
-                              ▼ (Public HTTPS Request)
+                              ▼ (Visits https://panel.yourdomain.com)
  ┌─────────────────────────────────────────────────────────┐
- │               CLOUDFLARE GLOBAL EDGE WAF                │
- │                 panel.yourdomain.com                    │
- │                  app.yourdomain.com                     │
+ │               CLOUDFLARE GLOBAL NETWORK                 │
+ │     - Free SSL Certificate (Green Padlock 🔒)           │
+ │     - DDoS Attack Protection                            │
  └────────────────────────────┬────────────────────────────┘
                               │
-                              │ ◄── Outbound-Only Encrypted Tunnel (TLS / QUIC)
+                              │ ◄── Outbound-Only Encrypted Tunnel
                               │     (Initiated by your phone to Cloudflare)
                               ▼
  ┌─────────────────────────────────────────────────────────┐
- │                     ANDROID PHONE                       │
+ │                     YOUR ANDROID PHONE                  │
  │                                                         │
  │  ┌───────────────────────────────────────────────────┐  │
- │  │              cloudflared daemon                   │  │
+ │  │              cloudflared background daemon        │  │
  │  └──────────┬─────────────────────────────┬──────────┘  │
- │             │ (Routes locally)            │             │
+ │             │                             │             │
  │             ▼                             ▼             │
  │  ┌───────────────────────┐   ┌───────────────────────┐  │
- │  │   CONTROL PLANE       │   │   APPLICATION PLANE   │  │
  │  │   TermuxPanel Admin   │   │   Hosted Websites     │  │
- │  │   (127.0.0.1:9000)    │   │   - HTML   (:8100)    │  │
- │  │   - Express Backend   │   │   - Node   (:8101)    │  │
- │  │   - SQLite (panel.db) │   │   - PHP    (:8102)    │  │
- │  │   - Responsive UI     │   │   - Python (:8103)    │  │
+ │  │   (127.0.0.1:9000)    │   │   (:8100, :8101...)   │  │
  │  └───────────────────────┘   └───────────────────────┘  │
  └─────────────────────────────────────────────────────────┘
 ```
 
-1. **Outbound Connection**: When TermuxPanel starts, the lightweight `cloudflared` daemon on your phone establishes an **outbound-only connection** to Cloudflare's closest edge server.
-2. **Reverse Proxy & Free SSL**: When a visitor enters `https://panel.yourdomain.com` or `https://yoursite.com`, Cloudflare terminates the HTTPS connection, provides free SSL, filters malicious traffic, and relays the request down through your phone's existing outbound tunnel.
-3. **Local Dispatch**: `cloudflared` receives the request inside your phone and passes it locally to `127.0.0.1:9000` (for the panel) or `127.0.0.1:8100` (for your websites).
-4. **Network Flexibility**: Because the connection is outbound, your server **remains online even if your phone's IP changes**, or if your phone switches between Wi-Fi and 4G/5G mobile data.
+1. Your phone makes an **outbound** connection to Cloudflare (just like when you open a website).
+2. When a visitor goes to `https://panel.yourdomain.com`, Cloudflare securely sends that request down the tunnel directly to your phone.
+3. **No ports are opened on your router.**
+4. **It works on home Wi-Fi, mobile hotspot, and 4G/5G mobile data.**
+5. **Even if your phone's IP address changes, the connection stays alive automatically.**
 
 ---
 
-## ⚡ Quick Start: One-Tap Installation
+## 3. What You Need Before Starting
+
+You only need 3 things:
+
+1. **An Android Phone or Tablet**:
+   - Running **Android 7.0 or higher**.
+   - At least **2 GB RAM** and **1 GB free storage space**.
+2. **An Internet Connection**:
+   - Wi-Fi or mobile data (4G / 5G).
+3. **A Domain Name (For remote access)**:
+   - For example: `yourname.com` (from Namecheap, GoDaddy, Cloudflare, etc.).
+   - If you only want to test locally on your home Wi-Fi, you don't even need a domain!
+
+---
+
+## 4. Step-by-Step Installation Guide (From Scratch)
+
+Follow these exact steps on your Android device:
 
 ### Step 1: Install Termux from F-Droid
-1. Download and install [Termux from F-Droid](https://f-droid.org/packages/com.termux/).
-2. Open Termux and run:
+> ⚠️ **IMPORTANT**: Do **NOT** install Termux from the Google Play Store. The Google Play Store version is deprecated and will not work.
+
+1. Open your phone's browser and go to: **[https://f-droid.org/packages/com.termux/](https://f-droid.org/packages/com.termux/)**
+2. Scroll down and tap **"Download APK"**.
+3. Once downloaded, open the file and tap **Install**.
+4. *(Optional but recommended)*: Also download and install **[Termux:Boot from F-Droid](https://f-droid.org/packages/com.termux.boot/)** if you want the server to start automatically when your phone reboots.
+
+---
+
+### Step 2: Open Termux and Run the Installer
+1. Open the **Termux** app on your phone.
+2. Grant storage permission by running:
    ```bash
-   pkg update && pkg upgrade -y
-   pkg install -y git
+   termux-setup-storage
+   ```
+   *(Tap "Allow" on the popup permission dialog).*
+
+3. Update Termux packages and install Git (copy and paste this whole line):
+   ```bash
+   pkg update -y && pkg install -y git
+   ```
+   *(If prompted with a prompt like `[Y/n]`, press Enter).*
+
+4. Clone the TermuxPanel repository:
+   ```bash
+   git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel
    ```
 
-### Step 2: Clone and Run Installer
-```bash
-# Clone the repository
-git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel
-cd ~/termux-panel
+5. Enter the directory and run the one-tap installer:
+   ```bash
+   cd ~/termux-panel
+   bash installer/install.sh
+   ```
 
-# Run the idempotent installer
-bash installer/install.sh
+---
+
+### Step 3: What Happens During Installation
+The installer is fully automated and idempotent. It will:
+- ✅ Check your phone's processor architecture (`arm64`, `arm`, `x86_64`).
+- ✅ Install `Node.js`, `Python`, `PHP`, `SQLite`, `cronie`, `openssh`, and `cloudflared`.
+- ✅ Set up the SQLite database (`data/panel.db`).
+- ✅ Enable the **24/7 background CPU wake-lock** so Android does not sleep.
+- ✅ Register the **24/7 auto-healing watchdog monitor**.
+- ✅ Install the `tp` command in your terminal.
+- ✅ Start the TermuxPanel server on `http://127.0.0.1:9000`.
+
+When finished, you will see:
+```
+╔══════════════════════════════════════════════════════════╗
+║               TERMUXPANEL SETUP COMPLETE!                ║
+╚══════════════════════════════════════════════════════════╝
+
+Access your control panel:
+  Local Dashboard:    http://127.0.0.1:9000
+  Terminal Manager:   tp (Type tp anywhere in Termux)
+  Hosted Sites Dir:   ~/termux-panel/storage/websites/
 ```
 
-### What the Installer Does Automatically:
-1. Verifies the Android / Termux environment and CPU architecture.
-2. Installs dependencies: `nodejs`, `python`, `php`, `sqlite`, `cronie`, `openssh`, `tar`, `curl`, `wget`, `termux-services`, and `cloudflared`.
-3. Sets up folder structures and hardens directory permissions (`chmod 700` on data and `chmod 600` on secret files).
-4. Installs Node.js backend packages.
-5. Bootstraps the SQLite database (`data/panel.db`) with WAL mode.
-6. Configures `Termux:Boot` autostart and acquires `termux-wake-lock`.
-7. Registers the **24/7 self-healing watchdog monitor** in `crontab`.
-8. Symlinks the `tp` management command to `$PREFIX/bin/tp`.
-9. Launches TermuxPanel on `http://127.0.0.1:9000`.
-
 ---
 
-## ☁️ Cloudflare Zero Trust Setup Guide
+## 5. First-Time Setup: Creating Your Admin Account
 
-Cloudflare Zero Trust gives your Android server an enterprise-grade HTTPS endpoint with global DDoS protection.
-
----
-
-### 📋 Prerequisites
-1. A **Cloudflare Account** ([Sign up free](https://dash.cloudflare.com/sign-up)).
-2. A **Domain Name** active on Cloudflare (e.g., `yourdomain.com`).
-3. Access to the **Cloudflare Zero Trust Dashboard** ([one.dash.cloudflare.com](https://one.dash.cloudflare.com/)).
-
----
-
-### 🟢 Method 1: Semi-Automatic Setup (Recommended for Beginners)
-
-#### Step 1: Create the Tunnel in Cloudflare
-1. Go to the [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/).
-2. In the left sidebar, click **Networks** ➔ **Tunnels**.
-3. Click the blue **Add a tunnel** (or **Create a tunnel**) button.
-4. Select **Cloudflared** as the connector type and click **Next**.
-5. Enter a name for your tunnel (e.g., `android-host`) and click **Save tunnel**.
-
-#### Step 2: Copy Your Tunnel Token
-1. On the "Install and run a connector" page, find the command for Linux.
-2. It contains:
-   ```bash
-   cloudflared.exe service install eyJhIjoiYmNm... (long token string)
+1. On your phone, open any web browser (Chrome, Firefox, Brave).
+2. Go to:
    ```
-3. Copy **ONLY the token string** starting with `eyJh...`.
-
-#### Step 3: Save the Token in TermuxPanel
-- **Via Web Dashboard**: Open `http://127.0.0.1:9000` ➔ Click **Cloudflare Tunnel** tab ➔ Under **Option 1: Semi-Automatic**, paste your token ➔ Click **Save & Launch Tunnel**.
-- **Via Termux Terminal**: Run `tp cloudflare` ➔ Select `1 (Semi-Automatic)` ➔ Paste your token.
-
-The token is saved securely in `~/termux-panel/config/cloudflare-token` (`chmod 600`), and `cloudflared` starts immediately.
-
-#### Step 4: Configure Public Hostname Routes
-Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/):
-1. Go to **Networks** ➔ **Tunnels** ➔ Click on your tunnel (`android-host`) ➔ Click **Configure**.
-2. Go to the **Public Hostname** tab ➔ Click **Add a public hostname**.
-
-##### Route 1: The Control Panel
-- **Subdomain**: `panel`
-- **Domain**: `yourdomain.com`
-- **Path**: *(leave empty)*
-- **Service Type**: `HTTP`
-- **URL**: `127.0.0.1:9000`
-- Click **Save hostname**.
-
-##### Route 2: Your Hosted Website (HTML, Node, Python, or PHP)
-- **Subdomain**: `@` *(or `www` / `app`)*
-- **Domain**: `yourdomain.com`
-- **Service Type**: `HTTP`
-- **URL**: `127.0.0.1:8100` *(matches the port assigned in TermuxPanel)*
-- Click **Save hostname**.
+   http://127.0.0.1:9000
+   ```
+3. You will see the **TermuxPanel Initial Setup Screen**:
+   - Enter your desired **Admin Username** (e.g. `admin`).
+   - Enter your **Email** (Optional).
+   - Enter a secure **Admin Password** (at least 6 characters).
+4. Click **Initialize TermuxPanel**.
+5. You are now logged in to your server dashboard! 🎉
 
 ---
 
-### ⚡ Method 2: Fully-Automatic Setup (Using Cloudflare API)
+## 6. Cloudflare Zero Trust Setup (Access from Anywhere)
 
-This method lets TermuxPanel talk directly to Cloudflare to automatically create the tunnel, configure routing rules, and create the DNS CNAME records in one click.
+To access your panel and websites from your laptop, office computer, or anywhere in the world over HTTPS (`https://panel.yourdomain.com`), choose either **Option A** or **Option B**.
 
-#### Step 1: Create a Cloudflare API Token
-1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
+---
+
+### Option A: Semi-Automatic Setup (Copy & Paste Token - Easiest)
+
+#### Step 1: Create a Free Cloudflare Account & Add Your Domain
+1. Go to **[https://dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)** and create a free account.
+2. Click **Add a Site** and enter your domain name (e.g. `yourdomain.com`).
+3. Choose the **Free** plan.
+4. Follow the instructions to change your domain's nameservers at your domain registrar (Namecheap, GoDaddy, etc.) to the Cloudflare nameservers provided.
+
+#### Step 2: Create the Tunnel in Cloudflare Zero Trust
+1. Go to the Cloudflare Zero Trust Dashboard: **[https://one.dash.cloudflare.com/](https://one.dash.cloudflare.com/)**
+2. In the left navigation bar, click **Networks** ➔ **Tunnels**.
+3. Click the blue **Add a tunnel** button.
+4. Select **Cloudflared** and click **Next**.
+5. Enter a tunnel name (e.g., `android-server`) and click **Save tunnel**.
+
+#### Step 3: Copy Your Tunnel Token
+1. You will see a page titled *"Install and run a connector"*.
+2. Look under the **Linux / Docker** section.
+3. You will see a command like:
+   ```bash
+   cloudflared.exe service install eyJhIjoiYmNm... (very long token)
+   ```
+4. Copy **ONLY the long token string** starting with `eyJh...` (do not copy the words before it).
+
+#### Step 4: Paste the Token into TermuxPanel
+- **In your browser**: Go to `http://127.0.0.1:9000` ➔ Click **Cloudflare Tunnel** in the left menu ➔ Under **Option 1: Semi-Automatic**, paste your token into the field ➔ Click **Save & Launch Tunnel**.
+- **OR in Termux Terminal**: Type `tp cloudflare`, select `1`, and paste the token.
+
+#### Step 5: Add Hostname Routes in Cloudflare Dashboard
+Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/):
+1. Under **Networks** ➔ **Tunnels**, click on your tunnel ➔ Click **Configure** (or **Edit**).
+2. Click the **Public Hostname** tab ➔ Click **Add a public hostname**.
+
+##### Route 1: For the Control Panel Dashboard
+| Field | What to Type / Select |
+|---|---|
+| **Subdomain** | `panel` |
+| **Domain** | Select `yourdomain.com` from dropdown |
+| **Path** | *(Leave empty)* |
+| **Service Type** | Select **`HTTP`** |
+| **URL** | Type **`127.0.0.1:9000`** |
+*Click **Save hostname**.*
+
+##### Route 2: For Your Main Website
+| Field | What to Type / Select |
+|---|---|
+| **Subdomain** | *(Leave blank for root domain, or type `www`)* |
+| **Domain** | Select `yourdomain.com` |
+| **Service Type** | Select **`HTTP`** |
+| **URL** | Type **`127.0.0.1:8100`** *(port shown in TermuxPanel)* |
+*Click **Save hostname**.*
+
+**You're done!** Now visit `https://panel.yourdomain.com` from any device in the world. It is live with full HTTPS encryption! 🔒
+
+---
+
+### Option B: Fully-Automatic Setup (Using Cloudflare API)
+
+If you prefer 1-click automatic setup where TermuxPanel creates the tunnel, ingress routing, and DNS records for you:
+
+1. Go to **[https://dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)**.
 2. Click **Create Token** ➔ Custom token ➔ **Get started**.
-3. Set Token name: `TermuxPanel Tunnel Token`.
-4. Under **Permissions**, add these 3 permissions:
+3. Set Token Name: `TermuxPanel Token`.
+4. Add these 3 permissions:
    - **Account** ➔ **Cloudflare Tunnel** ➔ **Edit**
    - **Zone** ➔ **DNS** ➔ **Edit**
    - **Zone** ➔ **Zone** ➔ **Read**
 5. Under **Account Resources**, choose **Include** ➔ **All accounts**.
-6. Under **Zone Resources**, choose **Include** ➔ **All zones** (or select your specific domain).
-7. Click **Continue to summary** ➔ **Create Token** ➔ Copy the API Token.
+6. Under **Zone Resources**, choose **Include** ➔ **All zones**.
+7. Click **Continue to summary** ➔ **Create Token** ➔ Copy the token string.
+8. In TermuxPanel: Open `http://127.0.0.1:9000` ➔ **Cloudflare Tunnel** ➔ **Option 2: Fully-Automatic** ➔ Paste your API Token, enter your domain (`yourdomain.com`), and click **⚡ Run Fully-Automatic Setup**.
 
-#### Step 2: Run Auto-Setup
-- **In Web Dashboard**: Go to `http://127.0.0.1:9000` ➔ **Cloudflare Tunnel** ➔ **Option 2: Fully-Automatic** ➔ Enter API Token, Domain (`yourdomain.com`), and Subdomain (`panel`) ➔ Click **⚡ Run Fully-Automatic Setup**.
-- **In Termux Terminal**: Run `tp cloudflare` ➔ Select `2 (Fully-Automatic)` ➔ Enter token and domain.
-
-TermuxPanel will automatically provision the tunnel, create DNS CNAME records, upload ingress mappings, and start `cloudflared`!
+TermuxPanel will communicate with Cloudflare and configure everything automatically in under 10 seconds!
 
 ---
 
-### 🛡️ Optional Extra Security: Cloudflare Access (Zero Trust Layer)
-To require email PIN or Google/GitHub login before anyone can even see the login screen:
-1. Go to [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) ➔ **Access** ➔ **Applications** ➔ **Add an application**.
-2. Select **Self-hosted** ➔ Domain: `panel.yourdomain.com`.
-3. Under **Policies**, add a rule allowing only your email address (`you@gmail.com`).
-4. Click **Save application**.
+### Adding Extra Security: Password Protect Before Login (Cloudflare Access)
+To add a firewall policy that requires your personal Google or Email PIN before anyone can even see your login screen:
+1. In [Cloudflare Zero Trust](https://one.dash.cloudflare.com/), go to **Access** ➔ **Applications** ➔ **Add an application**.
+2. Choose **Self-hosted**.
+3. Set Application domain: `panel.yourdomain.com`.
+4. Under **Policies**, create a rule that allows only your email address (`you@gmail.com`).
+5. Click **Save application**.
 
 ---
 
-## 🖥️ Panel Modules & Feature Guide
+## 7. How to Deploy Websites & Apps (Step-by-Step)
 
-### 1. Real-time Dashboard
-- **CPU & RAM Meters**: Live utilization percentages calculated from `/proc/stat` and `/proc/meminfo`.
-- **Disk Storage**: Visual progress bar of available vs used flash storage on your Android device.
-- **System Uptime**: Formatted uptime tracker (`4d 17h 32m`).
-- **Running Applications Card**: Real-time status list of active web services with one-click management.
+In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create Website**.
 
 ---
 
-### 2. Multi-Runtime Website & App Engine
-Click **+ Create Website** to deploy an application:
-
-| Type | How It Runs | Default Entry | Port Allocation |
-|---|---|---|---|
-| **HTML** | Embedded Node HTTP static server | `public/index.html` | Auto (`8100–8999`) |
-| **Node.js** | Child process (`node server.js`) with PID & log capture | `server.js` | Auto (`8100–8999`) |
-| **Python** | Python process (Flask / FastAPI / uvicorn) | `app.py` | Auto (`8100–8999`) |
-| **PHP** | PHP CLI server (`php -S 127.0.0.1:<port> -t public`) | `public/index.php` | Auto (`8100–8999`) |
-
-- **Lifecycle Controls**: Start, Stop, and Restart any website with one click.
-- **Port Manager**: Automatically allocates conflict-free ports from `8100` to `8999`.
-- **Autostart Toggle**: Automatically resurrects selected websites when the phone reboots.
+### Deploying a Static HTML/CSS/JS Website
+1. In the Create Website modal:
+   - **Site Name**: `my-website`
+   - **Runtime**: `Static HTML / CSS / JS`
+   - **Domain**: `yourdomain.com` (or leave blank)
+2. Click **Create & Launch**.
+3. TermuxPanel will create `~/termux-panel/storage/websites/my-website/public/` with starter `index.html` and `style.css` files, assign an automatic port (e.g. `8100`), and start serving it immediately.
+4. Click **📁 Files** to edit `index.html` or upload your custom HTML files!
 
 ---
 
-### 3. Sandboxed File Manager & In-Browser Code Editor
-- **Strict Security Sandboxing**: Normalized path verification ensures all file requests strictly reside within `storage/websites/<name>/`. Path traversal attempts (`../../`) are blocked.
-- **In-Browser Code Editor**: Edit HTML, JavaScript, Python, PHP, CSS, and JSON files directly from your phone or remote browser.
-- **File Upload & Download**: Drag-and-drop file uploader with chunked handling and instant archive downloads.
-- **Folder Management**: Create folders, rename files, and delete items.
+### Deploying a Node.js Application
+1. In the Create Website modal:
+   - **Site Name**: `my-api`
+   - **Runtime**: `Node.js (Express / HTTP)`
+   - **Entry File**: `server.js`
+2. Click **Create & Launch**.
+3. TermuxPanel creates `server.js` and `package.json`, assigns a port (e.g. `8101`), and runs `node server.js` under background process supervision.
+4. If your app crashes, TermuxPanel logs the error to `logs/websites/my-api/error.log` and allows you to restart it with one click.
 
 ---
 
-### 4. SQLite Database Explorer & SQL Query Runner
-- **Auto-Discovery**: Automatically discovers all `.db`, `.sqlite`, and `.sqlite3` files in your storage and website directories.
-- **Visual Table Browser**: View all tables, row counts, and column schemas (Data Types, Nullability, Primary Keys).
-- **Paginated Row Viewer**: Clean table viewer with pagination support for tables with thousands of records.
-- **Custom SQL Query Runner**: Execute custom SQL statements (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `CREATE TABLE`) directly from the UI.
-- **One-Click Export**: Download the entire raw `.db` database file to your local computer.
+### Deploying a Python App (Flask / FastAPI)
+1. In the Create Website modal:
+   - **Site Name**: `python-service`
+   - **Runtime**: `Python (Flask / FastAPI / WSGI)`
+   - **Entry File**: `app.py`
+2. Click **Create & Launch**.
+3. TermuxPanel generates `app.py`, injects the assigned `PORT` environment variable, and runs the Python process supervised.
 
 ---
 
-### 5. Scheduled Cron Job Manager
-- **Visual Scheduler**: Create scheduled jobs with standard expressions (`* * * * *`) or choose presets (Every Minute, Hourly, Daily at Midnight, Weekly on Sunday).
-- **System Sync**: Synchronizes all enabled tasks directly with Termux's background `crond` daemon.
-- **On-Demand Execution**: Click **▶ Run Now** to test and trigger any cron job instantly with exit status reporting.
+### Deploying a PHP Application
+1. In the Create Website modal:
+   - **Site Name**: `my-php-site`
+   - **Runtime**: `PHP (Built-in Server)`
+   - **Entry File**: `public/index.php`
+2. Click **Create & Launch**.
+3. Serves your PHP files out of `public/` on an isolated local port.
 
 ---
 
-### 6. Multi-Source Log Viewer
-- **Unified Log Explorer**: Read and search across:
-  - `logs/panel.log` (System and API logs)
-  - `logs/cloudflared.log` (Cloudflare Tunnel logs)
-  - `logs/websites/<name>/access.log` (Web traffic access logs)
-  - `logs/websites/<name>/error.log` (Application crash & stderr logs)
-- **Live Search & Filter**: Real-time keyword filtering to isolate errors quickly.
-- **Log Clear**: Safely purge log files when they grow too large.
+## 8. How to Use the Panel Features
+
+### File Manager & In-Browser Code Editor
+- Select your website from the dropdown to browse its files.
+- Click any file (e.g. `index.html`, `server.js`, `app.py`) to open the **built-in code editor**, make edits, and click **Save Changes**.
+- Use the **⬆ Upload** button to upload images, scripts, or ZIP files directly from your computer or phone.
+- Use **+ Folder** or **+ File** to structure your project.
+
+### SQLite Database Explorer & SQL Query Runner
+- Click the **Databases** tab.
+- TermuxPanel automatically detects any SQLite database file (`.db`, `.sqlite`) in your website folders as well as the system `panel.db`.
+- Click on any table in the left sidebar to view its rows with pagination.
+- Type custom SQL queries (e.g. `SELECT * FROM users;` or `CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT);`) into the query runner and click **Execute SQL**.
+- Click **Export .db** to download the raw database file to your computer.
+
+### Automated Cron Jobs
+- Click the **Cron Jobs** tab ➔ **+ Add Cron Job**.
+- Choose a schedule preset:
+  - `* * * * *` (Every Minute)
+  - `0 * * * *` (Every Hour)
+  - `0 0 * * *` (Daily at Midnight)
+  - `0 0 * * 0` (Weekly on Sunday)
+  - Or type your custom cron expression.
+- Type the shell command to execute (e.g. `node /path/to/script.js` or `bash /path/to/backup.sh`).
+- Click **▶ Run Now** to test execution immediately.
+
+### Viewing Live Server Logs
+- Click the **Logs** tab.
+- Choose from:
+  - **TermuxPanel System Log**: Server start, API requests, and authentication logs.
+  - **Cloudflare Tunnel Log**: Tunnel connection state and routing logs.
+  - **Website Access Log**: Live HTTP request traffic.
+  - **Website Error Log**: Application crashes and stack traces.
+- Use the search bar to filter logs in real time.
+
+### Creating & Downloading Backups
+- Click the **Backups** tab ➔ **+ Create Backup**.
+- Select the scope:
+  - **Full Server**: Backs up all website files, databases, and configuration into a compressed `.tar.gz` archive.
+  - **Websites Only**: Backs up only the files in `storage/websites/`.
+  - **Databases Only**: Backs up only your SQLite database files.
+- Click **⬇ Download** to save the backup to your PC or external drive.
 
 ---
 
-### 7. Backup & Restore Engine
-- **Backup Scopes**:
-  - **Full Server**: Websites storage + SQLite databases + configuration files.
-  - **Websites Storage Only**: All document roots in `storage/websites/`.
-  - **Databases & Config Only**: `data/panel.db` and app configuration.
-- **Format**: Compressed `.tar.gz` archive with timestamps.
-- **Download & Delete**: Download backup archives directly to your PC for off-device redundancy.
+## 9. Terminal CLI (`tp`) - Control via Phone Terminal
 
----
-
-## 💻 Terminal CLI (`tp`) Reference
-
-TermuxPanel includes a dedicated bash CLI tool (`tp`) symlinked directly into your path:
+You don't always need a web browser to manage your server. Open the Termux app and type:
 
 ```bash
-# Open the interactive Terminal Management Menu
 tp
 ```
+
+This launches the interactive terminal manager:
 
 ```
 ╔══════════════════════════════════════════╗
@@ -361,141 +413,128 @@ tp
   0. Exit
 ```
 
-### Direct CLI Commands:
+### Direct Terminal Shortcuts:
 ```bash
-tp status      # Check if Panel, Cloudflare Tunnel, and Cron are running
-tp start       # Start TermuxPanel and Cloudflare Tunnel in background
-tp stop        # Gracefully stop all panel and tunnel processes
-tp restart     # Restart the server and tunnel daemons
-tp logs        # Live tail the last 30 lines of panel.log
-tp cloudflare  # Launch the Cloudflare Tunnel setup wizard
+tp status      # Check if panel, cloudflared, and crond are running
+tp start       # Start panel and tunnel daemons in the background
+tp stop        # Stop all running panel and tunnel processes
+tp restart     # Restart the panel server
+tp logs        # Live tail the last 30 lines of the server log
+tp cloudflare  # Launch the Cloudflare setup wizard
 tp backup      # Generate an immediate full server backup archive
 ```
 
 ---
 
-## 🔋 24/7 Continuous Operation & Android Background Survival
+## 10. How to Keep It Running 24/7 (Prevent Android from Killing It)
 
-To ensure your Android micro-server runs **24/7/365** without being killed when the screen turns off:
+Android has aggressive battery-saving features that put apps to sleep when your screen is locked. To make your server run **24/7/365 uninterrupted**:
 
-### 1. Android Wake Lock (`termux-wake-lock`)
-TermuxPanel automatically acquires a CPU wake-lock. This keeps the phone CPU running while allowing the screen to turn off completely.
+### 1. The Automated CPU Wake-Lock
+TermuxPanel automatically runs `termux-wake-lock`. This keeps the phone's CPU running in low-power mode even when your screen is completely off.
 
-### 2. Disable Android Battery Optimization (Mandatory)
-- **Stock Android / Pixel**: Settings ➔ Apps ➔ Termux ➔ Battery ➔ Set to **Unrestricted**.
-- **Samsung (One UI)**: Settings ➔ Apps ➔ Termux ➔ Battery ➔ **Unrestricted**. Also add Termux to **Never sleeping apps**.
-- **Xiaomi / Redmi (MIUI / HyperOS)**: Settings ➔ Apps ➔ Manage Apps ➔ Termux ➔ Enable **Autostart** & set Battery Saver to **No restrictions**. Lock Termux in recent apps 🔒.
-- **OnePlus / Realme / Oppo**: Settings ➔ Battery ➔ Optimize battery use ➔ Set Termux to **Don't optimize**.
+### 2. Disable Android Battery Optimization (Required)
+- **Samsung**: Settings ➔ Apps ➔ Termux ➔ Battery ➔ Select **Unrestricted**. Also add Termux to **Never sleeping apps**.
+- **Xiaomi / Redmi / POCO**: Settings ➔ Apps ➔ Manage Apps ➔ Termux ➔ Enable **Autostart** & set Battery Saver to **No restrictions**. Lock Termux in your recent apps drawer (Tap the 🔒 lock icon).
+- **Google Pixel / Stock Android**: Settings ➔ Apps ➔ Termux ➔ App battery usage ➔ Set to **Unrestricted**.
+- **OnePlus / Realme / Oppo**: Settings ➔ Battery ➔ More settings ➔ Optimize battery use ➔ Set Termux to **Don't optimize**.
 
-### 3. Automated Self-Healing Watchdog (`scripts/watchdog.sh`)
-TermuxPanel installs a cron watchdog that checks your services every minute. If Android's memory manager ever kills Node.js or Cloudflare Tunnel, the watchdog **automatically resurrects them within 60 seconds**.
+### 3. Wi-Fi Sleep Policy
+- Go to Android **Settings ➔ Wi-Fi ➔ Advanced** (or Network preferences) and ensure **"Keep Wi-Fi on during sleep"** is set to **Always**.
 
-👉 Read the full **[24/7 Android Survival Guide](docs/ANDROID_247_GUIDE.md)** for detailed OEM instructions.
+### 4. The Built-in 24/7 Auto-Healing Watchdog
+TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that checks every minute. If Android ever stops Node.js or Cloudflare Tunnel during high memory pressure, the watchdog **automatically restarts them within 60 seconds**.
 
 ---
 
-## 📂 Directory Structure
+## 11. Understanding the Project Folder Structure
 
 ```
 ~/termux-panel/
 │
-├── backend/                  # Control Plane Express Server
-│   ├── auth/                 # Bcrypt authentication & session middleware
-│   ├── config/               # App configuration & dynamic port allocator
-│   ├── database/             # SQLite connection & schema migrations
-│   ├── routes/               # REST API endpoints (Websites, Files, DB, Cron, Logs, Backups)
-│   ├── services/             # Process supervisor, file manager, system metrics
-│   ├── test/                 # Automated verification test suite
-│   └── server.js             # Express server entry point (127.0.0.1:9000)
+├── backend/                  # Server engine logic
+│   ├── auth/                 # Bcrypt password hashing & session management
+│   ├── config/               # Ports & application constants
+│   ├── database/             # SQLite connection (panel.db) & schema migrations
+│   ├── routes/               # REST API endpoints (Websites, Files, Databases, Cron...)
+│   ├── services/             # Process supervisor, file sandboxing, metrics
+│   └── server.js             # Express entry point (127.0.0.1:9000)
 │
-├── frontend/                 # Responsive Vanilla HTML5/CSS3/JS Web UI
-│   ├── css/                  # Dark modern theme stylesheets
-│   ├── js/                   # Modular SPA controllers
-│   └── index.html            # Main administration dashboard
+├── frontend/                 # Zero-dependency web UI (HTML5, CSS3, JavaScript)
+│   ├── css/                  # Responsive dark mode stylesheet
+│   ├── js/                   # Dashboard & tab controllers
+│   └── index.html            # Single page web interface
 │
 ├── storage/
-│   └── websites/             # Document roots for hosted websites
-│       ├── mysite.com/       # Example static or dynamic website
+│   └── websites/             # Document roots for all your hosted sites
+│       ├── mysite.com/       # Example website files (public/index.html...)
 │       └── api.domain.com/   # Example API service
 │
 ├── data/
-│   ├── panel.db              # SQLite system database
-│   └── backups/              # Generated tar.gz backup archives
+│   ├── panel.db              # SQLite system database (tables, users, ports)
+│   └── backups/              # Stored .tar.gz backup archives
 │
 ├── logs/
 │   ├── panel.log             # Panel system log
-│   ├── cloudflared.log       # Cloudflare Tunnel daemon log
-│   ├── watchdog.log          # 24/7 watchdog monitor log
-│   └── websites/             # Per-website access and error logs
+│   ├── cloudflared.log       # Cloudflare Tunnel log
+│   ├── watchdog.log          # 24/7 auto-healing log
+│   └── websites/             # Per-website access.log & error.log
 │
 ├── config/
-│   ├── cloudflare-token      # Secure tunnel token file (chmod 600)
-│   └── panel.env             # Local environment variables
+│   ├── cloudflare-token      # Secure token file (chmod 600)
+│   └── panel.env             # Local configuration secrets
 │
-├── templates/                # Starter boilerplate templates
-│   ├── html/                 # Static HTML/CSS starter
-│   ├── node/                 # Express starter
-│   ├── python/               # Python starter
-│   └── php/                  # PHP starter
+├── templates/                # Starter boilerplate for new websites
+│   ├── html/                 # HTML/CSS template
+│   ├── node/                 # Node.js template
+│   ├── python/               # Python template
+│   └── php/                  # PHP template
 │
-├── installer/                # Idempotent installation & setup scripts
+├── installer/                # Automated installation scripts
 │   ├── install.sh            # One-tap master installer
-│   ├── dependencies.sh       # Termux package installer
-│   ├── security.sh           # Security & permission hardening
-│   ├── cloudflare.sh         # Interactive Cloudflare wizard
-│   └── uninstall.sh          # Safe uninstaller
+│   ├── dependencies.sh       # Package installer
+│   ├── security.sh           # File permission hardening
+│   └── cloudflare.sh         # Interactive Cloudflare wizard
 │
-├── scripts/                  # Management and daemon scripts
-│   ├── tp                    # Terminal CLI management command
+├── scripts/                  # CLI and background daemons
+│   ├── tp                    # Terminal management tool
 │   ├── watchdog.sh           # 24/7 self-healing monitor
-│   ├── start-server.sh       # Termux:Boot autostart script
-│   ├── service-panel.run     # termux-services panel daemon
-│   └── service-cloudflared.run # termux-services cloudflared daemon
+│   └── start-server.sh       # Boot autostart script
 │
-├── docs/                     # Detailed architectural documentation
-│   ├── CLOUDFLARE_GUIDE.md   # Cloudflare Zero Trust setup manual
-│   ├── ANDROID_247_GUIDE.md  # 24/7 Android optimization guide
-│   └── ARCHITECTURE.md       # Internal architecture deep dive
-│
-├── LICENSE                   # MIT License
-└── README.md                 # Complete documentation
+├── docs/                     # Detailed technical guides
+├── LICENSE                   # MIT Open Source License
+└── README.md                 # This guide
 ```
 
 ---
 
-## 🛡️ Security & Sandboxing Model
+## 12. Troubleshooting & Common Errors Solved
 
-- **Localhost Binding**: All internal services bind exclusively to `127.0.0.1`. No ports are directly reachable on your local Wi-Fi or public IP.
-- **Path Traversal Protection**: The File Manager normalizes all file paths and verifies that they resolve inside `storage/websites/<name>/`. Attempts to access `../../etc/passwd` or `/data/data/...` are immediately blocked.
-- **Password Hashing**: Passwords are encrypted using Bcrypt with 10 salt rounds.
-- **Brute Force Protection**: Express rate limiting restricts excessive authentication attempts.
-- **Secure File Permissions**: Tunnel tokens and environment secrets are hardened with `chmod 600`.
-- **Zero Inbound Attack Surface**: Cloudflare Tunnel uses outbound-only connections, completely shielding your home IP and mobile network from port scans and DDoS attacks.
+### Q1: `Error 1033: Cloudflare Tunnel error` when opening the website
+- **Reason**: The `cloudflared` process on your phone is stopped or your phone lost internet connection.
+- **Solution**: Open Termux and type `tp status`. If stopped, type `tp start`. Make sure your phone is connected to Wi-Fi or cellular data.
 
----
+### Q2: `502 Bad Gateway` error in browser
+- **Reason**: The Cloudflare Tunnel is connected, but the local website process is not running, or the port number in Cloudflare does not match the website's port.
+- **Solution**: Open TermuxPanel (`http://127.0.0.1:9000`), check the **Websites** tab, and verify that your website status is green **RUNNING**. Check the port number (e.g. `8100`) and make sure your Cloudflare Public Hostname route points to `HTTP 127.0.0.1:8100`.
 
-## ❓ Troubleshooting & FAQs
+### Q3: `Permission denied` when running `bash installer/install.sh`
+- **Reason**: Storage permission was not granted to Termux.
+- **Solution**: Run `termux-setup-storage` and tap **Allow**, then run the installer command again.
 
-### Q1: I see "Error 1033 (Cloudflare Tunnel Error)" in my browser.
-- **Cause**: `cloudflared` is not running on your phone, or the phone lost internet connectivity.
-- **Fix**: Open Termux and run `tp status`. If stopped, run `tp start`. Ensure `termux-wake-lock` is enabled.
+### Q4: How do I change my admin password?
+- **Solution**: Open TermuxPanel ➔ Go to the **Settings** tab ➔ Enter your current password and new password ➔ Click **Update Password**.
 
-### Q2: I get "HTTP 502 Bad Gateway" when visiting my website.
-- **Cause**: The hosted website (HTML, Node, Python, or PHP) is stopped or the port in Cloudflare does not match the port in TermuxPanel.
-- **Fix**: Check the **Websites** tab in TermuxPanel. Make sure the website status is **RUNNING**. Verify that the port in your Cloudflare Public Hostname route matches the port shown in TermuxPanel (e.g. `8100`).
-
-### Q3: How do I make my website run on `mysite.com` instead of a subdomain?
-- **Fix**: In your Cloudflare Zero Trust Dashboard under your tunnel's Public Hostname settings, leave the **Subdomain** field blank (or type `@`) and select `mysite.com` as the **Domain**. Set Service to `HTTP 127.0.0.1:8100`.
-
-### Q4: Termux stops running after 10–15 minutes when the screen is locked.
-- **Cause**: Android's battery optimizer put the app to sleep.
-- **Fix**: Open Android **Settings > Apps > Termux > Battery** and select **Unrestricted**. Read the [24/7 Android Survival Guide](docs/ANDROID_247_GUIDE.md) for brand-specific steps.
-
-### Q5: Can I host WordPress or Laravel?
-- **Yes**: You can place PHP projects into `storage/websites/<site>/public/`. For SQLite-compatible CMSs (like Grav, Kirby, Pico, or WordPress with SQLite Integration plugin), it works out of the box.
+### Q5: How do I completely stop or uninstall TermuxPanel?
+- **Solution**: Run:
+  ```bash
+  bash ~/termux-panel/installer/uninstall.sh
+  ```
 
 ---
 
-## 📄 License
+## 13. License
 
-This project is open-source and licensed under the **[MIT License](LICENSE)**. Built with ❤️ for the Termux and self-hosting community.
+This project is licensed under the **[MIT License](LICENSE)**.
+
+Built with ❤️ for the global Termux, self-hosting, and maker community.
