@@ -1,9 +1,14 @@
 const path = require('path');
+const dotenv = require('dotenv');
 
 const ROOT_DIR = process.env.TERMUX_PANEL_ROOT || path.resolve(__dirname, '../../');
 
+// Explicitly load config/panel.env
+const envPath = path.join(ROOT_DIR, 'config', 'panel.env');
+dotenv.config({ path: envPath });
+
 module.exports = {
-  PORT: process.env.PORT || 9000,
+  PORT: parseInt(process.env.PORT, 10) || 9000,
   HOST: process.env.HOST || '0.0.0.0',
   SESSION_SECRET: process.env.SESSION_SECRET || 'termux-panel-default-secret-change-in-production',
   ROOT_DIR,

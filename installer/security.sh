@@ -27,9 +27,13 @@ if [ ! -f "$ENV_FILE" ]; then
   RAND_SECRET=$(openssl rand -hex 32 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
   echo "SESSION_SECRET=$RAND_SECRET" > "$ENV_FILE"
   echo "PORT=9000" >> "$ENV_FILE"
-  echo "HOST=127.0.0.1" >> "$ENV_FILE"
+  echo "HOST=0.0.0.0" >> "$ENV_FILE"
   chmod 600 "$ENV_FILE" || true
   echo -e "  ${GREEN}✓ Generated secure panel.env secret${NC}"
+else
+  # Ensure existing panel.env binds to 0.0.0.0 for LAN/Wi-Fi PC access
+  sed -i 's/HOST=127.0.0.1/HOST=0.0.0.0/g' "$ENV_FILE" 2>/dev/null || true
+  grep -q "HOST=" "$ENV_FILE" || echo "HOST=0.0.0.0" >> "$ENV_FILE"
 fi
 
 # Hardening Cloudflare token file if exists
