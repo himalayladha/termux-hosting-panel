@@ -295,8 +295,63 @@ async function runTests() {
 
   console.log('  ✓ GitHub Auto-Deploy Webhooks and Web Terminal verified successfully.');
 
+  // 11. Android & Hardware Intelligence Suite (Battery, Thermal, WakeLock, Notifications)
+  console.log('[11/11] Testing Android & Hardware Intelligence Suite...');
+  const hardwareService = require('../services/hardware.service');
+  const notificationService = require('../services/notification.service');
+
+  // Test Battery Status & Thermal Calculation
+  const battery = await hardwareService.getBatteryStatus();
+  assert(battery && typeof battery.percentage === 'number', 'Battery percentage missing');
+  assert(typeof battery.temperature === 'number', 'Battery temperature missing');
+  assert(battery.status && typeof battery.status === 'string', 'Battery status missing');
+  assert(battery.plugged && typeof battery.plugged === 'string', 'Battery plugged source missing');
+  assert(['normal', 'warm', 'critical'].includes(battery.thermalState), 'Thermal state invalid');
+
+  // Test WakeLock Toggling & DB Persistence
+  const wlOn = await hardwareService.setWakeLock(true);
+  assert(wlOn.isEnabled === true, 'WakeLock enable failed');
+  let wlCheck = await hardwareService.getWakeLockStatus();
+  assert(wlCheck.isEnabled === true, 'WakeLock status mismatch');
+
+  const wlOff = await hardwareService.setWakeLock(false);
+  assert(wlOff.isEnabled === false, 'WakeLock disable failed');
+  wlCheck = await hardwareService.getWakeLockStatus();
+  assert(wlCheck.isEnabled === false, 'WakeLock status mismatch after disable');
+
+  // Restore default WakeLock
+  await hardwareService.setWakeLock(true);
+
+  // Test Notification Settings Storage & Retrieval
+  const savedSettings = await notificationService.saveSettings({
+    telegram_enabled: true,
+    telegram_bot_token: '123456:dummy_token',
+    telegram_chat_id: '99887766',
+    discord_enabled: false,
+    discord_webhook_url: 'https://discord.com/api/webhooks/dummy',
+    temp_threshold: 43,
+    battery_threshold: 18,
+    alert_battery: true,
+    alert_thermal: true
+  });
+  assert(savedSettings.telegram_enabled === true, 'Telegram enabled setting mismatch');
+  assert(savedSettings.telegram_bot_token === '123456:dummy_token', 'Telegram bot token mismatch');
+  assert(savedSettings.temp_threshold === 43, 'Temp threshold mismatch');
+  assert(savedSettings.battery_threshold === 18, 'Battery threshold mismatch');
+
+  // Test Alert Broadcaster
+  const broadcastRes = await notificationService.broadcastAlert({
+    title: 'Automated Test Warning',
+    message: 'Test alert payload format verification',
+    level: 'warning',
+    category: 'battery'
+  });
+  assert(broadcastRes && typeof broadcastRes === 'object', 'Broadcast alert returned invalid result');
+
+  console.log('  ✓ Battery/thermal parsing, WakeLock manager, and notification settings verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 10/10 Verifications Passed!     ');
+  console.log('  All TermuxPanel 11/11 Verifications Passed!     ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

@@ -239,6 +239,55 @@
             </div>
           </div>
 
+          <!-- Mobile Hardware & Battery Guard Banner -->
+          <div class="card mt-4" style="background: rgba(16, 185, 129, 0.04); border-color: rgba(16, 185, 129, 0.25);">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <i data-lucide="battery-charging" style="width: 20px; height: 20px; color: #10b981;"></i>
+                <h3 style="margin: 0; font-size: 16px;">Android Hardware & Battery Guard</h3>
+                <span id="metric-battery-status" class="badge badge-success" style="font-size: 11px;">CHARGING</span>
+                <span id="badge-wakelock-status" class="badge badge-secondary" style="font-size: 11px;">WAKELOCK</span>
+              </div>
+              <div class="flex-align gap-2">
+                <button id="btn-toggle-wakelock" class="btn btn-secondary btn-sm" onclick="dashboard.toggleWakeLock()">
+                  <i data-lucide="sun" style="width: 13px; height: 13px; margin-right: 4px;"></i> Keep CPU Awake
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="grid grid-4 gap-3">
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm flex-between">
+                    <span>Battery Level</span>
+                    <strong id="metric-battery-percent" style="color: #fff; font-size: 15px;">--%</strong>
+                  </div>
+                  <div class="progress-bar-wrapper mt-2" style="height: 6px;">
+                    <div class="progress-bar" id="bar-battery" style="width: 0%; background: #10b981;"></div>
+                  </div>
+                  <div class="text-muted text-sm mt-2" id="metric-battery-plugged" style="font-size: 11.5px;">Checking...</div>
+                </div>
+
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">Battery Thermal</div>
+                  <div style="font-size: 16px; font-weight: 600; margin-top: 4px;" id="metric-battery-temp">--°C</div>
+                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Auto-Guard Limit: <strong>42°C</strong></div>
+                </div>
+
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">Battery Health</div>
+                  <div style="font-size: 16px; font-weight: 600; color: #38bdf8; margin-top: 4px;" id="metric-battery-health">GOOD</div>
+                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Li-ion Sensor</div>
+                </div>
+
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">CPU Keepalive</div>
+                  <div style="font-size: 15px; font-weight: 600; color: #f59e0b; margin-top: 4px;">termux-wake-lock</div>
+                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Prevents screen lock sleep</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Dashboard Quick Overview -->
           <div class="card mt-4">
             <div class="card-header flex-between">
@@ -1159,6 +1208,129 @@
                   <span class="badge badge-success">Pure SQLite (C-Free / Zero Node-Gyp)</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- 3. Hardware Guard & Push Notifications Settings Card -->
+          <div class="card mt-4">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <i data-lucide="bell-ring" style="width: 18px; height: 18px; color: #a855f7;"></i>
+                <h3 style="margin: 0; font-size: 16px;">Push Notifications & Auto-Protection Guard</h3>
+              </div>
+              <span class="badge badge-primary">Telegram & Discord</span>
+            </div>
+            <div class="card-body">
+              <p class="text-muted text-sm mb-3">
+                Receive instant phone alerts when your phone is unplugged, battery drops below safe threshold, phone overheats, or tunnels crash.
+              </p>
+
+              <form id="notifications-settings-form">
+                <!-- Alert Preferences Checkboxes -->
+                <div class="grid grid-4 gap-3 mb-4">
+                  <label class="card bg-darker p-3" style="cursor: pointer; display: block;">
+                    <input type="checkbox" id="setting-alert-battery" checked style="margin-right: 6px;">
+                    <strong>Power & Battery</strong>
+                    <div class="text-muted text-sm mt-1" style="font-size: 11px;">Unplug & low battery alerts</div>
+                  </label>
+
+                  <label class="card bg-darker p-3" style="cursor: pointer; display: block;">
+                    <input type="checkbox" id="setting-alert-thermal" checked style="margin-right: 6px;">
+                    <strong>Thermal Guard</strong>
+                    <div class="text-muted text-sm mt-1" style="font-size: 11px;">Overheating warning alerts</div>
+                  </label>
+
+                  <label class="card bg-darker p-3" style="cursor: pointer; display: block;">
+                    <input type="checkbox" id="setting-alert-tunnel" checked style="margin-right: 6px;">
+                    <strong>Tunnel Status</strong>
+                    <div class="text-muted text-sm mt-1" style="font-size: 11px;">Cloudflare offline/online</div>
+                  </label>
+
+                  <label class="card bg-darker p-3" style="cursor: pointer; display: block;">
+                    <input type="checkbox" id="setting-alert-crash" checked style="margin-right: 6px;">
+                    <strong>Website Crashes</strong>
+                    <div class="text-muted text-sm mt-1" style="font-size: 11px;">Process failure notifications</div>
+                  </label>
+                </div>
+
+                <!-- Thresholds -->
+                <div class="grid grid-2 gap-3 mb-4">
+                  <div class="form-group mb-0">
+                    <label for="setting-temp-threshold"><strong>Thermal Warning Threshold (°C)</strong></label>
+                    <input type="number" id="setting-temp-threshold" class="form-control" value="42" min="35" max="60">
+                    <small class="text-muted">Triggers high-priority alert if phone battery exceeds this temperature.</small>
+                  </div>
+                  <div class="form-group mb-0">
+                    <label for="setting-bat-threshold"><strong>Low Battery Warning Threshold (%)</strong></label>
+                    <input type="number" id="setting-bat-threshold" class="form-control" value="15" min="5" max="50">
+                    <small class="text-muted">Triggers warning alert when phone is discharging below this percentage.</small>
+                  </div>
+                </div>
+
+                <div class="grid grid-2 gap-4">
+                  <!-- Telegram Bot Config -->
+                  <div class="card bg-darker p-3">
+                    <div class="flex-between mb-3">
+                      <div class="flex-align gap-2">
+                        <i data-lucide="send" style="width: 16px; height: 16px; color: #38bdf8;"></i>
+                        <strong>Telegram Bot Alerts</strong>
+                      </div>
+                      <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="setting-tg-enabled"> Enable
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="setting-tg-token">Bot Token</label>
+                      <input type="text" id="setting-tg-token" class="form-control" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+                      <small class="text-muted">Create a bot via <code>@BotFather</code> on Telegram.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label for="setting-tg-chat">Chat ID</label>
+                      <input type="text" id="setting-tg-chat" class="form-control" placeholder="e.g. 987654321 or @yourchannel">
+                      <small class="text-muted">Your Telegram user ID (from <code>@userinfobot</code>).</small>
+                    </div>
+
+                    <button type="button" id="btn-test-telegram" class="btn btn-secondary btn-sm" style="width: 100%;">
+                      <i data-lucide="send" style="width: 13px; height: 13px; margin-right: 4px;"></i> Send Test Telegram Message
+                    </button>
+                  </div>
+
+                  <!-- Discord Webhook Config -->
+                  <div class="card bg-darker p-3">
+                    <div class="flex-between mb-3">
+                      <div class="flex-align gap-2">
+                        <i data-lucide="message-square" style="width: 16px; height: 16px; color: #818cf8;"></i>
+                        <strong>Discord Webhook Alerts</strong>
+                      </div>
+                      <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="setting-dc-enabled"> Enable
+                      </label>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label for="setting-dc-url">Discord Webhook URL</label>
+                      <input type="text" id="setting-dc-url" class="form-control" placeholder="https://discord.com/api/webhooks/...">
+                      <small class="text-muted">Created in Discord ➔ Channel Settings ➔ Integrations ➔ Webhooks.</small>
+                    </div>
+
+                    <div style="height: 60px;"></div>
+
+                    <button type="button" id="btn-test-discord" class="btn btn-secondary btn-sm" style="width: 100%;">
+                      <i data-lucide="message-square" style="width: 13px; height: 13px; margin-right: 4px;"></i> Send Test Discord Message
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-4 flex-between">
+                  <span class="text-muted text-sm">Settings are stored securely in SQLite <code>settings</code>.</span>
+                  <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                    Save Alert Settings
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
 

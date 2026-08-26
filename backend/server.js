@@ -24,6 +24,8 @@ const tunnelRoutes = require('./routes/tunnel.routes');
 const domainsRoutes = require('./routes/domains.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const webhooksRoutes = require('./routes/webhooks.routes');
+const hardwareRoutes = require('./routes/hardware.routes');
+const hardwareService = require('./services/hardware.service');
 
 const app = express();
 const server = http.createServer(app);
@@ -73,6 +75,7 @@ app.use('/api/backups', backupsRoutes);
 app.use('/api/tunnel', tunnelRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/hardware', hardwareRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');
@@ -101,6 +104,9 @@ async function startServer() {
     console.log('==============================================');
 
     await db.initDb();
+
+    // Start Android Hardware & Battery Guard Watchdog
+    hardwareService.startWatchdog(60);
 
     server.listen(config.PORT, async () => {
       const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;

@@ -1,8 +1,10 @@
 const dashboard = {
   timer: null,
+  wakelockEnabled: true,
 
   init() {
     this.loadSummary();
+    this.loadHardware();
     this.startPolling();
   },
 
@@ -11,6 +13,7 @@ const dashboard = {
     this.timer = setInterval(() => {
       if (document.getElementById('view-dashboard').classList.contains('active')) {
         this.loadMetrics();
+        this.loadHardware();
       }
     }, 4000);
   },
@@ -32,6 +35,93 @@ const dashboard = {
     } catch (err) {
       console.error('Failed to refresh metrics:', err);
     }
+  },
+
+  async loadHardware() {
+    try {
+      const res = await API.get('/api/hardware/status');
+      this.renderHardware(res.battery, res.wakelock);
+    } catch (_) {}
+  },
+
+  renderHardware(b, w) {
+    if (!b) return;
+
+    // Battery Percent & Bar
+    const batPercent = document.getElementById('metric-battery-percent');
+    const batBar = document.getElementById('bar-battery');
+    const batStatus = document.getElementById('metric-battery-status');
+    const batHealth = document.getElementById('metric-battery-health');
+    const batTemp = document.getElementById('metric-battery-temp');
+    const batPlugged = document.getElementById('metric-battery-plugged');
+
+    if (batPercent) batPercent.textContent = `${b.percentage}%`;
+    if (batBar) {
+      batBar.style.width = `${b.percentage}%`;
+      batBar.style.background = b.percentage <= 20 ? '#ef4444' : b.percentage <= 50 ? '#f59e0b' : '#22c55e';
+    }
+
+    if (batStatus) {
+      batStatus.textContent = b.status;
+      batStatus.className = b.status === 'CHARGING' ? 'badge badge-success' : 'badge badge-secondary';
+    }
+
+    if (batPlugged) {
+      const plugText = b.plugged.replace('PLUGGED_', '');
+      batPlugged.textContent = b.plugged === 'UNPLUGGED' ? 'Unplugged' : `Plugged (${plugText})`;
+      batPlugged.style.color = b.plugged === 'UNPLUGGED' ? '#f59e0b' : '#4ade80';
+    }
+
+    if (batHealth) {
+      batHealth.textContent = b.health;
+    }
+
+    if (batTemp) {
+      batTemp.textContent = `${b.temperature}°C`;
+      if (b.temperature >= 42.0) {
+        batTemp.style.color = '#ef4444';
+        batTemp.innerHTML = `${b.temperature}°C <span class="badge badge-danger" style="font-size: 10px; margin-left: 4px;">HOT</span>`;
+      } else if (b.temperature >= 38.0) {
+        batTemp.style.color = '#f59e0b';
+        batTemp.innerHTML = `${b.temperature}°C <span class="badge badge-warning" style="font-size: 10px; margin-left: 4px;">WARM</span>`;
+      } else {
+        batTemp.style.color = '#22c55e';
+        batTemp.innerHTML = `${b.temperature}°C <span class="badge badge-success" style="font-size: 10px; margin-left: 4px;">NORMAL</span>`;
+      }
+    }
+
+    // WakeLock Button
+    if (w) {
+      this.wakelockEnabled = w.isEnabled;
+      const wlBtn = document.getElementById('btn-toggle-wakelock');
+      const wlBadge = document.getElementById('badge-wakelock-status');
+
+      if (wlBadge) {
+        wlBadge.textContent = w.isEnabled ? 'ACTIVE (CPU AWAKE)' : 'DISABLED';
+        wlBadge.className = w.isEnabled ? 'badge badge-success' : 'badge badge-secondary';
+      }
+
+      if (wlBtn) {
+        if (w.isEnabled) {
+          wlBtn.className = 'btn btn-secondary btn-sm';
+          wlBtn.innerHTML = `<i data-lucide="moon" style="width: 13px; height: 13px; margin-right: 4px;"></i> Release WakeLock`;
+        } else {
+          wlBtn.className = 'btn btn-primary btn-sm';
+          wlBtn.innerHTML = `<i data-lucide="sun" style="width: 13px; height: 13px; margin-right: 4px;"></i> Keep CPU Awake`;
+        }
+      }
+    }
+
+    if (window.lucide) lucide.createIcons();
+  },
+
+  async toggleWakeLock() {
+    try {
+      const newState = !this.wakelockEnabled;
+      const res = await API.post('/api/hardware/wakelock', { enable: newState });
+      API.toast(res.message, 'info');
+      this.loadHardware();
+    } catch (_) {}
   },
 
   renderMetrics(m) {
