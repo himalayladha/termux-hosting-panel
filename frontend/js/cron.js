@@ -42,7 +42,7 @@ const cronManager = {
     if (!tbody) return;
 
     if (!this.jobs || this.jobs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center">No cron jobs configured yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center" style="padding: 24px;">No cron jobs configured yet.</td></tr>`;
       return;
     }
 
@@ -65,14 +65,20 @@ const cronManager = {
           </td>
           <td>
             <div class="flex-align gap-2">
-              <button class="btn btn-secondary btn-sm" onclick="cronManager.runJobNow(${job.id})">▶ Run Now</button>
-              <button class="btn btn-danger btn-sm" onclick="cronManager.deleteJob(${job.id})">🗑</button>
+              <button class="btn btn-secondary btn-sm" onclick="cronManager.runJobNow(${job.id})" title="Run job immediately">
+                <i data-lucide="play" style="width: 13px; height: 13px; margin-right: 3px;"></i> Run
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="cronManager.deleteJob(${job.id})" title="Delete job">
+                <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+              </button>
             </div>
           </td>
         </tr>
       `
       )
       .join('');
+
+    if (window.lucide) lucide.createIcons();
   },
 
   async handleCreate(e) {

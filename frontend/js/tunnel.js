@@ -36,6 +36,7 @@ const tunnelManager = {
       if (semiCard) semiCard.classList.add('hidden');
       if (autoCard) autoCard.classList.remove('hidden');
     }
+    if (window.lucide) lucide.createIcons();
   },
 
   async loadStatus() {
@@ -111,7 +112,8 @@ const tunnelManager = {
 
     if (btn) {
       btn.disabled = true;
-      btn.textContent = '⏳ Configuring Tunnel & DNS...';
+      btn.innerHTML = `<i data-lucide="loader" style="width: 14px; height: 14px; margin-right: 4px;"></i> Configuring Tunnel & DNS...`;
+      if (window.lucide) lucide.createIcons();
     }
 
     try {
@@ -131,7 +133,8 @@ const tunnelManager = {
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.textContent = '⚡ Run Fully-Automatic Setup';
+        btn.innerHTML = `<i data-lucide="zap" style="width: 14px; height: 14px; margin-right: 4px;"></i> Run Fully-Automatic Setup`;
+        if (window.lucide) lucide.createIcons();
       }
     }
   }

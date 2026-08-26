@@ -12,6 +12,90 @@ async function getSqlEngine() {
   return SQL;
 }
 
+// Pre-built Starter Schema Presets
+const STARTER_SCHEMAS = {
+  blank: '',
+  auth_users: `
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT DEFAULT 'user',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+  `,
+  key_value: `
+    CREATE TABLE IF NOT EXISTS key_value_store (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      type TEXT DEFAULT 'string',
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `,
+  blog_cms: `
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id INTEGER,
+      title TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      content TEXT NOT NULL,
+      status TEXT DEFAULT 'draft',
+      published_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (category_id) REFERENCES categories(id)
+    );
+    CREATE TABLE IF NOT EXISTS comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      post_id INTEGER NOT NULL,
+      author_name TEXT NOT NULL,
+      comment TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+    );
+  `,
+  ecommerce: `
+    CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      sku TEXT UNIQUE,
+      price REAL NOT NULL,
+      stock_quantity INTEGER DEFAULT 0,
+      description TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS customers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      phone TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_id INTEGER NOT NULL,
+      total_amount REAL NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (customer_id) REFERENCES customers(id)
+    );
+  `
+};
+
 /**
  * Scan filesystem for SQLite databases (.db, .sqlite, .sqlite3)
  */
@@ -84,6 +168,59 @@ async function openDb(dbPath) {
   const fileBuffer = fs.readFileSync(dbPath);
   const db = new sqlEngine.Database(fileBuffer);
   return db;
+}
+
+/**
+ * Create a new SQLite database with optional starter schema template
+ */
+async function createDatabase(fullDbPath, templateType = 'blank') {
+  if (fs.existsSync(fullDbPath)) {
+    throw new Error('A database file already exists at this path');
+  }
+
+  const parentDir = path.dirname(fullDbPath);
+  if (!fs.existsSync(parentDir)) {
+    await fs.promises.mkdir(parentDir, { recursive: true });
+  }
+
+  const sqlEngine = await getSqlEngine();
+  const db = new sqlEngine.Database();
+
+  const schema = STARTER_SCHEMAS[templateType] || '';
+  if (schema.trim()) {
+    // Split and run statements
+    const statements = schema
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    for (const stmt of statements) {
+      db.run(stmt);
+    }
+  }
+
+  const data = db.export();
+  fs.writeFileSync(fullDbPath, Buffer.from(data));
+  db.close();
+
+  return {
+    success: true,
+    path: fullDbPath,
+    template: templateType
+  };
+}
+
+/**
+ * Delete a database file
+ */
+async function deleteDatabase(fullDbPath) {
+  if (fullDbPath === config.DB_PATH) {
+    throw new Error('Cannot delete system panel.db');
+  }
+  if (!fs.existsSync(fullDbPath)) {
+    throw new Error('Database file not found');
+  }
+  await fs.promises.unlink(fullDbPath);
+  return { success: true };
 }
 
 /**
@@ -202,7 +339,10 @@ async function executeSql(dbPath, sqlQuery) {
 }
 
 module.exports = {
+  STARTER_SCHEMAS,
   discoverDatabases,
+  createDatabase,
+  deleteDatabase,
   listTables,
   getTableSchema,
   getTableData,

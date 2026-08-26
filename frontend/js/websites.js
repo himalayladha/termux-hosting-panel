@@ -38,10 +38,13 @@ const websites = {
         <div class="card p-4 text-center">
           <p class="text-muted">No websites or applications deployed yet.</p>
           <div class="mt-3">
-            <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">+ Create Your First Website</button>
+            <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">
+              <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Create Your First Website
+            </button>
           </div>
         </div>
       `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 
@@ -68,25 +71,50 @@ const websites = {
                 <div class="flex-align gap-2 flex-wrap">
                   ${
                     isRunning
-                      ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;">🌐 Open Website</a>
-                         <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">🔄 Restart</button>
-                         <button class="btn btn-secondary btn-sm" onclick="websites.stopSite(${site.id})">⏹ Stop</button>`
-                      : `<button class="btn btn-primary btn-sm" onclick="websites.startSite(${site.id})">▶ Start</button>`
+                      ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center;">
+                           <i data-lucide="external-link" style="width: 13px; height: 13px; margin-right: 4px;"></i> Open Website
+                         </a>
+                         <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">
+                           <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 3px;"></i> Restart
+                         </button>
+                         <button class="btn btn-secondary btn-sm" onclick="websites.stopSite(${site.id})">
+                           <i data-lucide="square" style="width: 13px; height: 13px; margin-right: 3px;"></i> Stop
+                         </button>`
+                      : `<button class="btn btn-primary btn-sm" onclick="websites.startSite(${site.id})">
+                           <i data-lucide="play" style="width: 13px; height: 13px; margin-right: 3px;"></i> Start
+                         </button>`
                   }
-                  <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">📜 Logs</button>
-                  <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">📁 Files</button>
-                  <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')">🗑</button>
+                  <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">
+                    <i data-lucide="terminal" style="width: 13px; height: 13px; margin-right: 3px;"></i> Logs
+                  </button>
+                  <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">
+                    <i data-lucide="folder" style="width: 13px; height: 13px; margin-right: 3px;"></i> Files
+                  </button>
+                  <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')" title="Delete Website">
+                    <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+                  </button>
                 </div>
               </div>
 
               <!-- Endpoint Access Links -->
               <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; padding: 10px 14px;" class="flex-between flex-wrap gap-2 text-sm">
                 <div class="flex-align gap-3 flex-wrap">
-                  <span>📱 <strong>Phone Local:</strong> <a href="http://127.0.0.1:${site.port}" target="_blank" style="color: #60a5fa; text-decoration: underline;"><code>http://127.0.0.1:${site.port}</code></a></span>
+                  <span style="display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="smartphone" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+                    <strong>Phone Local:</strong>
+                    <a href="http://127.0.0.1:${site.port}" target="_blank" style="color: #60a5fa; text-decoration: underline;"><code>http://127.0.0.1:${site.port}</code></a>
+                  </span>
                   ${
                     wifiIp
-                      ? `<span>💻 <strong>PC (Same Wi-Fi):</strong> <a href="http://${wifiIp}:${site.port}" target="_blank" style="color: #4ade80; text-decoration: underline;"><code>http://${wifiIp}:${site.port}</code></a></span>`
-                      : `<span>💻 <strong>PC:</strong> <span class="text-muted">Connect phone to Wi-Fi</span></span>`
+                      ? `<span style="display: inline-flex; align-items: center; gap: 4px;">
+                           <i data-lucide="laptop" style="width: 14px; height: 14px; color: #4ade80;"></i>
+                           <strong>PC (Same Wi-Fi):</strong>
+                           <a href="http://${wifiIp}:${site.port}" target="_blank" style="color: #4ade80; text-decoration: underline;"><code>http://${wifiIp}:${site.port}</code></a>
+                         </span>`
+                      : `<span style="display: inline-flex; align-items: center; gap: 4px;">
+                           <i data-lucide="laptop" style="width: 14px; height: 14px; color: #94a3b8;"></i>
+                           <strong>PC:</strong> <span class="text-muted">Connect phone to Wi-Fi</span>
+                         </span>`
                   }
                 </div>
                 <div class="text-muted text-sm">
@@ -98,6 +126,8 @@ const websites = {
         `;
       })
       .join('');
+
+    if (window.lucide) lucide.createIcons();
   },
 
   async handleCreate(e) {

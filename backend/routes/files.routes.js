@@ -7,10 +7,16 @@ const { requireAuth } = require('../auth/auth.middleware');
 const db = require('../database/db');
 const fileService = require('../services/file.service');
 
+// Ensure tmp upload directory exists
+const tmpUploadDir = path.join(__dirname, '../../data/tmp');
+if (!fs.existsSync(tmpUploadDir)) {
+  fs.mkdirSync(tmpUploadDir, { recursive: true });
+}
+
 // Configure temporary upload storage
 const upload = multer({
-  dest: path.join(__dirname, '../../data/tmp'),
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB max upload
+  dest: tmpUploadDir,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB max upload
 });
 
 // Middleware to fetch website root
@@ -85,13 +91,29 @@ router.post('/:websiteId/mkdir', requireAuth, getWebsiteRoot, async (req, res) =
 });
 
 /**
- * Delete item
+ * Delete single item
  */
 router.post('/:websiteId/delete', requireAuth, getWebsiteRoot, async (req, res) => {
   try {
     const { path: itemPath } = req.body;
     if (!itemPath) return res.status(400).json({ error: 'Item path required' });
     const result = await fileService.deleteItem(req.website.root_path, itemPath);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Batch delete multiple items
+ */
+router.post('/:websiteId/batch-delete', requireAuth, getWebsiteRoot, async (req, res) => {
+  try {
+    const { paths } = req.body;
+    if (!Array.isArray(paths) || paths.length === 0) {
+      return res.status(400).json({ error: 'Array of file paths required' });
+    }
+    const result = await fileService.deleteMultipleItems(req.website.root_path, paths);
     return res.json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
@@ -113,33 +135,105 @@ router.post('/:websiteId/rename', requireAuth, getWebsiteRoot, async (req, res) 
 });
 
 /**
- * Upload file
+ * Multi-file and Single-file Upload with optional Auto-Extract for ZIP archives
  */
-router.post('/:websiteId/upload', requireAuth, getWebsiteRoot, upload.single('file'), async (req, res) => {
+router.post('/:websiteId/upload', requireAuth, getWebsiteRoot, upload.array('files', 100), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    const files = req.files || (req.file ? [req.file] : []);
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
     }
 
     const targetDir = req.body.destination || '';
+    const autoExtract = req.body.autoExtract === 'true' || req.body.autoExtract === true;
     const safeDestination = fileService.resolveSafePath(req.website.root_path, targetDir);
-    const finalFilePath = path.join(safeDestination.target, req.file.originalname);
 
-    // Move uploaded file from temp to final destination
-    await fs.promises.rename(req.file.path, finalFilePath);
+    const uploadedFiles = [];
+
+    for (const file of files) {
+      const originalName = file.originalname || path.basename(file.path);
+      const isZip = originalName.toLowerCase().endsWith('.zip');
+      const finalFilePath = path.join(safeDestination.target, originalName);
+
+      // Move uploaded file from temp to final destination
+      await fs.promises.rename(file.path, finalFilePath);
+
+      let extracted = false;
+      if (isZip && autoExtract) {
+        try {
+          const zipRelPath = path.relative(req.website.root_path, finalFilePath).replace(/\\/g, '/');
+          await fileService.extractZipArchive(req.website.root_path, zipRelPath, targetDir);
+          extracted = true;
+        } catch (extractErr) {
+          console.warn('[Files] Auto-extract warning:', extractErr.message);
+        }
+      }
+
+      uploadedFiles.push({
+        filename: originalName,
+        size: file.size,
+        extracted
+      });
+    }
 
     return res.json({
       success: true,
-      filename: req.file.originalname,
-      size: req.file.size
+      count: uploadedFiles.length,
+      files: uploadedFiles
     });
   } catch (err) {
-    // Cleanup tmp file if failed
-    if (req.file && fs.existsSync(req.file.path)) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (e) {}
+    // Cleanup remaining temp files
+    if (req.files) {
+      for (const f of req.files) {
+        if (fs.existsSync(f.path)) {
+          try { fs.unlinkSync(f.path); } catch (_) {}
+        }
+      }
     }
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Extract an existing ZIP archive
+ */
+router.post('/:websiteId/extract', requireAuth, getWebsiteRoot, async (req, res) => {
+  try {
+    const { path: zipRelativePath, destination: targetSubPath } = req.body;
+    if (!zipRelativePath) {
+      return res.status(400).json({ error: 'Zip file path required' });
+    }
+
+    const result = await fileService.extractZipArchive(
+      req.website.root_path,
+      zipRelativePath,
+      targetSubPath || path.dirname(zipRelativePath)
+    );
+
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Compress selected files/folders into a ZIP archive
+ */
+router.post('/:websiteId/compress', requireAuth, getWebsiteRoot, async (req, res) => {
+  try {
+    const { paths: sourcePaths, zipName, destination } = req.body;
+    if (!Array.isArray(sourcePaths) || sourcePaths.length === 0) {
+      return res.status(400).json({ error: 'Array of paths to compress required' });
+    }
+
+    const cleanZipName = (zipName || 'archive.zip').replace(/[^a-zA-Z0-9._-]/g, '');
+    const finalZipName = cleanZipName.toLowerCase().endsWith('.zip') ? cleanZipName : `${cleanZipName}.zip`;
+    const targetDir = destination || '';
+    const zipSubPath = path.join(targetDir, finalZipName).replace(/\\/g, '/');
+
+    const result = await fileService.createZipArchive(req.website.root_path, sourcePaths, zipSubPath);
+    return res.json(result);
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
 });

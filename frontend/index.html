@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TermuxPanel - Android Hosting Control Panel</title>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/components.css">
 </head>
@@ -12,14 +14,19 @@
   <div id="auth-container" class="auth-wrapper hidden">
     <div class="auth-card">
       <div class="auth-header">
-        <div class="logo-badge">TP</div>
+        <div class="logo-badge">
+          <i data-lucide="server" style="width: 26px; height: 26px;"></i>
+        </div>
         <h1 id="auth-title">TermuxPanel</h1>
         <p id="auth-subtitle">Lightweight Android Hosting Engine</p>
       </div>
 
       <!-- Setup Form (Initial Boot) -->
       <form id="setup-form" class="auth-form hidden">
-        <div class="alert alert-info">Welcome! Create your primary administrator account to get started.</div>
+        <div class="alert alert-info">
+          <i data-lucide="info" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          Welcome! Create your primary administrator account to get started.
+        </div>
         <div class="form-group">
           <label for="setup-username">Admin Username</label>
           <input type="text" id="setup-username" required placeholder="e.g. admin" autocomplete="username">
@@ -32,7 +39,10 @@
           <label for="setup-password">Admin Password</label>
           <input type="password" id="setup-password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Initialize TermuxPanel</button>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i data-lucide="shield-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          Initialize TermuxPanel
+        </button>
       </form>
 
       <!-- Login Form -->
@@ -45,7 +55,10 @@
           <label for="login-password">Password</label>
           <input type="password" id="login-password" required placeholder="Password" autocomplete="current-password">
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i data-lucide="log-in" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          Log In
+        </button>
       </form>
     </div>
   </div>
@@ -59,44 +72,46 @@
           <span class="brand-badge">TP</span>
           <span class="brand-title">TermuxPanel</span>
         </div>
-        <button id="sidebar-close-btn" class="icon-btn mobile-only">&times;</button>
+        <button id="sidebar-close-btn" class="icon-btn mobile-only">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
       </div>
 
       <nav class="sidebar-nav">
         <button class="nav-item active" data-tab="dashboard">
-          <span class="nav-icon">📊</span>
+          <i data-lucide="layout-dashboard" class="nav-icon"></i>
           <span class="nav-label">Dashboard</span>
         </button>
         <button class="nav-item" data-tab="websites">
-          <span class="nav-icon">🌐</span>
+          <i data-lucide="globe" class="nav-icon"></i>
           <span class="nav-label">Websites</span>
         </button>
         <button class="nav-item" data-tab="filemanager">
-          <span class="nav-icon">📁</span>
+          <i data-lucide="folder-tree" class="nav-icon"></i>
           <span class="nav-label">File Manager</span>
         </button>
         <button class="nav-item" data-tab="databases">
-          <span class="nav-icon">🗄️</span>
+          <i data-lucide="database" class="nav-icon"></i>
           <span class="nav-label">Databases</span>
         </button>
         <button class="nav-item" data-tab="cron">
-          <span class="nav-icon">⏱️</span>
+          <i data-lucide="clock" class="nav-icon"></i>
           <span class="nav-label">Cron Jobs</span>
         </button>
         <button class="nav-item" data-tab="logs">
-          <span class="nav-icon">📜</span>
+          <i data-lucide="terminal" class="nav-icon"></i>
           <span class="nav-label">Logs</span>
         </button>
         <button class="nav-item" data-tab="backups">
-          <span class="nav-icon">💾</span>
+          <i data-lucide="hard-drive-download" class="nav-icon"></i>
           <span class="nav-label">Backups</span>
         </button>
         <button class="nav-item" data-tab="tunnel">
-          <span class="nav-icon">☁️</span>
+          <i data-lucide="cloud" class="nav-icon"></i>
           <span class="nav-label">Cloudflare Tunnel</span>
         </button>
         <button class="nav-item" data-tab="settings">
-          <span class="nav-icon">⚙️</span>
+          <i data-lucide="settings" class="nav-icon"></i>
           <span class="nav-label">Settings</span>
         </button>
       </nav>
@@ -114,13 +129,18 @@
       <!-- Top Navbar -->
       <header class="topbar">
         <div class="topbar-left">
-          <button id="sidebar-toggle-btn" class="icon-btn mobile-only">☰</button>
+          <button id="sidebar-toggle-btn" class="icon-btn mobile-only">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
           <h2 id="page-title" class="page-title">Dashboard</h2>
         </div>
         <div class="topbar-right">
           <div class="user-menu">
             <span id="nav-username" class="nav-username">Admin</span>
-            <button id="logout-btn" class="btn btn-secondary btn-sm">Log Out</button>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">
+              <i data-lucide="log-out" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+              Log Out
+            </button>
           </div>
         </div>
       </header>
@@ -134,18 +154,22 @@
             <div class="card-body" style="padding: 16px 20px;">
               <div class="flex-between flex-wrap gap-3">
                 <div class="flex-align gap-3">
-                  <div style="font-size: 24px;">🌐</div>
+                  <div class="icon-circle" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                    <i data-lucide="network" style="width: 22px; height: 22px;"></i>
+                  </div>
                   <div>
                     <strong style="color: #fff; font-size: 15px;">Server Access Endpoints</strong>
                     <div class="text-muted" style="font-size: 13px;">Connect locally, from any PC on the same Wi-Fi, or globally.</div>
                   </div>
                 </div>
                 <div class="flex-align gap-2 flex-wrap" id="access-urls-container">
-                  <span class="badge badge-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: normal;">
-                    📱 Phone: <code id="dash-local-url" style="color: #60a5fa;">http://127.0.0.1:9000</code>
+                  <span class="badge badge-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: normal; display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="smartphone" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+                    Phone: <code id="dash-local-url" style="color: #60a5fa;">http://127.0.0.1:9000</code>
                   </span>
-                  <span class="badge badge-success" style="padding: 6px 12px; font-size: 12px; font-weight: normal;">
-                    💻 PC (Wi-Fi): <code id="dash-wifi-url" style="color: #4ade80;">Detecting...</code>
+                  <span class="badge badge-success" style="padding: 6px 12px; font-size: 12px; font-weight: normal; display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="laptop" style="width: 14px; height: 14px; color: #4ade80;"></i>
+                    PC (Wi-Fi): <code id="dash-wifi-url" style="color: #4ade80;">Detecting...</code>
                   </span>
                 </div>
               </div>
@@ -157,7 +181,7 @@
             <div class="metric-card">
               <div class="metric-header">
                 <span class="metric-title">CPU Load</span>
-                <span class="metric-icon">⚡</span>
+                <i data-lucide="cpu" class="metric-icon" style="color: #38bdf8;"></i>
               </div>
               <div class="metric-value" id="metric-cpu">0%</div>
               <div class="progress-bar-wrapper">
@@ -169,7 +193,7 @@
             <div class="metric-card">
               <div class="metric-header">
                 <span class="metric-title">RAM Usage</span>
-                <span class="metric-icon">🧠</span>
+                <i data-lucide="activity" class="metric-icon" style="color: #a855f7;"></i>
               </div>
               <div class="metric-value" id="metric-ram">0 / 0 GB</div>
               <div class="progress-bar-wrapper">
@@ -181,7 +205,7 @@
             <div class="metric-card">
               <div class="metric-header">
                 <span class="metric-title">Storage</span>
-                <span class="metric-icon">💾</span>
+                <i data-lucide="hard-drive" class="metric-icon" style="color: #10b981;"></i>
               </div>
               <div class="metric-value" id="metric-disk">0 / 0 GB</div>
               <div class="progress-bar-wrapper">
@@ -193,7 +217,7 @@
             <div class="metric-card">
               <div class="metric-header">
                 <span class="metric-title">System Uptime</span>
-                <span class="metric-icon">⏱️</span>
+                <i data-lucide="timer" class="metric-icon" style="color: #f59e0b;"></i>
               </div>
               <div class="metric-value" id="metric-uptime">0h 0m</div>
               <div class="metric-footer text-success" id="metric-env">Android Ready</div>
@@ -204,7 +228,10 @@
           <div class="card mt-4">
             <div class="card-header flex-between">
               <h3>Running Applications</h3>
-              <button class="btn btn-primary btn-sm" onclick="app.switchTab('websites')">+ Create Website</button>
+              <button class="btn btn-primary btn-sm" onclick="app.switchTab('websites')">
+                <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                Create Website
+              </button>
             </div>
             <div class="card-body">
               <div id="dashboard-apps-list" class="apps-list">
@@ -221,7 +248,10 @@
               <h3>Hosted Websites & Applications</h3>
               <p class="text-muted">Manage your HTML, Node.js, Python, and PHP services</p>
             </div>
-            <button id="open-create-site-btn" class="btn btn-primary">+ Create Website</button>
+            <button id="open-create-site-btn" class="btn btn-primary">
+              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+              Create Website
+            </button>
           </div>
 
           <div class="websites-grid mt-4" id="websites-list">
@@ -232,30 +262,93 @@
         <!-- 3. FILE MANAGER VIEW -->
         <section id="view-filemanager" class="tab-view">
           <div class="card">
-            <div class="card-header flex-between">
+            <div class="card-header flex-between flex-wrap gap-2">
               <div class="flex-align gap-2">
                 <label for="fm-site-select"><strong>Website:</strong></label>
                 <select id="fm-site-select" class="form-control-sm"></select>
               </div>
-              <div class="flex-align gap-2">
-                <button id="fm-upload-btn" class="btn btn-secondary btn-sm">⬆ Upload</button>
-                <input type="file" id="fm-file-input" class="hidden">
-                <button id="fm-new-folder-btn" class="btn btn-secondary btn-sm">+ Folder</button>
-                <button id="fm-new-file-btn" class="btn btn-primary btn-sm">+ File</button>
+              <div class="flex-align gap-2 flex-wrap">
+                <button id="fm-upload-files-btn" class="btn btn-primary btn-sm">
+                  <i data-lucide="upload-cloud" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Upload Files
+                </button>
+                <input type="file" id="fm-files-input" class="hidden" multiple>
+
+                <button id="fm-upload-zip-btn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="archive-restore" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Upload & Unzip
+                </button>
+                <input type="file" id="fm-zip-input" class="hidden" accept=".zip">
+
+                <button id="fm-new-folder-btn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="folder-plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Folder
+                </button>
+                <button id="fm-new-file-btn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="file-plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  File
+                </button>
               </div>
             </div>
+
+            <!-- Drag & Drop Dropzone Box -->
+            <div id="fm-dropzone" class="fm-dropzone">
+              <div class="dropzone-inner">
+                <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+                <h4>Drag & Drop files or ZIP archives here</h4>
+                <p class="text-muted text-sm">Drop multiple files or code archives for instant upload & automatic extraction.</p>
+                <div class="dropzone-controls mt-2">
+                  <label class="form-check-label" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="fm-auto-extract-toggle" checked>
+                    <span style="font-size: 12px; color: #cbd5e1;">Auto-extract .zip archives on drop / upload</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Progress Bar (hidden by default) -->
+            <div id="fm-upload-progress" class="fm-upload-progress hidden">
+              <div class="flex-between text-sm mb-1">
+                <span id="fm-upload-status-text">Uploading files...</span>
+                <span id="fm-upload-percent-text">0%</span>
+              </div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="fm-upload-progress-bar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Batch Selection Action Bar -->
+            <div id="fm-batch-bar" class="fm-batch-bar hidden">
+              <div class="flex-between">
+                <span id="fm-selected-count-text">0 items selected</span>
+                <div class="flex-align gap-2">
+                  <button id="fm-batch-compress-btn" class="btn btn-secondary btn-sm">
+                    <i data-lucide="archive" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                    Compress to ZIP
+                  </button>
+                  <button id="fm-batch-delete-btn" class="btn btn-danger btn-sm">
+                    <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                    Delete Selected
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="card-body">
               <div class="fm-breadcrumbs" id="fm-breadcrumbs">
-                <span class="crumb" onclick="fileManager.navigateTo('/')">/</span>
+                <span class="crumb" onclick="fileManager.navigateTo('/')">root</span>
               </div>
               <div class="table-responsive mt-2">
                 <table class="table" id="fm-table">
                   <thead>
                     <tr>
+                      <th style="width: 38px;">
+                        <input type="checkbox" id="fm-select-all" title="Select all items">
+                      </th>
                       <th>Name</th>
                       <th>Size</th>
                       <th>Modified</th>
-                      <th>Actions</th>
+                      <th style="text-align: right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="fm-table-body">
@@ -270,26 +363,43 @@
         <!-- 4. DATABASES VIEW -->
         <section id="view-databases" class="tab-view">
           <div class="card">
-            <div class="card-header flex-between">
+            <div class="card-header flex-between flex-wrap gap-2">
               <div class="flex-align gap-2">
                 <label for="db-select"><strong>Database:</strong></label>
                 <select id="db-select" class="form-control-sm"></select>
               </div>
               <div class="flex-align gap-2">
-                <button id="db-export-btn" class="btn btn-secondary btn-sm">Export .db</button>
+                <button id="open-create-db-btn" class="btn btn-primary btn-sm">
+                  <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Create Database
+                </button>
+                <button id="db-export-btn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="download" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Export .db
+                </button>
+                <button id="db-delete-btn" class="btn btn-danger btn-sm">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Delete DB
+                </button>
               </div>
             </div>
             <div class="card-body">
               <div class="db-layout">
                 <div class="db-tables-sidebar">
-                  <h4>Tables</h4>
+                  <h4>
+                    <i data-lucide="table" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                    Tables
+                  </h4>
                   <ul id="db-tables-list" class="db-tables-list"></ul>
                 </div>
                 <div class="db-content-area">
                   <div class="db-query-box">
                     <div class="flex-between mb-2">
                       <label><strong>SQL Query Runner</strong></label>
-                      <button id="db-run-sql-btn" class="btn btn-primary btn-sm">Execute SQL</button>
+                      <button id="db-run-sql-btn" class="btn btn-primary btn-sm">
+                        <i data-lucide="play" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                        Execute SQL
+                      </button>
                     </div>
                     <textarea id="db-sql-input" class="code-editor-sm" placeholder="SELECT * FROM users LIMIT 10;"></textarea>
                   </div>
@@ -309,9 +419,12 @@
           <div class="view-header flex-between">
             <div>
               <h3>Scheduled Cron Jobs</h3>
-              <p class="text-muted">Automated tasks managed directly by TermuxPanel</p>
+              <p class="text-muted">Automated background tasks managed directly by TermuxPanel</p>
             </div>
-            <button id="open-create-cron-btn" class="btn btn-primary">+ Add Cron Job</button>
+            <button id="open-create-cron-btn" class="btn btn-primary">
+              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+              Add Cron Job
+            </button>
           </div>
           <div class="card mt-4">
             <div class="table-responsive">
@@ -344,8 +457,14 @@
                 <input type="text" id="log-search-input" placeholder="Search filter..." class="form-control-sm">
               </div>
               <div class="flex-align gap-2">
-                <button id="log-refresh-btn" class="btn btn-secondary btn-sm">🔄 Refresh</button>
-                <button id="log-clear-btn" class="btn btn-danger btn-sm">Clear Log</button>
+                <button id="log-refresh-btn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="refresh-cw" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Refresh
+                </button>
+                <button id="log-clear-btn" class="btn btn-danger btn-sm">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Clear Log
+                </button>
               </div>
             </div>
             <div class="card-body">
@@ -363,7 +482,10 @@
               <h3>Server & Website Backups</h3>
               <p class="text-muted">Generate full or partial archives of your sites and databases</p>
             </div>
-            <button id="open-create-backup-btn" class="btn btn-primary">+ Create Backup</button>
+            <button id="open-create-backup-btn" class="btn btn-primary">
+              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+              Create Backup
+            </button>
           </div>
           <div class="card mt-4">
             <div class="table-responsive">
@@ -410,7 +532,10 @@
                       <label for="tunnel-token-input">Tunnel Token</label>
                       <input type="password" id="tunnel-token-input" class="form-control" placeholder="eyJhIjoi..." required>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Save & Launch Tunnel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      <i data-lucide="shield-check" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                      Save & Launch Tunnel
+                    </button>
                   </form>
                 </div>
               </div>
@@ -434,7 +559,10 @@
                       <input type="text" id="cf-subdomain" class="form-control" value="panel" placeholder="panel">
                       <small class="text-muted">Result: <code>https://panel.yourdomain.com</code></small>
                     </div>
-                    <button type="submit" id="cf-auto-btn" class="btn btn-primary btn-sm">⚡ Run Fully-Automatic Setup</button>
+                    <button type="submit" id="cf-auto-btn" class="btn btn-primary btn-sm">
+                      <i data-lucide="zap" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                      Run Fully-Automatic Setup
+                    </button>
                   </form>
                 </div>
               </div>
@@ -463,7 +591,10 @@
               <div class="card mt-4 bg-darker" style="border-left: 4px solid var(--success);">
                 <div class="card-body">
                   <div class="flex-between">
-                    <h4>🛡️ 2nd Layer Security: Cloudflare Access</h4>
+                    <h4>
+                      <i data-lucide="shield-check" style="width: 18px; height: 18px; margin-right: 6px; color: var(--success);"></i>
+                      2nd Layer Security: Cloudflare Access
+                    </h4>
                     <span class="badge badge-success">RECOMMENDED</span>
                   </div>
                   <p class="text-muted text-sm mt-1">
@@ -499,7 +630,10 @@
                   <label for="new-password">New Password</label>
                   <input type="password" id="new-password" required minlength="6" autocomplete="new-password">
                 </div>
-                <button type="submit" class="btn btn-primary">Update Password</button>
+                <button type="submit" class="btn btn-primary">
+                  <i data-lucide="key" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Update Password
+                </button>
               </form>
             </div>
           </div>
@@ -510,7 +644,7 @@
             </div>
             <div class="card-body">
               <p><strong>Panel Version:</strong> <span id="settings-version">1.0.0</span></p>
-              <p><strong>Local Bound Host:</strong> <code id="settings-host">127.0.0.1</code></p>
+              <p><strong>Local Bound Host:</strong> <code id="settings-host">0.0.0.0 (All Interfaces)</code></p>
               <p><strong>Local Bound Port:</strong> <code id="settings-port">9000</code></p>
               <p><strong>Storage Path:</strong> <code id="settings-root">~/termux-panel</code></p>
             </div>
@@ -560,7 +694,57 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
-          <button type="submit" class="btn btn-primary">Create & Launch</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="rocket" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+            Create & Launch
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Database Modal -->
+  <div id="modal-create-db" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>
+          <i data-lucide="database" style="width: 20px; height: 20px; margin-right: 6px; color: #38bdf8;"></i>
+          Create New SQLite Database
+        </h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="create-db-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="db-website-target">Attach to Website / Directory</label>
+            <select id="db-website-target" class="form-control">
+              <option value="">System Data Directory (data/)</option>
+              <!-- Populated dynamically with websites -->
+            </select>
+            <small class="text-muted">Select a website to place the database directly into that site's root directory.</small>
+          </div>
+          <div class="form-group">
+            <label for="new-db-name">Database Filename</label>
+            <input type="text" id="new-db-name" required placeholder="e.g. app.db or users.sqlite" pattern="[a-zA-Z0-9._-]+">
+          </div>
+          <div class="form-group">
+            <label for="db-starter-template">Starter Schema Template</label>
+            <select id="db-starter-template" class="form-control">
+              <option value="blank">Empty Database (Blank)</option>
+              <option value="auth_users">User Authentication (users, sessions, roles)</option>
+              <option value="key_value">Key-Value Store (settings, app cache)</option>
+              <option value="blog_cms">Blog & CMS (posts, categories, comments)</option>
+              <option value="ecommerce">E-Commerce (products, orders, customers)</option>
+            </select>
+            <small class="text-muted" id="db-template-desc">Blank database ready for custom tables.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+            Create Database
+          </button>
         </div>
       </form>
     </div>
@@ -578,7 +762,10 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
-        <button id="editor-save-btn" class="btn btn-primary">Save Changes</button>
+        <button id="editor-save-btn" class="btn btn-primary">
+          <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+          Save Changes
+        </button>
       </div>
     </div>
   </div>

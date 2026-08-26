@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const AdmZip = require('adm-zip');
 const config = require('../config/app.config');
 
 /**
@@ -44,9 +45,11 @@ async function listFiles(websiteRoot, relativeSubPath = '') {
     const fullItemPath = path.join(target, entry.name);
     try {
       const itemStat = await fs.promises.stat(fullItemPath);
+      const isZip = !entry.isDirectory() && entry.name.toLowerCase().endsWith('.zip');
       items.push({
         name: entry.name,
         isDirectory: entry.isDirectory(),
+        isZip,
         size: entry.isDirectory() ? null : itemStat.size,
         modifiedAt: itemStat.mtime.toISOString(),
         relativePath: path.join(relative, entry.name).replace(/\\/g, '/')
@@ -147,6 +150,22 @@ async function deleteItem(websiteRoot, relativeSubPath) {
 }
 
 /**
+ * Delete multiple items
+ */
+async function deleteMultipleItems(websiteRoot, relativePaths = []) {
+  const results = [];
+  for (const relPath of relativePaths) {
+    try {
+      await deleteItem(websiteRoot, relPath);
+      results.push({ path: relPath, success: true });
+    } catch (err) {
+      results.push({ path: relPath, success: false, error: err.message });
+    }
+  }
+  return { success: true, results };
+}
+
+/**
  * Rename or move an item
  */
 async function renameItem(websiteRoot, oldRelativePath, newRelativePath) {
@@ -174,6 +193,79 @@ async function renameItem(websiteRoot, oldRelativePath, newRelativePath) {
   return { success: true };
 }
 
+/**
+ * Extract a ZIP archive with directory traversal security guards (Zip-Slip protection)
+ */
+async function extractZipArchive(websiteRoot, zipRelativePath, targetSubPath = '') {
+  const { target: zipFullPath } = resolveSafePath(websiteRoot, zipRelativePath);
+  const { target: extractDestPath } = resolveSafePath(websiteRoot, targetSubPath);
+
+  if (!fs.existsSync(zipFullPath)) {
+    throw new Error('Zip archive not found');
+  }
+
+  const zip = new AdmZip(zipFullPath);
+  const zipEntries = zip.getEntries();
+
+  // Validate all entry paths to prevent zip slip attacks
+  for (const entry of zipEntries) {
+    const entryTargetPath = path.normalize(path.join(extractDestPath, entry.entryName));
+    if (entryTargetPath !== extractDestPath && !entryTargetPath.startsWith(extractDestPath + path.sep)) {
+      throw new Error(`Security Exception: Path traversal zip entry detected (${entry.entryName})`);
+    }
+  }
+
+  // Ensure destination directory exists
+  if (!fs.existsSync(extractDestPath)) {
+    await fs.promises.mkdir(extractDestPath, { recursive: true });
+  }
+
+  // Extract all entries safely
+  zip.extractAllTo(extractDestPath, true);
+
+  return {
+    success: true,
+    extractedCount: zipEntries.length,
+    destination: targetSubPath || '/'
+  };
+}
+
+/**
+ * Compress selected files/folders into a ZIP archive
+ */
+async function createZipArchive(websiteRoot, sourceRelativePaths = [], destinationZipSubPath) {
+  if (!destinationZipSubPath) {
+    throw new Error('Destination zip filename required');
+  }
+
+  const { target: zipDestFullPath } = resolveSafePath(websiteRoot, destinationZipSubPath);
+  const zip = new AdmZip();
+
+  for (const relPath of sourceRelativePaths) {
+    const { target: itemFullPath } = resolveSafePath(websiteRoot, relPath);
+    if (!fs.existsSync(itemFullPath)) continue;
+
+    const stat = await fs.promises.stat(itemFullPath);
+    if (stat.isDirectory()) {
+      zip.addLocalFolder(itemFullPath, path.basename(itemFullPath));
+    } else {
+      zip.addLocalFile(itemFullPath);
+    }
+  }
+
+  const parentDir = path.dirname(zipDestFullPath);
+  if (!fs.existsSync(parentDir)) {
+    await fs.promises.mkdir(parentDir, { recursive: true });
+  }
+
+  zip.writeZip(zipDestFullPath);
+
+  return {
+    success: true,
+    zipPath: destinationZipSubPath
+  };
+}
+
 module.exports = {
   resolveSafePath,
   listFiles,
@@ -181,5 +273,8 @@ module.exports = {
   writeFile,
   createDirectory,
   deleteItem,
-  renameItem
+  deleteMultipleItems,
+  renameItem,
+  extractZipArchive,
+  createZipArchive
 };

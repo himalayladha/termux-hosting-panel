@@ -83,7 +83,7 @@ async function runTests() {
   console.log('  ✓ File Manager sandboxing successfully prevented all traversal attempts.');
 
   // 5. Dynamic Port Allocation
-  console.log('[5/5] Testing Dynamic Port Allocation...');
+  console.log('[5/7] Testing Dynamic Port Allocation...');
   const port1 = await findAvailablePort([]);
   assert(port1 >= 8100 && port1 <= 8999, 'Allocated port out of range');
 
@@ -91,8 +91,60 @@ async function runTests() {
   assert(port2 !== port1, 'Port collision detected');
   console.log(`  ✓ Port allocator allocated safe ports: :${port1}, :${port2}`);
 
+  // 6. Database Creator & Starter Schemas
+  console.log('[6/7] Testing Database Creator & Starter Presets...');
+  const databaseService = require('../services/database.service');
+  const testDbDir = path.join(process.env.TERMUX_PANEL_ROOT, 'data', 'test-dbs');
+  if (!fs.existsSync(testDbDir)) fs.mkdirSync(testDbDir, { recursive: true });
+  const testAuthDb = path.join(testDbDir, 'test_auth.db');
+  if (fs.existsSync(testAuthDb)) fs.unlinkSync(testAuthDb);
+
+  await databaseService.createDatabase(testAuthDb, 'auth_users');
+  assert(fs.existsSync(testAuthDb), 'Database file creation failed');
+  const authTables = await databaseService.listTables(testAuthDb);
+  const authTableNames = authTables.map((t) => t.name);
+  assert(authTableNames.includes('users'), 'auth_users preset missing users table');
+  assert(authTableNames.includes('sessions'), 'auth_users preset missing sessions table');
+
+  // Test SQL query execution
+  const insertRes = await databaseService.executeSql(
+    testAuthDb,
+    "INSERT INTO users (username, email, password_hash) VALUES ('alice', 'alice@example.com', 'hash123')"
+  );
+  assert(insertRes.changes === 1, 'SQL insert failed');
+  const queryRes = await databaseService.executeSql(testAuthDb, 'SELECT username FROM users WHERE email = "alice@example.com"');
+  assert(queryRes.rows.length === 1 && queryRes.rows[0].username === 'alice', 'SQL select verification failed');
+  await databaseService.deleteDatabase(testAuthDb);
+  assert(!fs.existsSync(testAuthDb), 'Database deletion failed');
+  console.log('  ✓ Database creator and schema templates verified successfully.');
+
+  // 7. ZIP Compression & Safe Extraction
+  console.log('[7/7] Testing ZIP Compression & Safe Extraction...');
+  const testSiteDir = path.join(process.env.TERMUX_PANEL_ROOT, 'storage', 'websites', 'test-zip-site');
+  if (!fs.existsSync(testSiteDir)) fs.mkdirSync(testSiteDir, { recursive: true });
+
+  // Create sample files
+  fs.writeFileSync(path.join(testSiteDir, 'sample1.txt'), 'Hello world 1');
+  fs.writeFileSync(path.join(testSiteDir, 'sample2.txt'), 'Hello world 2');
+
+  // Compress
+  const zipRes = await fileService.createZipArchive(testSiteDir, ['sample1.txt', 'sample2.txt'], 'test_archive.zip');
+  assert(zipRes.success, 'Zip creation failed');
+  assert(fs.existsSync(path.join(testSiteDir, 'test_archive.zip')), 'Zip file does not exist');
+
+  // Extract into extracted_folder
+  const extractRes = await fileService.extractZipArchive(testSiteDir, 'test_archive.zip', 'extracted_folder');
+  assert(extractRes.success, 'Zip extraction failed');
+  assert(fs.existsSync(path.join(testSiteDir, 'extracted_folder', 'sample1.txt')), 'Extracted file 1 missing');
+  assert(fs.existsSync(path.join(testSiteDir, 'extracted_folder', 'sample2.txt')), 'Extracted file 2 missing');
+
+  // Cleanup
+  fs.rmSync(testSiteDir, { recursive: true, force: true });
+  fs.rmSync(testDbDir, { recursive: true, force: true });
+  console.log('  ✓ ZIP compression and safe extraction verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel Core Tests Passed Successfully! ');
+  console.log('  All TermuxPanel 7/7 Verifications Passed!       ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

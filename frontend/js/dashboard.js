@@ -120,11 +120,17 @@ const dashboard = {
                 <td><strong>${s.name}</strong></td>
                 <td><span class="badge badge-primary">${s.type.toUpperCase()}</span></td>
                 <td>
-                  <div style="font-size: 12px; display: flex; flex-direction: column; gap: 2px;">
-                    <span>📱 <a href="http://127.0.0.1:${s.port}" target="_blank" style="color: #60a5fa;"><code>http://127.0.0.1:${s.port}</code></a></span>
+                  <div style="font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="display: inline-flex; align-items: center; gap: 4px;">
+                      <i data-lucide="smartphone" style="width: 12px; height: 12px; color: #60a5fa;"></i>
+                      <a href="http://127.0.0.1:${s.port}" target="_blank" style="color: #60a5fa;"><code>http://127.0.0.1:${s.port}</code></a>
+                    </span>
                     ${
                       isWifiClient
-                        ? `<span>💻 <a href="http://${currentHost}:${s.port}" target="_blank" style="color: #4ade80;"><code>http://${currentHost}:${s.port}</code></a></span>`
+                        ? `<span style="display: inline-flex; align-items: center; gap: 4px;">
+                             <i data-lucide="laptop" style="width: 12px; height: 12px; color: #4ade80;"></i>
+                             <a href="http://${currentHost}:${s.port}" target="_blank" style="color: #4ade80;"><code>http://${currentHost}:${s.port}</code></a>
+                           </span>`
                         : ''
                     }
                   </div>
@@ -138,7 +144,9 @@ const dashboard = {
                   <div class="flex-align gap-1">
                     ${
                       isRunning
-                        ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;">🌐 Open</a>`
+                        ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center;">
+                             <i data-lucide="external-link" style="width: 12px; height: 12px; margin-right: 3px;"></i> Open
+                           </a>`
                         : ''
                     }
                     <button class="btn btn-secondary btn-sm" onclick="app.switchTab('websites')">Manage</button>
@@ -152,5 +160,7 @@ const dashboard = {
         </table>
       </div>
     `;
+
+    if (window.lucide) lucide.createIcons();
   }
 };

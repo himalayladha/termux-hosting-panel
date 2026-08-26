@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
+const path = require('path');
 const { requireAuth } = require('../auth/auth.middleware');
 const dbService = require('../services/database.service');
+const db = require('../database/db');
+const config = require('../config/app.config');
 
 // Helper to decode dbId or return path
 function resolveDbPath(encodedId) {
   if (!encodedId) throw new Error('Database ID is required');
   if (encodedId === 'panel_db') {
-    const config = require('../config/app.config');
     return config.DB_PATH;
   }
   const decoded = Buffer.from(encodedId, 'base64url').toString('utf8');
@@ -27,6 +29,73 @@ router.get('/', requireAuth, async (req, res) => {
     return res.json(dbs);
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Get available starter database templates
+ */
+router.get('/templates', requireAuth, (req, res) => {
+  const templates = [
+    { id: 'blank', name: 'Empty Database', description: 'Clean blank SQLite database with no initial tables' },
+    { id: 'auth_users', name: 'User Authentication', description: 'Includes users, sessions, and password management tables' },
+    { id: 'key_value', name: 'Key-Value Store', description: 'Includes simple key-value store for app settings or caching' },
+    { id: 'blog_cms', name: 'Blog & Content CMS', description: 'Includes posts, categories, and comments tables' },
+    { id: 'ecommerce', name: 'E-Commerce / Store', description: 'Includes products, customers, and orders tables' }
+  ];
+  return res.json(templates);
+});
+
+/**
+ * Create a new SQLite database
+ */
+router.post('/create', requireAuth, async (req, res) => {
+  try {
+    const { websiteId, dbName, template } = req.body;
+    if (!dbName || !/^[a-zA-Z0-9._-]+$/.test(dbName)) {
+      return res.status(400).json({ error: 'Valid database filename required (e.g. app.db)' });
+    }
+
+    const cleanName = dbName.toLowerCase().endsWith('.db') || dbName.toLowerCase().endsWith('.sqlite') || dbName.toLowerCase().endsWith('.sqlite3')
+      ? dbName
+      : `${dbName}.db`;
+
+    let targetDir = config.DATA_DIR;
+
+    if (websiteId) {
+      const site = await db.get('SELECT * FROM websites WHERE id = ?', [websiteId]);
+      if (!site) {
+        return res.status(404).json({ error: 'Selected website not found' });
+      }
+      targetDir = site.root_path;
+    }
+
+    const fullDbPath = path.join(targetDir, cleanName);
+    const result = await dbService.createDatabase(fullDbPath, template || 'blank');
+
+    return res.status(201).json({
+      success: true,
+      message: `Database ${cleanName} created successfully!`,
+      path: fullDbPath,
+      dbId: Buffer.from(fullDbPath).toString('base64url'),
+      template: template || 'blank'
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Delete a database file
+ */
+router.post('/delete', requireAuth, async (req, res) => {
+  try {
+    const { dbId } = req.body;
+    const dbPath = resolveDbPath(dbId);
+    const result = await dbService.deleteDatabase(dbPath);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

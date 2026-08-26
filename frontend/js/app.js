@@ -84,6 +84,7 @@ const app = {
     document.getElementById('login-form').classList.add('hidden');
     document.getElementById('auth-title').textContent = 'TermuxPanel Setup';
     document.getElementById('auth-subtitle').textContent = 'Create Primary Admin Account';
+    if (window.lucide) lucide.createIcons();
   },
 
   showAuthModal(isInitialized = true) {
@@ -93,6 +94,7 @@ const app = {
     document.getElementById('login-form').classList.remove('hidden');
     document.getElementById('auth-title').textContent = 'TermuxPanel';
     document.getElementById('auth-subtitle').textContent = 'Sign in to your control panel';
+    if (window.lucide) lucide.createIcons();
   },
 
   showApp() {
@@ -116,6 +118,7 @@ const app = {
     settingsManager.init();
 
     this.switchTab('dashboard');
+    if (window.lucide) lucide.createIcons();
   },
 
   async handleSetup(e) {
@@ -190,6 +193,10 @@ const app = {
     if (tabId === 'backups') backupsManager.loadBackups();
     if (tabId === 'tunnel') tunnelManager.loadStatus();
     if (tabId === 'settings') settingsManager.loadSettings();
+
+    if (window.lucide) {
+      setTimeout(() => lucide.createIcons(), 50);
+    }
   }
 };
 
