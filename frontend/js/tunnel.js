@@ -11,8 +11,6 @@ const tunnelManager = {
 
   init() {
     this.bindEvents();
-    this.loadStatus();
-    this.loadProviders();
   },
 
   bindEvents() {
@@ -312,6 +310,8 @@ const tunnelManager = {
       this.tunnelState = data.status;
       this.renderStatus(data.status);
       this.renderRoutes(data.recommendedRoutes);
+      this.populateTargetSelects();
+      this.loadProviders();
     } catch (e) {}
   },
 

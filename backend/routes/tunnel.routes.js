@@ -14,36 +14,38 @@ router.get('/status', requireAuth, async (req, res) => {
     const tunnelStatus = await cloudflareService.getTunnelStatus();
     const tunnelConf = cloudflareService.getTunnelConfig();
 
-    // 1. Check if Cloudflare API has remote ingress hostnames configured and auto-sync to domains table
-    try {
-      const remoteRules = await cloudflareService.getRemoteTunnelIngress();
-      if (remoteRules && remoteRules.length > 0) {
-        const websites = await db.all('SELECT id, name, domain, port, type FROM websites');
-        for (const rule of remoteRules) {
-          const cleanHostname = rule.hostname.trim().toLowerCase();
-          const isPanel = rule.service.includes('9000');
-          let mappedSiteId = 0;
+    // 1. If sync requested, query Cloudflare API for remote ingress hostnames
+    if (req.query.sync === '1') {
+      try {
+        const remoteRules = await cloudflareService.getRemoteTunnelIngress();
+        if (remoteRules && remoteRules.length > 0) {
+          const websites = await db.all('SELECT id, name, domain, port, type FROM websites');
+          for (const rule of remoteRules) {
+            const cleanHostname = rule.hostname.trim().toLowerCase();
+            const isPanel = rule.service.includes('9000');
+            let mappedSiteId = 0;
 
-          if (!isPanel) {
-            const portMatch = rule.service.match(/:(\d+)/);
-            if (portMatch) {
-              const portNum = parseInt(portMatch[1], 10);
-              const matchedSite = websites.find((w) => w.port === portNum);
-              if (matchedSite) mappedSiteId = matchedSite.id;
+            if (!isPanel) {
+              const portMatch = rule.service.match(/:(\d+)/);
+              if (portMatch) {
+                const portNum = parseInt(portMatch[1], 10);
+                const matchedSite = websites.find((w) => w.port === portNum);
+                if (matchedSite) mappedSiteId = matchedSite.id;
+              }
+            }
+
+            // Auto-insert into domains if not already tracked
+            const exists = await db.get('SELECT id FROM domains WHERE domain = ?', [cleanHostname]);
+            if (!exists) {
+              await db.run(
+                'INSERT INTO domains (domain, website_id, ssl_enabled, cname_target) VALUES (?, ?, 1, ?)',
+                [cleanHostname, mappedSiteId, tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com']
+              );
             }
           }
-
-          // Auto-insert into domains if not already tracked
-          const exists = await db.get('SELECT id FROM domains WHERE domain = ?', [cleanHostname]);
-          if (!exists) {
-            await db.run(
-              'INSERT INTO domains (domain, website_id, ssl_enabled, cname_target) VALUES (?, ?, 1, ?)',
-              [cleanHostname, mappedSiteId, tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com']
-            );
-          }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
+    }
 
     // Fetch all connected domains with their mapped websites
     const domains = await db.all(`

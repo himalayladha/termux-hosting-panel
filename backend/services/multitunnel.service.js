@@ -128,6 +128,10 @@ function extractLoclxPublicUrl() {
   }
 }
 
+let providersCache = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 4000;
+
 /**
  * Multi-Tunnel Service API
  */
@@ -135,7 +139,12 @@ const multitunnelService = {
   /**
    * Get all tunnel providers and their live status
    */
-  async getAllProvidersStatus() {
+  async getAllProvidersStatus(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && providersCache && now - lastCacheTime < CACHE_TTL_MS) {
+      return providersCache;
+    }
+
     // 1. Cloudflare
     const cfInstalled = await cloudflareService.checkCloudflaredInstalled();
     const cfConfig = cloudflareService.getTunnelConfig();
@@ -209,6 +218,10 @@ const multitunnelService = {
         type: 'Private Mesh & Funnel Routing'
       }
     };
+
+    providersCache = result;
+    lastCacheTime = Date.now();
+    return result;
   },
 
   /**

@@ -18,6 +18,7 @@ function cfApiRequest(endpoint, apiToken, method = 'GET', body = null) {
       method,
       hostname: url.hostname,
       path: url.pathname + url.search,
+      timeout: 4000,
       headers: {
         Authorization: `Bearer ${apiToken.trim()}`,
         'Content-Type': 'application/json',
@@ -40,6 +41,11 @@ function cfApiRequest(endpoint, apiToken, method = 'GET', body = null) {
           reject(new Error(`Failed to parse Cloudflare API response: ${data.substring(0, 100)}`));
         }
       });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Cloudflare API request timed out (4s)'));
     });
 
     req.on('error', (err) => reject(err));
