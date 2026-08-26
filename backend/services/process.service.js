@@ -116,8 +116,8 @@ function startHtmlSite(website) {
       reject(err);
     });
 
-    server.listen(website.port, '127.0.0.1', () => {
-      appendLog(accessLog, `Static server listening on 127.0.0.1:${website.port}`);
+    server.listen(website.port, '0.0.0.0', () => {
+      appendLog(accessLog, `Static server listening on 0.0.0.0:${website.port}`);
       activeProcesses.set(website.id, {
         staticServer: server,
         type: 'html',
@@ -151,7 +151,7 @@ function startChildProcess(website) {
     const env = {
       ...process.env,
       PORT: String(website.port),
-      HOST: '127.0.0.1',
+      HOST: '0.0.0.0',
       ...customEnv
     };
 
@@ -164,7 +164,7 @@ function startChildProcess(website) {
       const entry = website.entry_file || 'app.py';
       // Check if entry contains uvicorn / fastapi syntax
       if (entry.includes(':app') || entry.includes('main:app')) {
-        args = ['-m', 'uvicorn', entry, '--host', '127.0.0.1', '--port', String(website.port)];
+        args = ['-m', 'uvicorn', entry, '--host', '0.0.0.0', '--port', String(website.port)];
       } else {
         args = [entry];
       }
@@ -173,7 +173,7 @@ function startChildProcess(website) {
       const publicDir = fs.existsSync(path.join(website.root_path, 'public'))
         ? 'public'
         : '.';
-      args = ['-S', `127.0.0.1:${website.port}`, '-t', publicDir];
+      args = ['-S', `0.0.0.0:${website.port}`, '-t', publicDir];
     } else {
       return reject(new Error(`Unsupported application type: ${website.type}`));
     }

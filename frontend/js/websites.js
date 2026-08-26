@@ -49,35 +49,49 @@ const websites = {
       .map((site) => {
         const isRunning = site.status === 'running';
         const typeBadge = site.type.toUpperCase();
+        const currentHost = window.location.hostname || '127.0.0.1';
+        const wifiIp = site.wifiIp || (currentHost !== '127.0.0.1' && currentHost !== 'localhost' ? currentHost : null);
+        const openUrl = isRunning ? (wifiIp ? `http://${wifiIp}:${site.port}` : `http://127.0.0.1:${site.port}`) : '#';
 
         return `
           <div class="card mb-3">
-            <div class="card-body flex-between">
-              <div>
-                <div class="flex-align gap-2 mb-2">
-                  <h4 style="font-size: 16px; margin: 0;">${site.name}</h4>
+            <div class="card-body">
+              <div class="flex-between flex-wrap gap-3 mb-3">
+                <div class="flex-align gap-2">
+                  <h4 style="font-size: 16px; margin: 0; font-weight: 600;">${site.name}</h4>
                   <span class="badge badge-primary">${typeBadge}</span>
-                  <span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">${site.status.toUpperCase()}</span>
+                  <span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">
+                    ${isRunning ? '● RUNNING' : '○ STOPPED'}
+                  </span>
                 </div>
-                <div class="text-muted text-sm">
-                  <span>Port: <code>127.0.0.1:${site.port}</code></span>
-                  <span style="margin: 0 8px;">•</span>
-                  <span>Entry: <code>${site.entry_file || 'default'}</code></span>
-                  <span style="margin: 0 8px;">•</span>
-                  <span>Domain: <code>${site.domain || site.name}</code></span>
+
+                <div class="flex-align gap-2 flex-wrap">
+                  ${
+                    isRunning
+                      ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;">🌐 Open Website</a>
+                         <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">🔄 Restart</button>
+                         <button class="btn btn-secondary btn-sm" onclick="websites.stopSite(${site.id})">⏹ Stop</button>`
+                      : `<button class="btn btn-primary btn-sm" onclick="websites.startSite(${site.id})">▶ Start</button>`
+                  }
+                  <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">📜 Logs</button>
+                  <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">📁 Files</button>
+                  <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')">🗑</button>
                 </div>
               </div>
 
-              <div class="flex-align gap-2">
-                ${
-                  isRunning
-                    ? `<button class="btn btn-secondary btn-sm" onclick="websites.stopSite(${site.id})">⏹ Stop</button>
-                       <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">🔄 Restart</button>`
-                    : `<button class="btn btn-primary btn-sm" onclick="websites.startSite(${site.id})">▶ Start</button>`
-                }
-                <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">📜 Logs</button>
-                <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">📁 Files</button>
-                <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')">🗑</button>
+              <!-- Endpoint Access Links -->
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; padding: 10px 14px;" class="flex-between flex-wrap gap-2 text-sm">
+                <div class="flex-align gap-3 flex-wrap">
+                  <span>📱 <strong>Phone Local:</strong> <a href="http://127.0.0.1:${site.port}" target="_blank" style="color: #60a5fa; text-decoration: underline;"><code>http://127.0.0.1:${site.port}</code></a></span>
+                  ${
+                    wifiIp
+                      ? `<span>💻 <strong>PC (Same Wi-Fi):</strong> <a href="http://${wifiIp}:${site.port}" target="_blank" style="color: #4ade80; text-decoration: underline;"><code>http://${wifiIp}:${site.port}</code></a></span>`
+                      : `<span>💻 <strong>PC:</strong> <span class="text-muted">Connect phone to Wi-Fi</span></span>`
+                  }
+                </div>
+                <div class="text-muted text-sm">
+                  <span>Entry: <code>${site.entry_file || 'default'}</code></span>
+                </div>
               </div>
             </div>
           </div>

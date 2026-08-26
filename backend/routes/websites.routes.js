@@ -26,19 +26,32 @@ function copyDirRecursive(src, dest) {
   }
 }
 
+const systemService = require('../services/system.service');
+
 /**
  * List all websites
  */
 router.get('/', requireAuth, async (req, res) => {
   try {
     await processService.refreshAllStatuses();
+    const netMetrics = systemService.getSystemMetrics ? await systemService.getSystemMetrics() : null;
+    const wifiIp = netMetrics && netMetrics.network ? netMetrics.network.wifiIp : null;
+
     const websites = await db.all(`
       SELECT w.*, d.domain as custom_domain
       FROM websites w
       LEFT JOIN domains d ON w.id = d.website_id AND d.is_primary = 1
       ORDER BY w.created_at DESC
     `);
-    return res.json(websites);
+
+    const enriched = websites.map((w) => ({
+      ...w,
+      localUrl: `http://127.0.0.1:${w.port}`,
+      wifiUrl: wifiIp ? `http://${wifiIp}:${w.port}` : null,
+      wifiIp
+    }));
+
+    return res.json(enriched);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

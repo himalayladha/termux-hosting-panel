@@ -95,6 +95,9 @@ const dashboard = {
       return;
     }
 
+    const currentHost = window.location.hostname || '127.0.0.1';
+    const isWifiClient = currentHost !== '127.0.0.1' && currentHost !== 'localhost';
+
     listEl.innerHTML = `
       <div class="table-responsive">
         <table class="table">
@@ -102,30 +105,48 @@ const dashboard = {
             <tr>
               <th>Application</th>
               <th>Type</th>
-              <th>Local Port</th>
+              <th>Direct Access Links</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             ${sites
-              .map(
-                (s) => `
+              .map((s) => {
+                const isRunning = s.status === 'running';
+                const openUrl = isWifiClient ? `http://${currentHost}:${s.port}` : `http://127.0.0.1:${s.port}`;
+                return `
               <tr>
                 <td><strong>${s.name}</strong></td>
                 <td><span class="badge badge-primary">${s.type.toUpperCase()}</span></td>
-                <td><code>:${s.port}</code></td>
                 <td>
-                  <span class="badge ${s.status === 'running' ? 'badge-success' : 'badge-danger'}">
-                    ${s.status.toUpperCase()}
+                  <div style="font-size: 12px; display: flex; flex-direction: column; gap: 2px;">
+                    <span>📱 <a href="http://127.0.0.1:${s.port}" target="_blank" style="color: #60a5fa;"><code>http://127.0.0.1:${s.port}</code></a></span>
+                    ${
+                      isWifiClient
+                        ? `<span>💻 <a href="http://${currentHost}:${s.port}" target="_blank" style="color: #4ade80;"><code>http://${currentHost}:${s.port}</code></a></span>`
+                        : ''
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">
+                    ${isRunning ? 'RUNNING' : 'STOPPED'}
                   </span>
                 </td>
                 <td>
-                  <button class="btn btn-secondary btn-sm" onclick="app.switchTab('websites')">Manage</button>
+                  <div class="flex-align gap-1">
+                    ${
+                      isRunning
+                        ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;">🌐 Open</a>`
+                        : ''
+                    }
+                    <button class="btn btn-secondary btn-sm" onclick="app.switchTab('websites')">Manage</button>
+                  </div>
                 </td>
               </tr>
-            `
-              )
+            `;
+              })
               .join('')}
           </tbody>
         </table>
