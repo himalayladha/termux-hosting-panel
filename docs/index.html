@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TermuxPanel - Turn Any Android Phone into a 24/7 Hosting Server</title>
+  <title>TermuxPanel - Turn Any Android Phone into a 24/7 Production Web Server</title>
   <meta name="description" content="A lightweight, production-grade web hosting control panel & application supervisor for Android/Termux with Cloudflare Zero Trust Tunnel HTTPS remote access.">
   <meta property="og:title" content="TermuxPanel - Android Web Hosting Control Panel">
   <meta property="og:description" content="Host HTML, Node.js, Python, & PHP apps directly on your Android phone with zero port forwarding.">
@@ -18,7 +18,7 @@
       --bg: #0b0f19;
       --bg-card: #131b2e;
       --bg-card-hover: #1a253f;
-      --bg-accent: #0f172a;
+      --bg-darker: #070a14;
       --border: #202d4a;
       --border-light: #2e3e66;
       --text: #f8fafc;
@@ -104,7 +104,7 @@
     }
     .nav-links {
       display: flex;
-      gap: 24px;
+      gap: 20px;
       align-items: center;
     }
     .nav-links a {
@@ -188,7 +188,7 @@
     .hero-subtitle {
       font-size: 19px;
       color: var(--text-muted);
-      max-width: 760px;
+      max-width: 780px;
       margin: 0 auto 36px;
       line-height: 1.6;
     }
@@ -201,7 +201,7 @@
 
     /* Terminal Showcase Box */
     .terminal-box {
-      max-width: 820px;
+      max-width: 860px;
       margin: 0 auto;
       background: #050811;
       border: 1px solid var(--border);
@@ -237,11 +237,48 @@
     .terminal-prompt { color: #38bdf8; font-weight: 700; }
     .terminal-output { color: #10b981; }
 
+    /* Interactive Mock Dashboard */
+    .dashboard-mock {
+      max-width: 1000px;
+      margin: 50px auto 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+    }
+    .mock-topbar {
+      background: #0d1322;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mock-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 24px;
+      background: var(--bg-darker);
+    }
+    .mock-metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .mock-metric-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .mock-metric-val { font-size: 20px; font-weight: 800; color: #fff; }
+    .mock-bar { height: 5px; background: #1e293b; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+    .mock-bar-fill { height: 100%; background: var(--primary-light); }
+    .mock-body { padding: 24px; }
+
     /* Section Styling */
     section { padding: 80px 0; border-top: 1px solid var(--border); }
     .section-header {
       text-align: center;
-      max-width: 720px;
+      max-width: 760px;
       margin: 0 auto 56px;
     }
     .section-tag {
@@ -274,6 +311,11 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
       gap: 32px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
     }
 
     /* Cards */
@@ -308,6 +350,40 @@
     }
     .card-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #fff; }
     .card-text { color: var(--text-muted); font-size: 15px; line-height: 1.6; }
+
+    /* Runtime Showcase Tabs */
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     /* Architecture Visualizer */
     .arch-container {
@@ -434,10 +510,14 @@
       gap: 20px;
       align-items: flex-start;
       margin-bottom: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
     }
     .step-num {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       background: linear-gradient(135deg, var(--primary), #38bdf8);
       border-radius: 50%;
       display: flex;
@@ -446,6 +526,7 @@
       font-weight: 800;
       font-size: 18px;
       flex-shrink: 0;
+      box-shadow: 0 0 16px var(--primary-glow);
     }
     .step-content { flex: 1; }
 
@@ -465,6 +546,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      user-select: none;
     }
     .faq-question:hover { color: var(--primary-light); }
     .faq-answer {
@@ -472,7 +554,10 @@
       color: var(--text-muted);
       font-size: 15px;
       line-height: 1.6;
+      display: none;
     }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-question { color: var(--primary-light); }
 
     /* Footer */
     footer {
@@ -484,11 +569,13 @@
     }
 
     @media (max-width: 768px) {
-      .hero-title { font-size: 36px; }
+      .hero-title { font-size: 34px; }
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .mock-metrics { grid-template-columns: 1fr 1fr; }
       .arch-row { flex-direction: column; }
       .arch-arrow { transform: rotate(90deg); margin: 8px 0; }
       .nav-links { display: none; }
+      .tabs-nav { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -503,7 +590,9 @@
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#architecture">How It Works</a>
+        <a href="#dashboard-preview">Live Demo</a>
+        <a href="#runtimes">Runtimes</a>
+        <a href="#architecture">Architecture</a>
         <a href="#install">Installation</a>
         <a href="#cloudflare">Cloudflare Tunnel</a>
         <a href="#security">Security</a>
@@ -519,14 +608,14 @@
   <header class="hero">
     <div class="container">
       <div class="hero-badge">
-        <i data-lucide="zap"></i> Turn Your Android Device into a Web Server
+        <i data-lucide="zap"></i> Self-Hosted Web Server for Android & Termux
       </div>
       <h1 class="hero-title">
-        Self-Host Websites on Android<br>
-        <span class="hero-highlight">With 24/7 Global HTTPS Access</span>
+        Turn Any Android Phone Into a<br>
+        <span class="hero-highlight">24/7 Production Web Hosting Server</span>
       </h1>
       <p class="hero-subtitle">
-        A lightweight hosting control panel designed for Termux. Host HTML, Node.js, Python, and PHP applications, manage SQLite databases, and manage everything with an in-browser cPanel dashboard — with zero router port forwarding.
+        A lightweight, production-grade web hosting control panel & process engine for Termux. Host HTML, Node.js, Python, and PHP apps, manage SQLite databases, edit code in your browser, and access your sites securely over Cloudflare HTTPS — zero router port-forwarding required.
       </p>
 
       <div class="hero-actions">
@@ -561,6 +650,92 @@
           <div class="terminal-output">✓ [6/8] Cloudflare Zero Trust Tunnel connected (https://panel.yourdomain.com)</div>
           <br>
           <div><strong>TermuxPanel Control Dashboard is LIVE at:</strong> <a href="http://127.0.0.1:9000" style="color:#38bdf8;">http://127.0.0.1:9000</a></div>
+        </div>
+      </div>
+
+      <!-- Live Dashboard Mockup Section -->
+      <div id="dashboard-preview" class="dashboard-mock">
+        <div class="mock-topbar">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="badge badge-primary"><i data-lucide="smartphone"></i> TermuxPanel</span>
+            <span style="font-size: 13px; font-weight: 600; color: #fff;">Server Overview (127.0.0.1:9000)</span>
+          </div>
+          <div>
+            <span class="badge badge-success"><i data-lucide="shield-check"></i> SSL Active</span>
+          </div>
+        </div>
+
+        <div class="mock-metrics">
+          <div class="mock-metric-card">
+            <div class="mock-metric-title"><span>CPU Load</span> <i data-lucide="cpu"></i></div>
+            <div class="mock-metric-val">12%</div>
+            <div class="mock-bar"><div class="mock-bar-fill" style="width: 12%;"></div></div>
+          </div>
+          <div class="mock-metric-card">
+            <div class="mock-metric-title"><span>RAM Usage</span> <i data-lucide="activity"></i></div>
+            <div class="mock-metric-val">1.8 / 6 GB</div>
+            <div class="mock-bar"><div class="mock-bar-fill" style="width: 30%;"></div></div>
+          </div>
+          <div class="mock-metric-card">
+            <div class="mock-metric-title"><span>Storage</span> <i data-lucide="hard-drive"></i></div>
+            <div class="mock-metric-val">42 / 128 GB</div>
+            <div class="mock-bar"><div class="mock-bar-fill" style="width: 32%;"></div></div>
+          </div>
+          <div class="mock-metric-card">
+            <div class="mock-metric-title"><span>Uptime</span> <i data-lucide="clock"></i></div>
+            <div class="mock-metric-val" style="color: #10b981;">18d 07h</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Android 24/7 Mode</div>
+          </div>
+        </div>
+
+        <div class="mock-body">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="font-size: 16px; color: #fff;">Supervised Applications</h4>
+            <span class="badge badge-primary">4 Services Running</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Application</th>
+                  <th>Runtime</th>
+                  <th>Internal Port</th>
+                  <th>Public Hostname</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>company-portal</strong></td>
+                  <td><span class="badge badge-primary">HTML / STATIC</span></td>
+                  <td><code>127.0.0.1:8100</code></td>
+                  <td><code>portal.yourdomain.com</code></td>
+                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>rest-api-v1</strong></td>
+                  <td><span class="badge badge-primary">NODE.JS (EXPRESS)</span></td>
+                  <td><code>127.0.0.1:8101</code></td>
+                  <td><code>api.yourdomain.com</code></td>
+                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>ai-model-service</strong></td>
+                  <td><span class="badge badge-primary">PYTHON (FASTAPI)</span></td>
+                  <td><code>127.0.0.1:8102</code></td>
+                  <td><code>ai.yourdomain.com</code></td>
+                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>personal-blog</strong></td>
+                  <td><span class="badge badge-primary">PHP RUNTIME</span></td>
+                  <td><code>127.0.0.1:8103</code></td>
+                  <td><code>blog.yourdomain.com</code></td>
+                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -615,6 +790,110 @@
     </div>
   </section>
 
+  <!-- Interactive Runtime Showcase -->
+  <section id="runtimes">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i data-lucide="code-2"></i> APPLICATION RUNTIMES</div>
+        <h2 class="section-title">Support for Every Modern Web Stack</h2>
+        <p class="section-desc">Each application runs in an isolated process with its own dedicated port and access/error logs.</p>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchRuntimeTab('node')"><i data-lucide="server"></i> Node.js</button>
+        <button class="tab-btn" onclick="switchRuntimeTab('python')"><i data-lucide="terminal"></i> Python</button>
+        <button class="tab-btn" onclick="switchRuntimeTab('php')"><i data-lucide="file-code"></i> PHP</button>
+        <button class="tab-btn" onclick="switchRuntimeTab('html')"><i data-lucide="layout"></i> Static HTML</button>
+      </div>
+
+      <div id="tab-node" class="tab-content active">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4>Node.js Express Application (Supervised Child Process)</h4>
+            <span class="badge badge-primary">Port: 127.0.0.1:8101</span>
+          </div>
+          <p class="text-muted text-sm mb-3">Runs <code>node server.js</code> with PID tracking, automatic restarts on crash, and segregated stdout/stderr logging.</p>
+          <div class="code-box">
+            <pre style="color: #cbd5e1; font-family: monospace;">const http = require('http');
+const PORT = process.env.PORT || 8101;
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ status: 'online', runtime: process.version, time: new Date() }));
+});
+
+server.listen(PORT, '127.0.0.1', () => console.log(`API live on :${PORT}`));</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-python" class="tab-content">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4>Python WSGI / ASGI App (FastAPI / Flask / Django)</h4>
+            <span class="badge badge-primary">Port: 127.0.0.1:8102</span>
+          </div>
+          <p class="text-muted text-sm mb-3">Supervised Python interpreter injecting environment variables (<code>PORT</code>, <code>HOST</code>) with virtualenv support.</p>
+          <div class="code-box">
+            <pre style="color: #cbd5e1; font-family: monospace;">import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+
+PORT = int(os.environ.get('PORT', 8102))
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({'message': 'Hello from Python on Termux!'}).encode())
+
+HTTPServer(('127.0.0.1', PORT), Handler).serve_forever()</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-php" class="tab-content">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4>PHP Application (Built-in Web Server)</h4>
+            <span class="badge badge-primary">Port: 127.0.0.1:8103</span>
+          </div>
+          <p class="text-muted text-sm mb-3">Supervises <code>php -S 127.0.0.1:<port> -t public/</code> to host dynamic PHP sites and SQLite CMSs.</p>
+          <div class="code-box">
+            <pre style="color: #cbd5e1; font-family: monospace;">&lt;?php
+header('Content-Type: application/json');
+echo json_encode([
+    'status' => 'online',
+    'runtime' => 'PHP ' . phpversion(),
+    'timestamp' => date('c')
+], JSON_PRETTY_PRINT);
+?&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-html" class="tab-content">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4>Static HTML5 / CSS3 / JavaScript Site</h4>
+            <span class="badge badge-primary">Port: 127.0.0.1:8100</span>
+          </div>
+          <p class="text-muted text-sm mb-3">High-speed embedded static server with path-traversal protection and instant MIME-type resolution.</p>
+          <div class="code-box">
+            <pre style="color: #cbd5e1; font-family: monospace;">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;My Hosted Site&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hosted on Android with TermuxPanel!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Architecture Visualizer -->
   <section id="architecture">
     <div class="container">
@@ -638,7 +917,7 @@
         </div>
 
         <div style="text-align: center; color: var(--primary-light); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <i data-lucide="lock"></i> Outbound-Only Encrypted QUIC/TLS Tunnel
+          <i data-lucide="lock"></i> Outbound-Only Encrypted QUIC/TLS Tunnel (No open router ports)
         </div>
 
         <div class="arch-row">
@@ -769,6 +1048,62 @@
     </div>
   </section>
 
+  <!-- Comparison Table -->
+  <section id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i data-lucide="bar-chart-2"></i> COMPARISON</div>
+        <h2 class="section-title">How Does It Compare?</h2>
+        <p class="section-desc">Why running TermuxPanel on Android beats traditional setups.</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>TermuxPanel (Android)</th>
+              <th>Cloud VPS ($5-$20/mo)</th>
+              <th>Port-Forwarded Home PC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Hardware Cost</strong></td>
+              <td><span class="badge badge-success">Free (Use Old Phone)</span></td>
+              <td>Monthly Recurring Fee</td>
+              <td>High PC Power Consumption</td>
+            </tr>
+            <tr>
+              <td><strong>Port Forwarding Needed?</strong></td>
+              <td><span class="badge badge-success">NO (Zero-Trust Tunnel)</span></td>
+              <td>No</td>
+              <td><span class="badge badge-warning">YES (Security Risk)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Built-in Battery Backup</strong></td>
+              <td><span class="badge badge-success">YES (Phone Battery)</span></td>
+              <td>Datacenter UPS</td>
+              <td>Requires expensive UPS</td>
+            </tr>
+            <tr>
+              <td><strong>Mobile & Wi-Fi IP Survival</strong></td>
+              <td><span class="badge badge-success">Auto-Reconnects</span></td>
+              <td>Static IP required</td>
+              <td>Dynamic DNS required</td>
+            </tr>
+            <tr>
+              <td><strong>Multi-Runtime Support</strong></td>
+              <td><span class="badge badge-success">HTML, Node, Python, PHP</span></td>
+              <td>Manual CLI Setup</td>
+              <td>Manual CLI Setup</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- Minimum Requirements Table -->
   <section>
     <div class="container">
@@ -827,23 +1162,28 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Does this require rooting my Android phone? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer"><strong>NO.</strong> TermuxPanel runs 100% in user space inside Termux. You do NOT need root permissions or custom ROMs.</div>
+        <div class="faq-question" onclick="toggleFaq(this)">Does this require rooting my Android phone? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer"><strong>NO.</strong> TermuxPanel runs 100% in user space inside Termux. You do NOT need root permissions, unlocked bootloaders, or custom ROMs.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">What happens if my phone's IP address changes? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-question" onclick="toggleFaq(this)">What happens if my phone's IP address changes? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer">Because Cloudflare Tunnel uses an <strong>outbound connection</strong>, your website stays online seamlessly even if your phone switches between Wi-Fi and 5G mobile data.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">How do I keep it running when my screen is off? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">TermuxPanel automatically acquires a CPU wake-lock (<code>termux-wake-lock</code>). Simply go to Android Settings ➔ Apps ➔ Termux ➔ Battery and select <strong>"Unrestricted"</strong> so Android doesn't kill it.</div>
+        <div class="faq-question" onclick="toggleFaq(this)">How do I keep it running 24/7 when my screen is off? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">TermuxPanel automatically acquires a CPU wake-lock (<code>termux-wake-lock</code>). Simply go to Android Settings ➔ Apps ➔ Termux ➔ Battery and select <strong>"Unrestricted"</strong> so Android doesn't put the app to sleep.</div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Can I host PHP, Python, and Node.js at the same time? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-question" onclick="toggleFaq(this)">Can I host PHP, Python, and Node.js at the same time? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer"><strong>YES.</strong> TermuxPanel assigns each site an isolated local port (8100, 8101, 8102...) and supervises each process independently.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">How do I manage the server from the phone terminal? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">Type <code>tp</code> in Termux to launch the interactive terminal management menu, or use commands like <code>tp status</code>, <code>tp start</code>, <code>tp stop</code>, and <code>tp logs</code>.</div>
       </div>
     </div>
   </section>
@@ -856,13 +1196,30 @@
     </div>
   </footer>
 
-  <!-- Initialize Lucide Icons -->
+  <!-- Interactive Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
         lucide.createIcons();
       }
     });
+
+    function switchRuntimeTab(tabKey) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().includes(tabKey));
+      const targetContent = document.getElementById(`tab-${tabKey}`);
+
+      if (targetBtn) targetBtn.classList.add('active');
+      if (targetContent) targetContent.classList.add('active');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleFaq(el) {
+      const parent = el.closest('.faq-item');
+      parent.classList.toggle('open');
+    }
   </script>
 </body>
 </html>
