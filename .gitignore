@@ -4,8 +4,22 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Sensitive Secrets, Config & Tokens
+config/*
+!config/.gitkeep
+*.token
+*.env
+*.env.*
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+
 # Database & Runtime Data
-data/panel.db*
+data/*.db*
+data/*.sqlite*
+data/*.sqlite3*
 data/tmp/
 data/backups/*
 !data/backups/.gitkeep
@@ -14,14 +28,10 @@ data/backups/*
 storage/websites/*
 !storage/websites/.gitkeep
 
-# Logs
+# Runtime Logs
 logs/*.log
 logs/websites/*
 !logs/websites/.gitkeep
-
-# Sensitive Secrets & Tokens
-config/cloudflare-token
-config/panel.env
 
 # OS / Editor Artifacts
 .DS_Store
