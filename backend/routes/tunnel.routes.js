@@ -87,22 +87,22 @@ router.get('/status', requireAuth, async (req, res) => {
 
     // 3. Add any hosted websites that do not have a custom domain mapped yet
     for (const site of websites) {
-      if (site.domain && !mappedDomainSet.has(site.domain)) {
-        dynamicRoutes.push({
-          hostname: site.domain,
-          tunnelUrl: `https://${site.domain}`,
-          rawTarget: tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com',
-          type: 'HTTP',
-          service: `http://127.0.0.1:${site.port}`,
-          description: `Hosted Website: ${site.name} (${site.type.toUpperCase()})`,
-          status: 'Local Domain',
-          isLive: false,
-          isPanel: false
-        });
-        mappedDomainSet.add(site.domain);
-      } else if (!site.domain) {
-        const hasMapped = domains.some((d) => d.website_id === site.id);
-        if (!hasMapped) {
+      const hasMapped = domains.some((d) => d.website_id === site.id);
+      if (!hasMapped) {
+        if (site.domain && !mappedDomainSet.has(site.domain)) {
+          dynamicRoutes.push({
+            hostname: site.domain,
+            tunnelUrl: `https://${site.domain}`,
+            rawTarget: tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com',
+            type: 'HTTP',
+            service: `http://127.0.0.1:${site.port}`,
+            description: `Hosted Website: ${site.name} (${site.type.toUpperCase()})`,
+            status: 'Local Domain',
+            isLive: false,
+            isPanel: false
+          });
+          mappedDomainSet.add(site.domain);
+        } else if (!site.domain) {
           dynamicRoutes.push({
             hostname: site.name,
             tunnelUrl: `http://localhost:${site.port}`,

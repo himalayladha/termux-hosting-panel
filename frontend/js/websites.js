@@ -128,6 +128,15 @@ const websites = {
               <!-- Endpoint Access Links -->
               <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; padding: 10px 14px;" class="flex-between flex-wrap gap-2 text-sm">
                 <div class="flex-align gap-3 flex-wrap">
+                  ${
+                    (site.custom_domain || (site.domain && site.domain.includes('.')))
+                      ? `<span style="display: inline-flex; align-items: center; gap: 4px;">
+                           <i data-lucide="globe" style="width: 14px; height: 14px; color: #38bdf8;"></i>
+                           <strong>Public Domain:</strong>
+                           <a href="https://${site.custom_domain || site.domain}" target="_blank" style="color: #38bdf8; text-decoration: underline;"><code>https://${site.custom_domain || site.domain}</code></a>
+                         </span>`
+                      : ''
+                  }
                   <span style="display: inline-flex; align-items: center; gap: 4px;">
                     <i data-lucide="smartphone" style="width: 14px; height: 14px; color: #60a5fa;"></i>
                     <strong>Phone Local:</strong>
