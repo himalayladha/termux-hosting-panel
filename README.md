@@ -4,6 +4,66 @@
 
 ---
 
+## 📱 Minimum Requirements
+
+| Component | Minimum | Recommended |
+|---|---|---|
+| **Android OS** | Android 7.0 (Nougat) or higher | Android 10.0+ |
+| **RAM** | 2 GB | 3 GB - 4 GB+ |
+| **Free Storage** | 1 GB | 4 GB+ (for website files & backups) |
+| **Architecture** | ARM64 (`aarch64`), ARMv7 (`arm`), or `x86_64` | ARM64 |
+| **Termux App** | [Termux from F-Droid](https://f-droid.org/packages/com.termux/) *(Do **NOT** use Google Play version)* | F-Droid release |
+| **Autostart (Optional)** | [Termux:Boot from F-Droid](https://f-droid.org/packages/com.termux.boot/) | F-Droid release |
+| **Internet** | Any active Wi-Fi or 4G/5G mobile connection | Stable Wi-Fi / Hotspot |
+
+---
+
+## 🧠 How Does It Connect? (The Concept Explained)
+
+### ❌ Does it need Port Forwarding or a Static IP?
+**NO.** You do **NOT** need:
+- ❌ Port Forwarding on your Wi-Fi router.
+- ❌ A Static Public IP from your ISP.
+- ❌ Dynamic DNS (DDNS) services like No-IP or DuckDNS.
+- ❌ Any open inbound ports on your Android phone or home network.
+
+---
+
+### 🌐 The Cloudflare Tunnel Concept: Outbound-Only Magic
+
+Most mobile networks and home ISPs use **CGNAT (Carrier-Grade NAT)** or dynamic IPs that block incoming connections, preventing you from hosting traditional servers on a phone.
+
+TermuxPanel solves this using a **Remotely Managed Cloudflare Zero Trust Tunnel**:
+
+```
+ [ Visitor Anywhere in the World ]
+                 │
+                 ▼  (Public HTTPS)
+    ┌─────────────────────────┐
+    │   CLOUDFLARE EDGE WAF   │
+    │  panel.yourdomain.com   │
+    └────────────┬────────────┘
+                 │
+                 │  ◄── Outbound Encrypted Tunnel Connection (QUIC/TLS)
+                 │      (Initiated by your phone to Cloudflare)
+                 │
+    ┌────────────▼────────────┐
+    │     ANDROID / TERMUX    │
+    │   cloudflared daemon    │
+    │            │            │
+    │            ▼            │
+    │  TermuxPanel :9000      │
+    │  Websites    :8100..    │
+    └─────────────────────────┘
+```
+
+1. **Outbound Connection**: When TermuxPanel starts, the lightweight `cloudflared` daemon on your phone makes an **outbound-only connection** to Cloudflare's closest global edge server.
+2. **Reverse Proxy & Free SSL**: When a visitor enters `https://panel.yourdomain.com` or `https://yoursite.com` in their browser, Cloudflare terminates the HTTPS connection and routes the request down through your phone's existing outbound tunnel.
+3. **Local Dispatch**: `cloudflared` receives the request inside your phone and passes it locally to `127.0.0.1:9000` (for the panel) or `127.0.0.1:8100` (for your websites).
+4. **Network Flexibility**: Because the connection is outbound, your server **remains online even if your phone's IP changes**, or if your phone switches between Wi-Fi and 4G/5G mobile data.
+
+---
+
 ## Features
 
 - 📊 **Server Dashboard**: Real-time CPU, RAM, Storage disk space, Uptime, and application health meters.
