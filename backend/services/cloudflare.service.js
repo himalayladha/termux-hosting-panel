@@ -52,6 +52,23 @@ function cfApiRequest(endpoint, apiToken, method = 'GET', body = null) {
 }
 
 /**
+ * Fetch all zones/domains linked to a Cloudflare API Token
+ */
+async function listZones(apiToken) {
+  if (!apiToken || !apiToken.trim()) {
+    throw new Error('Cloudflare API Token is required');
+  }
+  const zones = await cfApiRequest('/zones', apiToken);
+  return (zones || []).map((z) => ({
+    id: z.id,
+    name: z.name,
+    status: z.status,
+    nameServers: z.name_servers || [],
+    accountName: (z.account && z.account.name) || 'Cloudflare Account'
+  }));
+}
+
+/**
  * Check if cloudflared binary is installed
  */
 async function checkCloudflaredInstalled() {
@@ -70,11 +87,13 @@ async function checkCloudflaredInstalled() {
 }
 
 /**
- * Check if Cloudflare tunnel token is configured
+ * Check if Cloudflare tunnel token is configured and extract CNAME target
  */
 function getTunnelConfig() {
   const tokenExists = fs.existsSync(config.CLOUDFLARE_TOKEN_FILE);
   let maskedToken = null;
+  let tunnelId = null;
+  let cnameTarget = '<YOUR_TUNNEL_ID>.cfargotunnel.com';
 
   if (tokenExists) {
     try {
@@ -84,6 +103,16 @@ function getTunnelConfig() {
       } else {
         maskedToken = '****';
       }
+
+      // Try decoding base64 tunnel token to extract tunnelId
+      try {
+        const decoded = Buffer.from(content, 'base64').toString('utf8');
+        const parsed = JSON.parse(decoded);
+        if (parsed.t) {
+          tunnelId = parsed.t;
+          cnameTarget = `${tunnelId}.cfargotunnel.com`;
+        }
+      } catch (_) {}
     } catch (e) {
       maskedToken = 'configured (unreadable)';
     }
@@ -92,7 +121,9 @@ function getTunnelConfig() {
   return {
     isConfigured: tokenExists,
     tokenPath: config.CLOUDFLARE_TOKEN_FILE,
-    maskedToken
+    maskedToken,
+    tunnelId,
+    cnameTarget
   };
 }
 
@@ -292,10 +323,7 @@ async function getTunnelStatus() {
 
   let isRunning = false;
   try {
-    if (process.platform === 'win32') {
-      const { stdout } = await execPromise('tasklist /FI "IMAGENAME eq cloudflared.exe"');
-      isRunning = stdout.includes('cloudflared.exe');
-    } else {
+    if (process.platform !== 'win32') {
       const { stdout } = await execPromise('pgrep -x cloudflared');
       isRunning = !!stdout.trim();
     }
@@ -308,6 +336,8 @@ async function getTunnelStatus() {
     binaryVersion: binary.version,
     isConfigured: tunnelConfig.isConfigured,
     maskedToken: tunnelConfig.maskedToken,
+    tunnelId: tunnelConfig.tunnelId,
+    cnameTarget: tunnelConfig.cnameTarget,
     isRunning,
     logPath: config.CLOUDFLARE_LOG_FILE
   };
@@ -389,6 +419,7 @@ module.exports = {
   saveTunnelToken,
   setupTunnelViaApi,
   getTunnelStatus,
+  listZones,
   startTunnel,
   stopTunnel,
   restartTunnel,

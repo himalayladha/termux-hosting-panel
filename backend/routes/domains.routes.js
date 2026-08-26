@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../auth/auth.middleware');
 const domainService = require('../services/domain.service');
+const cloudflareService = require('../services/cloudflare.service');
 
 /**
  * List all connected custom domains
@@ -12,6 +13,34 @@ router.get('/', requireAuth, async (req, res) => {
     return res.json(domains);
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Get active Cloudflare Tunnel configuration & CNAME target
+ */
+router.get('/tunnel-info', requireAuth, async (req, res) => {
+  try {
+    const config = cloudflareService.getTunnelConfig();
+    return res.json(config);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Fetch all zones/domains linked to a Cloudflare API Token
+ */
+router.get('/cloudflare/zones', requireAuth, async (req, res) => {
+  try {
+    const { apiToken } = req.query;
+    if (!apiToken) {
+      return res.status(400).json({ error: 'API Token is required' });
+    }
+    const zones = await cloudflareService.listZones(apiToken);
+    return res.json(zones);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

@@ -1,10 +1,13 @@
 const domainsManager = {
   domainsList: [],
   currentMode: 'auto',
+  tunnelInfo: null,
+  cfZones: [],
 
   init() {
     this.bindEvents();
     this.loadDomains();
+    this.loadTunnelInfo();
   },
 
   bindEvents() {
@@ -42,6 +45,27 @@ const domainsManager = {
     if (prefixInput) prefixInput.addEventListener('input', updatePreview);
     if (rootInput) rootInput.addEventListener('input', updatePreview);
 
+    // Dynamic CNAME Host update in Connect Modal
+    const domainInput = document.getElementById('connect-domain-input');
+    if (domainInput) {
+      domainInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim().toLowerCase().replace(/^https?:\/\//, '');
+        const hostEl = document.getElementById('manual-cname-host');
+        if (hostEl) {
+          if (!val) {
+            hostEl.textContent = '@ (or subdomain prefix)';
+          } else {
+            const parts = val.split('.');
+            if (parts.length > 2) {
+              hostEl.textContent = parts[0];
+            } else {
+              hostEl.textContent = '@';
+            }
+          }
+        }
+      });
+    }
+
     // Dynamic Checkbox Toggles in Subdomain Modal
     const siteCb = document.getElementById('subdomain-enable-site');
     const siteFields = document.getElementById('subdomain-site-fields');
@@ -72,21 +96,92 @@ const domainsManager = {
     this.currentMode = mode;
     const autoBtn = document.getElementById('domain-tab-btn-auto');
     const manualBtn = document.getElementById('domain-tab-btn-manual');
+    const nsBtn = document.getElementById('domain-tab-btn-ns');
+
     const autoFields = document.getElementById('domain-cf-auto-fields');
     const manualFields = document.getElementById('domain-cf-manual-fields');
+    const nsFields = document.getElementById('domain-cf-ns-fields');
 
-    if (mode === 'auto') {
-      if (autoBtn) autoBtn.className = 'btn btn-primary btn-sm';
-      if (manualBtn) manualBtn.className = 'btn btn-secondary btn-sm';
-      if (autoFields) autoFields.classList.remove('hidden');
-      if (manualFields) manualFields.classList.add('hidden');
-    } else {
-      if (autoBtn) autoBtn.className = 'btn btn-secondary btn-sm';
-      if (manualBtn) manualBtn.className = 'btn btn-primary btn-sm';
-      if (autoFields) autoFields.classList.add('hidden');
-      if (manualFields) manualFields.classList.remove('hidden');
-    }
+    if (autoBtn) autoBtn.className = mode === 'auto' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    if (manualBtn) manualBtn.className = mode === 'manual' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    if (nsBtn) nsBtn.className = mode === 'ns' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+
+    if (autoFields) autoFields.classList.toggle('hidden', mode !== 'auto');
+    if (manualFields) manualFields.classList.toggle('hidden', mode !== 'manual');
+    if (nsFields) nsFields.classList.toggle('hidden', mode !== 'ns');
+
     if (window.lucide) lucide.createIcons();
+  },
+
+  async loadTunnelInfo() {
+    try {
+      const data = await API.get('/api/domains/tunnel-info');
+      this.tunnelInfo = data;
+      const targetEl = document.getElementById('manual-cname-target');
+      if (targetEl && data.cnameTarget) {
+        targetEl.textContent = data.cnameTarget;
+      }
+    } catch (e) {}
+  },
+
+  async fetchCfZones() {
+    const tokenInput = document.getElementById('domain-cf-token');
+    const token = tokenInput ? tokenInput.value.trim() : '';
+    if (!token) {
+      API.toast('Please paste your Cloudflare API Token first', 'warning');
+      return;
+    }
+
+    const fetchBtn = document.getElementById('btn-fetch-cf-zones');
+    if (fetchBtn) {
+      fetchBtn.disabled = true;
+      fetchBtn.innerHTML = `<i data-lucide="loader" style="width: 13px; height: 13px; margin-right: 3px;"></i> Fetching...`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    try {
+      API.toast('Fetching domains from your Cloudflare account...', 'info');
+      const zones = await API.get(`/api/domains/cloudflare/zones?apiToken=${encodeURIComponent(token)}`);
+      this.cfZones = zones;
+
+      if (!zones || zones.length === 0) {
+        API.toast('No domains found in this Cloudflare account', 'warning');
+        return;
+      }
+
+      API.toast(`Found ${zones.length} domain(s) in your Cloudflare account!`, 'success');
+
+      const selectContainer = document.getElementById('domain-cf-zones-container');
+      const select = document.getElementById('domain-cf-zone-select');
+      const manualContainer = document.getElementById('domain-cf-zone-manual-container');
+
+      if (select && selectContainer) {
+        select.innerHTML = zones.map((z) => `<option value="${z.name}">${z.name} (${z.accountName || 'Active'})</option>`).join('');
+        selectContainer.classList.remove('hidden');
+        if (manualContainer) manualContainer.classList.add('hidden');
+
+        select.addEventListener('change', (e) => {
+          const domainIn = document.getElementById('connect-domain-input');
+          if (domainIn && !domainIn.value) {
+            domainIn.value = e.target.value;
+          }
+        });
+
+        // Set initial
+        const domainIn = document.getElementById('connect-domain-input');
+        if (domainIn && !domainIn.value && zones.length > 0) {
+          domainIn.value = zones[0].name;
+        }
+      }
+    } catch (err) {
+      // Toast displayed by API
+    } finally {
+      if (fetchBtn) {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = `<i data-lucide="cloud-download" style="width: 13px; height: 13px; margin-right: 3px;"></i> Fetch Domains`;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
   },
 
   async openConnectModal() {
@@ -96,18 +191,18 @@ const domainsManager = {
         const sites = await API.get('/api/websites');
         targetSelect.innerHTML = `
           <option value="">TermuxPanel Control Plane (:9000)</option>
-          ${sites.map((s) => `<option value="${s.id}">Website: ${s.name} (Port :${s.port})</option>`).join('')}
+          ${sites.map((s) => `<option value="${s.id}">Website: ${s.name} (Port :${s.port} • ${s.type.toUpperCase()})</option>`).join('')}
         `;
       } catch (e) {}
     }
 
+    this.loadTunnelInfo();
     document.getElementById('modal-connect-domain').classList.remove('hidden');
     this.switchMode('auto');
     if (window.lucide) lucide.createIcons();
   },
 
   async openSubdomainModal() {
-    // If user has existing domains configured, pre-fill root domain
     const rootInput = document.getElementById('subdomain-root-input');
     if (rootInput && this.domainsList && this.domainsList.length > 0) {
       const firstDomain = this.domainsList[0].domain;
@@ -140,7 +235,7 @@ const domainsManager = {
         <tr>
           <td colspan="6" class="text-muted text-center" style="padding: 32px;">
             <i data-lucide="globe-2" style="width: 36px; height: 36px; color: #475569; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
-            No custom domains or subdomains connected yet. Click "+ Create Subdomain" or "+ Connect Domain" to start.
+            No custom domains or subdomains connected yet.<br>Click <strong>"+ Connect Existing Domain"</strong> or <strong>"+ Create Subdomain"</strong> to route traffic.
           </td>
         </tr>
       `;
@@ -185,8 +280,11 @@ const domainsManager = {
           </td>
           <td style="text-align: right;">
             <div class="flex-align gap-2" style="justify-content: flex-end;">
+              <button class="btn btn-secondary btn-sm" onclick="domainsManager.showDnsInstructions('${d.domain}')" title="View CNAME DNS details">
+                <i data-lucide="info" style="width: 13px; height: 13px;"></i>
+              </button>
               <button class="btn btn-secondary btn-sm" onclick="domainsManager.verifyDomain('${d.domain}')" title="Verify DNS propagation & SSL reachability">
-                <i data-lucide="activity" style="width: 13px; height: 13px; margin-right: 3px;"></i> Verify DNS
+                <i data-lucide="activity" style="width: 13px; height: 13px; margin-right: 3px;"></i> Verify
               </button>
               <a href="https://${d.domain}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open live domain">
                 <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
@@ -204,13 +302,32 @@ const domainsManager = {
     if (window.lucide) lucide.createIcons();
   },
 
+  async showDnsInstructions(domainName) {
+    const cnameTarget = (this.tunnelInfo && this.tunnelInfo.cnameTarget) || '<YOUR_TUNNEL_ID>.cfargotunnel.com';
+    const parts = domainName.split('.');
+    const host = parts.length > 2 ? parts[0] : '@';
+
+    await UI.alert(
+      `Cloudflare DNS Record Details for "${domainName}":\n\n` +
+      `• Type: CNAME\n` +
+      `• Name / Host: ${host}\n` +
+      `• Target / Destination: ${cnameTarget}\n` +
+      `• Proxy Status: Proxied (Orange Cloud ☁️ Enabled)\n\n` +
+      `Traffic will route through your Cloudflare Tunnel directly to the connected website!`,
+      `DNS Settings: ${domainName}`,
+      'info'
+    );
+  },
+
   async handleConnectDomain(e) {
     e.preventDefault();
     const domain = document.getElementById('connect-domain-input').value.trim();
     const websiteId = document.getElementById('domain-target-select').value || null;
     const isAuto = this.currentMode === 'auto';
     const cfApiToken = isAuto ? document.getElementById('domain-cf-token').value.trim() : null;
-    const cfZoneDomain = isAuto ? document.getElementById('domain-cf-zone').value.trim() : null;
+    const zoneSelect = document.getElementById('domain-cf-zone-select');
+    const manualZoneInput = document.getElementById('domain-cf-zone');
+    const cfZoneDomain = isAuto ? (zoneSelect && !zoneSelect.closest('.hidden') ? zoneSelect.value : (manualZoneInput ? manualZoneInput.value.trim() : null)) : null;
 
     if (!domain) return;
 
@@ -229,11 +346,29 @@ const domainsManager = {
       document.getElementById('connect-domain-form').reset();
       this.loadDomains();
 
+      const cnameTarget = (this.tunnelInfo && this.tunnelInfo.cnameTarget) || res.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com';
+      const parts = domain.split('.');
+      const host = parts.length > 2 ? parts[0] : '@';
+
       if (!isAuto) {
         await UI.alert(
-          `Domain ${domain} registered!\n\nTo complete DNS setup in Cloudflare Dashboard:\n1. Add a CNAME record with Name: "${domain}"\n2. Target: "<YOUR_TUNNEL_ID>.cfargotunnel.com"\n3. Proxy status: Proxied (Orange Cloud)`,
-          'DNS Setup Instructions',
-          'info'
+          `Domain "${domain}" is connected to your website!\n\n` +
+          `Complete your DNS setup in Cloudflare Dashboard:\n` +
+          `1. Add CNAME Record with Name: "${host}"\n` +
+          `2. Target: "${cnameTarget}"\n` +
+          `3. Proxy status: Proxied (Orange Cloud)\n\n` +
+          `Your site will immediately receive free HTTPS SSL!`,
+          'Domain Connected Successfully',
+          'success'
+        );
+      } else {
+        await UI.alert(
+          `Domain "${domain}" has been automatically configured in Cloudflare!\n\n` +
+          `• Target: ${res.targetName} (: ${res.targetPort})\n` +
+          `• DNS CNAME & Ingress Route created.\n` +
+          `• Live URL: https://${domain}`,
+          'Domain Active via Cloudflare API',
+          'success'
         );
       }
     } catch (err) {

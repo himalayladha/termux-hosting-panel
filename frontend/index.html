@@ -1085,63 +1085,89 @@
       <div class="modal-header">
         <h3>
           <i data-lucide="globe-2" style="width: 20px; height: 20px; margin-right: 6px; color: #38bdf8;"></i>
-          Connect Custom Domain / Subdomain
+          Connect & Map Domain to Website
         </h3>
         <button class="modal-close-btn">&times;</button>
       </div>
       <form id="connect-domain-form">
         <div class="modal-body">
           <div class="form-group">
-            <label for="connect-domain-input">Custom Domain / Subdomain</label>
-            <input type="text" id="connect-domain-input" required placeholder="e.g. store.mybrand.com or myportfolio.dev" class="form-control">
-            <small class="text-muted">Enter the fully qualified domain or subdomain you want to route to this device.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="domain-target-select">Route Traffic To</label>
+            <label for="domain-target-select"><strong>1. Select Hosted Website / App to Connect</strong></label>
             <select id="domain-target-select" class="form-control">
               <!-- Populated dynamically with websites + TermuxPanel -->
             </select>
           </div>
 
+          <div class="form-group">
+            <label for="connect-domain-input"><strong>2. Domain / Subdomain Name</strong></label>
+            <input type="text" id="connect-domain-input" required placeholder="e.g. himalay.digital, blog.himalay.digital, store.com" class="form-control">
+            <small class="text-muted">Enter the exact domain or subdomain you want to point to this website.</small>
+          </div>
+
           <!-- Setup Method Mode Selector -->
           <div class="mt-3 mb-2">
-            <label><strong>Cloudflare Configuration Method:</strong></label>
-            <div class="flex-align gap-2 mt-1">
+            <label><strong>3. Choose Connection Method:</strong></label>
+            <div class="flex-align gap-2 mt-1 flex-wrap">
               <button type="button" id="domain-tab-btn-auto" class="btn btn-primary btn-sm" onclick="domainsManager.switchMode('auto')">
                 <i data-lucide="zap" style="width: 13px; height: 13px; margin-right: 3px;"></i>
                 Option 1: 1-Click Auto (Cloudflare API)
               </button>
               <button type="button" id="domain-tab-btn-manual" class="btn btn-secondary btn-sm" onclick="domainsManager.switchMode('manual')">
                 <i data-lucide="edit-3" style="width: 13px; height: 13px; margin-right: 3px;"></i>
-                Option 2: Manual CNAME Setup
+                Option 2: Manual DNS CNAME Record
+              </button>
+              <button type="button" id="domain-tab-btn-ns" class="btn btn-secondary btn-sm" onclick="domainsManager.switchMode('ns')">
+                <i data-lucide="server" style="width: 13px; height: 13px; margin-right: 3px;"></i>
+                Option 3: Nameservers Guide
               </button>
             </div>
           </div>
 
           <!-- Option 1: 1-Click Auto Fields -->
           <div id="domain-cf-auto-fields" class="card mt-3 bg-darker p-3">
-            <p class="text-muted text-sm mb-2">TermuxPanel will automatically call Cloudflare API to create the DNS CNAME record and configure the tunnel ingress rule.</p>
+            <p class="text-muted text-sm mb-2">TermuxPanel will connect to your Cloudflare account to create the DNS CNAME record and configure the tunnel ingress routing automatically.</p>
             <div class="form-group">
-              <label for="domain-cf-token">Cloudflare API Token (Edit Zone DNS + Cloudflare Tunnel)</label>
-              <input type="password" id="domain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token">
+              <label for="domain-cf-token">Cloudflare API Token</label>
+              <div class="flex-align gap-2">
+                <input type="password" id="domain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="domainsManager.fetchCfZones()" id="btn-fetch-cf-zones">
+                  <i data-lucide="cloud-download" style="width: 13px; height: 13px; margin-right: 3px;"></i>
+                  Fetch Domains
+                </button>
+              </div>
             </div>
-            <div class="form-group mb-0">
-              <label for="domain-cf-zone">Cloudflare Zone / Root Domain</label>
-              <input type="text" id="domain-cf-zone" class="form-control" placeholder="e.g. mybrand.com">
+            <div class="form-group mb-0 hidden" id="domain-cf-zones-container">
+              <label for="domain-cf-zone-select">Select Cloudflare Root Zone</label>
+              <select id="domain-cf-zone-select" class="form-control"></select>
+            </div>
+            <div class="form-group mb-0" id="domain-cf-zone-manual-container">
+              <label for="domain-cf-zone">Cloudflare Root Domain</label>
+              <input type="text" id="domain-cf-zone" class="form-control" placeholder="e.g. himalay.digital">
             </div>
           </div>
 
           <!-- Option 2: Manual CNAME Instructions -->
           <div id="domain-cf-manual-fields" class="card mt-3 bg-darker p-3 hidden">
-            <h4>Manual DNS Configuration in Cloudflare Dashboard:</h4>
-            <p class="text-muted text-sm mt-1">Log in to your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare DNS Dashboard</a> and add this record:</p>
-            <div style="background: #050811; padding: 10px 14px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-top: 8px; border: 1px solid var(--border-color);">
-              <div><strong>Type:</strong> <code>CNAME</code></div>
-              <div><strong>Name:</strong> <code>your domain or subdomain</code></div>
-              <div><strong>Target:</strong> <code>&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
-              <div><strong>Proxy:</strong> <span style="color: #f59e0b;">Proxied (Orange Cloud)</span></div>
+            <h4>Manual DNS Configuration in your Cloudflare Dashboard:</h4>
+            <p class="text-muted text-sm mt-1">Since your Cloudflare Tunnel is active, simply add this CNAME record in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Cloudflare DNS Dashboard</a>:</p>
+            <div style="background: #050811; padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-top: 10px; border: 1px solid var(--border-color); line-height: 1.8;">
+              <div><strong>Type:</strong> <code style="color: #38bdf8;">CNAME</code></div>
+              <div><strong>Name / Host:</strong> <code id="manual-cname-host">@ (or subdomain prefix)</code></div>
+              <div><strong>Target / Destination:</strong> <code id="manual-cname-target" style="color: #22c55e;">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
+              <div><strong>Proxy Status:</strong> <span style="color: #f59e0b; font-weight: 600;">Proxied (Orange Cloud ☁️ Enabled)</span></div>
             </div>
+          </div>
+
+          <!-- Option 3: Nameservers Guide -->
+          <div id="domain-cf-ns-fields" class="card mt-3 bg-darker p-3 hidden">
+            <h4>Using a Domain from GoDaddy, Namecheap, or Hostinger?</h4>
+            <p class="text-muted text-sm mt-1">To get free edge SSL, DDoS mitigation, and Cloudflare Tunnel routing for any custom domain:</p>
+            <ol class="text-muted text-sm mt-2" style="padding-left: 20px; line-height: 1.6;">
+              <li>Log in to <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">dash.cloudflare.com</a> and click <strong>"Add a Domain"</strong>.</li>
+              <li>Cloudflare will give you 2 free nameservers (e.g. <code>ns1.cloudflare.com</code>, <code>ns2.cloudflare.com</code>).</li>
+              <li>Go to your domain registrar (GoDaddy, Namecheap, etc.) and replace their default nameservers with the Cloudflare nameservers.</li>
+              <li>Once updated, use <strong>Option 1 (Auto API)</strong> or <strong>Option 2 (Manual CNAME)</strong> above to connect it to your Termux website!</li>
+            </ol>
           </div>
         </div>
         <div class="modal-footer">
