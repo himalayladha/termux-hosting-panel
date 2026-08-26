@@ -1,0 +1,10 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# termux-services run file for termux-panel
+# Place at: $PREFIX/var/service/termux-panel/run
+
+exec 2>&1
+export NODE_ENV=production
+export PORT=9000
+export HOST=127.0.0.1
+cd "$HOME/termux-panel/backend" || exit 1
+exec node server.js

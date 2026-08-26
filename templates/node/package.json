@@ -1,0 +1,9 @@
+{
+  "name": "node-app",
+  "version": "1.0.0",
+  "description": "Hosted Node.js Application on TermuxPanel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

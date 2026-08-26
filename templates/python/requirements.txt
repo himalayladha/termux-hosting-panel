@@ -1,0 +1,2 @@
+# Python dependencies for TermuxPanel hosted application
+# Add your packages here (e.g. flask, fastapi, uvicorn, requests)

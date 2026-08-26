@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TermuxPanel - Android Hosting Control Panel</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body class="dark-theme">
+  <!-- Authentication / Setup Screen -->
+  <div id="auth-container" class="auth-wrapper hidden">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-badge">TP</div>
+        <h1 id="auth-title">TermuxPanel</h1>
+        <p id="auth-subtitle">Lightweight Android Hosting Engine</p>
+      </div>
+
+      <!-- Setup Form (Initial Boot) -->
+      <form id="setup-form" class="auth-form hidden">
+        <div class="alert alert-info">Welcome! Create your primary administrator account to get started.</div>
+        <div class="form-group">
+          <label for="setup-username">Admin Username</label>
+          <input type="text" id="setup-username" required placeholder="e.g. admin" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="setup-email">Email (Optional)</label>
+          <input type="email" id="setup-email" placeholder="admin@example.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="setup-password">Admin Password</label>
+          <input type="password" id="setup-password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Initialize TermuxPanel</button>
+      </form>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" required placeholder="Username" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="Password" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App Interface -->
+  <div id="app-container" class="app-layout hidden">
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-badge">TP</span>
+          <span class="brand-title">TermuxPanel</span>
+        </div>
+        <button id="sidebar-close-btn" class="icon-btn mobile-only">&times;</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="websites">
+          <span class="nav-icon">🌐</span>
+          <span class="nav-label">Websites</span>
+        </button>
+        <button class="nav-item" data-tab="filemanager">
+          <span class="nav-icon">📁</span>
+          <span class="nav-label">File Manager</span>
+        </button>
+        <button class="nav-item" data-tab="databases">
+          <span class="nav-icon">🗄️</span>
+          <span class="nav-label">Databases</span>
+        </button>
+        <button class="nav-item" data-tab="cron">
+          <span class="nav-icon">⏱️</span>
+          <span class="nav-label">Cron Jobs</span>
+        </button>
+        <button class="nav-item" data-tab="logs">
+          <span class="nav-icon">📜</span>
+          <span class="nav-label">Logs</span>
+        </button>
+        <button class="nav-item" data-tab="backups">
+          <span class="nav-icon">💾</span>
+          <span class="nav-label">Backups</span>
+        </button>
+        <button class="nav-item" data-tab="tunnel">
+          <span class="nav-icon">☁️</span>
+          <span class="nav-label">Cloudflare Tunnel</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="device-status">
+          <span class="status-dot online"></span>
+          <span id="device-info-text">Android / Termux</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebar-toggle-btn" class="icon-btn mobile-only">☰</button>
+          <h2 id="page-title" class="page-title">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="user-menu">
+            <span id="nav-username" class="nav-username">Admin</span>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">Log Out</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Views Container -->
+      <main class="content-body">
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="view-dashboard" class="tab-view active">
+          <!-- Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">CPU Load</span>
+                <span class="metric-icon">⚡</span>
+              </div>
+              <div class="metric-value" id="metric-cpu">0%</div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="bar-cpu" style="width: 0%"></div>
+              </div>
+              <div class="metric-footer" id="metric-cpu-cores">0 Cores</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">RAM Usage</span>
+                <span class="metric-icon">🧠</span>
+              </div>
+              <div class="metric-value" id="metric-ram">0 / 0 GB</div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="bar-ram" style="width: 0%"></div>
+              </div>
+              <div class="metric-footer" id="metric-ram-percent">0% Used</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Storage</span>
+                <span class="metric-icon">💾</span>
+              </div>
+              <div class="metric-value" id="metric-disk">0 / 0 GB</div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="bar-disk" style="width: 0%"></div>
+              </div>
+              <div class="metric-footer" id="metric-disk-percent">0% Used</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">System Uptime</span>
+                <span class="metric-icon">⏱️</span>
+              </div>
+              <div class="metric-value" id="metric-uptime">0h 0m</div>
+              <div class="metric-footer text-success" id="metric-env">Android Ready</div>
+            </div>
+          </div>
+
+          <!-- Dashboard Quick Overview -->
+          <div class="card mt-4">
+            <div class="card-header flex-between">
+              <h3>Running Applications</h3>
+              <button class="btn btn-primary btn-sm" onclick="app.switchTab('websites')">+ Create Website</button>
+            </div>
+            <div class="card-body">
+              <div id="dashboard-apps-list" class="apps-list">
+                <p class="text-muted">Loading applications...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. WEBSITES VIEW -->
+        <section id="view-websites" class="tab-view">
+          <div class="view-header flex-between">
+            <div>
+              <h3>Hosted Websites & Applications</h3>
+              <p class="text-muted">Manage your HTML, Node.js, Python, and PHP services</p>
+            </div>
+            <button id="open-create-site-btn" class="btn btn-primary">+ Create Website</button>
+          </div>
+
+          <div class="websites-grid mt-4" id="websites-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- 3. FILE MANAGER VIEW -->
+        <section id="view-filemanager" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div class="flex-align gap-2">
+                <label for="fm-site-select"><strong>Website:</strong></label>
+                <select id="fm-site-select" class="form-control-sm"></select>
+              </div>
+              <div class="flex-align gap-2">
+                <button id="fm-upload-btn" class="btn btn-secondary btn-sm">⬆ Upload</button>
+                <input type="file" id="fm-file-input" class="hidden">
+                <button id="fm-new-folder-btn" class="btn btn-secondary btn-sm">+ Folder</button>
+                <button id="fm-new-file-btn" class="btn btn-primary btn-sm">+ File</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="fm-breadcrumbs" id="fm-breadcrumbs">
+                <span class="crumb" onclick="fileManager.navigateTo('/')">/</span>
+              </div>
+              <div class="table-responsive mt-2">
+                <table class="table" id="fm-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Size</th>
+                      <th>Modified</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fm-table-body">
+                    <!-- Dynamic File Items -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. DATABASES VIEW -->
+        <section id="view-databases" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div class="flex-align gap-2">
+                <label for="db-select"><strong>Database:</strong></label>
+                <select id="db-select" class="form-control-sm"></select>
+              </div>
+              <div class="flex-align gap-2">
+                <button id="db-export-btn" class="btn btn-secondary btn-sm">Export .db</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="db-layout">
+                <div class="db-tables-sidebar">
+                  <h4>Tables</h4>
+                  <ul id="db-tables-list" class="db-tables-list"></ul>
+                </div>
+                <div class="db-content-area">
+                  <div class="db-query-box">
+                    <div class="flex-between mb-2">
+                      <label><strong>SQL Query Runner</strong></label>
+                      <button id="db-run-sql-btn" class="btn btn-primary btn-sm">Execute SQL</button>
+                    </div>
+                    <textarea id="db-sql-input" class="code-editor-sm" placeholder="SELECT * FROM users LIMIT 10;"></textarea>
+                  </div>
+                  <div class="table-responsive mt-3">
+                    <div id="db-results-container">
+                      <p class="text-muted">Select a table or execute a query above.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. CRON JOBS VIEW -->
+        <section id="view-cron" class="tab-view">
+          <div class="view-header flex-between">
+            <div>
+              <h3>Scheduled Cron Jobs</h3>
+              <p class="text-muted">Automated tasks managed directly by TermuxPanel</p>
+            </div>
+            <button id="open-create-cron-btn" class="btn btn-primary">+ Add Cron Job</button>
+          </div>
+          <div class="card mt-4">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Schedule</th>
+                    <th>Command</th>
+                    <th>Last Status</th>
+                    <th>Enabled</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="cron-table-body">
+                  <!-- Dynamic Cron Items -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. LOGS VIEW -->
+        <section id="view-logs" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div class="flex-align gap-2">
+                <label for="log-select"><strong>Log File:</strong></label>
+                <select id="log-select" class="form-control-sm"></select>
+                <input type="text" id="log-search-input" placeholder="Search filter..." class="form-control-sm">
+              </div>
+              <div class="flex-align gap-2">
+                <button id="log-refresh-btn" class="btn btn-secondary btn-sm">🔄 Refresh</button>
+                <button id="log-clear-btn" class="btn btn-danger btn-sm">Clear Log</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="log-viewer" id="log-viewer-box">
+                <pre id="log-content" class="log-pre">Loading logs...</pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. BACKUPS VIEW -->
+        <section id="view-backups" class="tab-view">
+          <div class="view-header flex-between">
+            <div>
+              <h3>Server & Website Backups</h3>
+              <p class="text-muted">Generate full or partial archives of your sites and databases</p>
+            </div>
+            <button id="open-create-backup-btn" class="btn btn-primary">+ Create Backup</button>
+          </div>
+          <div class="card mt-4">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Archive Name</th>
+                    <th>Size</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="backups-table-body">
+                  <!-- Dynamic Backup Items -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. CLOUDFLARE TUNNEL VIEW -->
+        <section id="view-tunnel" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between">
+              <h3>Cloudflare Zero Trust Tunnel</h3>
+              <span id="tunnel-badge" class="badge badge-secondary">Checking...</span>
+            </div>
+            <div class="card-body">
+              <p>Cloudflare Tunnel allows you to expose TermuxPanel and all hosted websites to the internet securely via HTTPS without port forwarding or dynamic DNS.</p>
+              
+              <!-- Setup Mode Selector -->
+              <div class="flex-align gap-2 mt-3 mb-3">
+                <button id="tunnel-tab-btn-semi" class="btn btn-primary btn-sm" onclick="tunnelManager.switchMode('semi')">Option 1: Semi-Automatic (Tunnel Token)</button>
+                <button id="tunnel-tab-btn-auto" class="btn btn-secondary btn-sm" onclick="tunnelManager.switchMode('auto')">Option 2: Fully-Automatic (Cloudflare API)</button>
+              </div>
+
+              <!-- Option 1: Semi-Automatic Card -->
+              <div id="tunnel-mode-semi" class="card mt-3 bg-darker">
+                <div class="card-body">
+                  <h4>Option 1: Semi-Automatic (Paste Token)</h4>
+                  <p class="text-muted text-sm">Create the tunnel in your Cloudflare Zero Trust Dashboard and paste the tunnel token below. Stored securely in <code>~/termux-panel/config/cloudflare-token</code> (chmod 600).</p>
+                  <form id="tunnel-token-form" class="mt-2">
+                    <div class="form-group">
+                      <label for="tunnel-token-input">Tunnel Token</label>
+                      <input type="password" id="tunnel-token-input" class="form-control" placeholder="eyJhIjoi..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Save & Launch Tunnel</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Option 2: Fully-Automatic Card -->
+              <div id="tunnel-mode-auto" class="card mt-3 bg-darker hidden">
+                <div class="card-body">
+                  <h4>Option 2: Fully-Automatic (Cloudflare API)</h4>
+                  <p class="text-muted text-sm">Enter your Cloudflare API Token and domain name. TermuxPanel will automatically create the tunnel, configure ingress routes, and create DNS CNAME records for you.</p>
+                  <form id="tunnel-api-form" class="mt-2">
+                    <div class="form-group">
+                      <label for="cf-api-token">Cloudflare API Token (Edit Zone DNS + Cloudflare Tunnel)</label>
+                      <input type="password" id="cf-api-token" class="form-control" placeholder="API Token from Cloudflare Profile" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="cf-domain">Domain Name (Managed on Cloudflare)</label>
+                      <input type="text" id="cf-domain" class="form-control" placeholder="e.g. example.com" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="cf-subdomain">Panel Subdomain</label>
+                      <input type="text" id="cf-subdomain" class="form-control" value="panel" placeholder="panel">
+                      <small class="text-muted">Result: <code>https://panel.yourdomain.com</code></small>
+                    </div>
+                    <button type="submit" id="cf-auto-btn" class="btn btn-primary btn-sm">⚡ Run Fully-Automatic Setup</button>
+                  </form>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <h4>Cloudflare Zero Trust Hostname Routing Map</h4>
+                <p class="text-muted text-sm">Active routes mapping your public hostnames to local Termux services:</p>
+                <div class="table-responsive mt-2">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Public Hostname</th>
+                        <th>Type</th>
+                        <th>URL / Local Service</th>
+                        <th>Target</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tunnel-routes-body">
+                      <!-- Dynamic Route Hints -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. SETTINGS VIEW -->
+        <section id="view-settings" class="tab-view">
+          <div class="card">
+            <div class="card-header">
+              <h3>Administrator Security</h3>
+            </div>
+            <div class="card-body">
+              <form id="change-password-form">
+                <div class="form-group">
+                  <label for="current-password">Current Password</label>
+                  <input type="password" id="current-password" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                  <label for="new-password">New Password</label>
+                  <input type="password" id="new-password" required minlength="6" autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card mt-4">
+            <div class="card-header">
+              <h3>Server Details</h3>
+            </div>
+            <div class="card-body">
+              <p><strong>Panel Version:</strong> <span id="settings-version">1.0.0</span></p>
+              <p><strong>Local Bound Host:</strong> <code id="settings-host">127.0.0.1</code></p>
+              <p><strong>Local Bound Port:</strong> <code id="settings-port">9000</code></p>
+              <p><strong>Storage Path:</strong> <code id="settings-root">~/termux-panel</code></p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Create Website Modal -->
+  <div id="modal-create-site" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Website / App</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="create-site-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="site-name">Application / Site Name</label>
+            <input type="text" id="site-name" required placeholder="e.g. mysite" pattern="[a-zA-Z0-9._-]+">
+            <small class="text-muted">Used for the directory name in <code>~/termux-panel/storage/websites/</code></small>
+          </div>
+          <div class="form-group">
+            <label for="site-type">Application Runtime</label>
+            <select id="site-type" class="form-control" required>
+              <option value="html">Static HTML / CSS / JS</option>
+              <option value="node">Node.js (Express / HTTP)</option>
+              <option value="python">Python (Flask / FastAPI / WSGI)</option>
+              <option value="php">PHP (Built-in Server)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="site-domain">Domain / Hostname (Optional)</label>
+            <input type="text" id="site-domain" placeholder="e.g. example.com or app.yourdomain.com">
+          </div>
+          <div class="form-group">
+            <label for="site-entry">Entry File (Optional)</label>
+            <input type="text" id="site-entry" placeholder="Default: index.html / server.js / app.py">
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="site-autostart" checked>
+            <label for="site-autostart">Autostart on boot</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create & Launch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- File Editor Modal -->
+  <div id="modal-file-editor" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 id="editor-file-title">Edit File</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="editor-textarea" class="code-editor-lg" spellcheck="false"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+        <button id="editor-save-btn" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website Logs Modal -->
+  <div id="modal-site-logs" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 id="site-logs-title">Website Logs</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4>Access Logs</h4>
+        <pre id="site-access-log" class="log-pre mb-3"></pre>
+        <h4>Error Logs</h4>
+        <pre id="site-error-log" class="log-pre text-danger"></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Cron Job Modal -->
+  <div id="modal-create-cron" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Cron Job</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="create-cron-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="cron-name">Job Name</label>
+            <input type="text" id="cron-name" required placeholder="e.g. Daily DB Backup">
+          </div>
+          <div class="form-group">
+            <label for="cron-preset">Schedule Preset</label>
+            <select id="cron-preset" class="form-control">
+              <option value="* * * * *">Every Minute (* * * * *)</option>
+              <option value="0 * * * *">Every Hour (0 * * * *)</option>
+              <option value="0 0 * * *">Daily at Midnight (0 0 * * *)</option>
+              <option value="0 0 * * 0">Weekly on Sunday (0 0 * * 0)</option>
+              <option value="custom">Custom Expression</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cron-expression">Cron Expression</label>
+            <input type="text" id="cron-expression" required value="* * * * *">
+          </div>
+          <div class="form-group">
+            <label for="cron-command">Shell Command</label>
+            <input type="text" id="cron-command" required placeholder="e.g. node /path/to/script.js">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Job</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Backup Modal -->
+  <div id="modal-create-backup" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create Backup</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="create-backup-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="backup-type">Backup Scope</label>
+            <select id="backup-type" class="form-control">
+              <option value="full">Full Server (Websites + Databases + Config)</option>
+              <option value="websites">Websites Storage Only</option>
+              <option value="databases">Databases & Config Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Start Backup</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/websites.js"></script>
+  <script src="js/filemanager.js"></script>
+  <script src="js/databases.js"></script>
+  <script src="js/cron.js"></script>
+  <script src="js/logs.js"></script>
+  <script src="js/backups.js"></script>
+  <script src="js/tunnel.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

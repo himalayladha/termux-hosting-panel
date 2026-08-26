@@ -1,0 +1,170 @@
+const websites = {
+  list: [],
+
+  init() {
+    this.bindEvents();
+    this.loadWebsites();
+  },
+
+  bindEvents() {
+    const openBtn = document.getElementById('open-create-site-btn');
+    if (openBtn) {
+      openBtn.addEventListener('click', () => {
+        document.getElementById('modal-create-site').classList.remove('hidden');
+      });
+    }
+
+    const createForm = document.getElementById('create-site-form');
+    if (createForm) {
+      createForm.addEventListener('submit', (e) => this.handleCreate(e));
+    }
+  },
+
+  async loadWebsites() {
+    try {
+      this.list = await API.get('/api/websites');
+      this.renderWebsites();
+    } catch (err) {
+      console.error('Failed to load websites:', err);
+    }
+  },
+
+  renderWebsites() {
+    const grid = document.getElementById('websites-list');
+    if (!grid) return;
+
+    if (!this.list || this.list.length === 0) {
+      grid.innerHTML = `
+        <div class="card p-4 text-center">
+          <p class="text-muted">No websites or applications deployed yet.</p>
+          <div class="mt-3">
+            <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">+ Create Your First Website</button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = this.list
+      .map((site) => {
+        const isRunning = site.status === 'running';
+        const typeBadge = site.type.toUpperCase();
+
+        return `
+          <div class="card mb-3">
+            <div class="card-body flex-between">
+              <div>
+                <div class="flex-align gap-2 mb-2">
+                  <h4 style="font-size: 16px; margin: 0;">${site.name}</h4>
+                  <span class="badge badge-primary">${typeBadge}</span>
+                  <span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">${site.status.toUpperCase()}</span>
+                </div>
+                <div class="text-muted text-sm">
+                  <span>Port: <code>127.0.0.1:${site.port}</code></span>
+                  <span style="margin: 0 8px;">•</span>
+                  <span>Entry: <code>${site.entry_file || 'default'}</code></span>
+                  <span style="margin: 0 8px;">•</span>
+                  <span>Domain: <code>${site.domain || site.name}</code></span>
+                </div>
+              </div>
+
+              <div class="flex-align gap-2">
+                ${
+                  isRunning
+                    ? `<button class="btn btn-secondary btn-sm" onclick="websites.stopSite(${site.id})">⏹ Stop</button>
+                       <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">🔄 Restart</button>`
+                    : `<button class="btn btn-primary btn-sm" onclick="websites.startSite(${site.id})">▶ Start</button>`
+                }
+                <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">📜 Logs</button>
+                <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">📁 Files</button>
+                <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')">🗑</button>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  },
+
+  async handleCreate(e) {
+    e.preventDefault();
+    const name = document.getElementById('site-name').value;
+    const type = document.getElementById('site-type').value;
+    const domain = document.getElementById('site-domain').value;
+    const entry_file = document.getElementById('site-entry').value;
+    const autostart = document.getElementById('site-autostart').checked;
+
+    try {
+      await API.post('/api/websites', {
+        name,
+        type,
+        domain,
+        entry_file,
+        autostart
+      });
+      API.toast(`Website ${name} created and launched!`, 'success');
+      document.getElementById('modal-create-site').classList.add('hidden');
+      document.getElementById('create-site-form').reset();
+      this.loadWebsites();
+    } catch (err) {
+      // toast shown by API client
+    }
+  },
+
+  async startSite(id) {
+    try {
+      await API.post(`/api/websites/${id}/start`);
+      API.toast('Website started', 'success');
+      this.loadWebsites();
+    } catch (e) {}
+  },
+
+  async stopSite(id) {
+    try {
+      await API.post(`/api/websites/${id}/stop`);
+      API.toast('Website stopped', 'info');
+      this.loadWebsites();
+    } catch (e) {}
+  },
+
+  async restartSite(id) {
+    try {
+      await API.post(`/api/websites/${id}/restart`);
+      API.toast('Website restarted', 'success');
+      this.loadWebsites();
+    } catch (e) {}
+  },
+
+  async viewLogs(id, name) {
+    try {
+      const data = await API.get(`/api/websites/${id}/logs`);
+      document.getElementById('site-logs-title').textContent = `${name} Logs`;
+      document.getElementById('site-access-log').textContent =
+        data.accessLogs.join('\n') || '(No access logs yet)';
+      document.getElementById('site-error-log').textContent =
+        data.errorLogs.join('\n') || '(No error logs)';
+      document.getElementById('modal-site-logs').classList.remove('hidden');
+    } catch (e) {}
+  },
+
+  openFileManager(id) {
+    app.switchTab('filemanager');
+    const select = document.getElementById('fm-site-select');
+    if (select) {
+      select.value = id;
+      fileManager.loadFiles();
+    }
+  },
+
+  async deleteSite(id, name) {
+    if (!confirm(`Are you sure you want to delete ${name}? All files and records will be deleted.`)) {
+      return;
+    }
+
+    try {
+      await API.delete(`/api/websites/${id}`);
+      API.toast(`Deleted ${name}`, 'info');
+      this.loadWebsites();
+    } catch (e) {}
+  }
+};

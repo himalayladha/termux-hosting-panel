@@ -1,0 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# termux-services run file for cloudflared
+# Place at: $PREFIX/var/service/cloudflared/run
+
+exec 2>&1
+TOKEN_FILE="$HOME/termux-panel/config/cloudflare-token"
+
+if [ ! -f "$TOKEN_FILE" ]; then
+  echo "Cloudflare token file not found at $TOKEN_FILE. Service sleeping."
+  sleep 60
+  exit 1
+fi
+
+exec cloudflared tunnel run --token-file "$TOKEN_FILE"

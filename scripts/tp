@@ -1,0 +1,182 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# ==============================================================================
+# TermuxPanel Terminal Management CLI (tp)
+# ==============================================================================
+
+PANEL_DIR="$HOME/termux-panel"
+if [ ! -d "$PANEL_DIR" ]; then
+  # Fallback to current directory or relative
+  PANEL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+show_banner() {
+  echo -e "${CYAN}╔══════════════════════════════════════════╗${NC}"
+  echo -e "${CYAN}║             TERMUXPANEL                  ║${NC}"
+  echo -e "${CYAN}║     Android Hosting Control Plane        ║${NC}"
+  echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
+}
+
+check_status() {
+  echo -e "\n${BLUE}▶ Checking TermuxPanel Status...${NC}"
+  
+  # Check Node server
+  if pgrep -f "node.*server.js" > /dev/null; then
+    echo -e "  [Panel Service]     ${GREEN}RUNNING${NC} (http://127.0.0.1:9000)"
+  else
+    echo -e "  [Panel Service]     ${RED}STOPPED${NC}"
+  fi
+
+  # Check Cloudflare Tunnel
+  if pgrep -x "cloudflared" > /dev/null; then
+    echo -e "  [Cloudflare Tunnel] ${GREEN}RUNNING${NC}"
+  else
+    echo -e "  [Cloudflare Tunnel] ${YELLOW}STOPPED / NOT RUNNING${NC}"
+  fi
+
+  # Check Crond
+  if pgrep -x "crond" > /dev/null; then
+    echo -e "  [Cron Daemon]       ${GREEN}RUNNING${NC}"
+  else
+    echo -e "  [Cron Daemon]       ${YELLOW}STOPPED${NC}"
+  fi
+  echo ""
+}
+
+start_panel() {
+  echo -e "\n${BLUE}▶ Starting TermuxPanel Server...${NC}"
+  cd "$PANEL_DIR/backend" || exit 1
+
+  # Acquire wake lock if in Termux
+  if command -v termux-wake-lock >/dev/null 2>&1; then
+    termux-wake-lock
+    echo -e "  ${GREEN}✓${NC} Termux wake-lock acquired"
+  fi
+
+  # Start crond if available
+  if command -v crond >/dev/null 2>&1; then
+    pgrep -x crond >/dev/null || crond
+  fi
+
+  # Start server in background or via termux-services
+  if command -v sv >/dev/null 2>&1 && [ -d "$PREFIX/var/service/termux-panel" ]; then
+    sv up termux-panel
+    echo -e "  ${GREEN}✓${NC} Started via termux-services (termux-panel)"
+  else
+    nohup node server.js > "$PANEL_DIR/logs/panel.log" 2>&1 &
+    echo -e "  ${GREEN}✓${NC} Node server started in background (PID: $!)"
+  fi
+
+  # Check if cloudflared token configured
+  if [ -f "$PANEL_DIR/config/cloudflare-token" ]; then
+    if command -v cloudflared >/dev/null 2>&1; then
+      if ! pgrep -x "cloudflared" > /dev/null; then
+        nohup cloudflared tunnel run --token-file "$PANEL_DIR/config/cloudflare-token" > "$PANEL_DIR/logs/cloudflared.log" 2>&1 &
+        echo -e "  ${GREEN}✓${NC} Cloudflare Tunnel launched (PID: $!)"
+      fi
+    fi
+  fi
+
+  echo -e "\n${GREEN}TermuxPanel is live at http://127.0.0.1:9000${NC}\n"
+}
+
+stop_panel() {
+  echo -e "\n${BLUE}▶ Stopping TermuxPanel Server...${NC}"
+  pkill -f "node.*server.js" && echo -e "  ${GREEN}✓${NC} TermuxPanel stopped"
+  pkill -x "cloudflared" && echo -e "  ${GREEN}✓${NC} Cloudflared tunnel stopped"
+  echo ""
+}
+
+restart_panel() {
+  stop_panel
+  sleep 1
+  start_panel
+}
+
+view_logs() {
+  echo -e "\n${BLUE}▶ Tailing last 30 lines of panel.log (Ctrl+C to exit):${NC}\n"
+  if [ -f "$PANEL_DIR/logs/panel.log" ]; then
+    tail -n 30 -f "$PANEL_DIR/logs/panel.log"
+  else
+    echo -e "${YELLOW}No log file found at $PANEL_DIR/logs/panel.log${NC}"
+  fi
+}
+
+configure_cloudflare() {
+  bash "$PANEL_DIR/installer/cloudflare.sh"
+}
+
+create_backup() {
+  echo -e "\n${BLUE}▶ Creating Full Backup Archive...${NC}"
+  TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+  BACKUP_FILE="$PANEL_DIR/data/backups/backup-cli-$TIMESTAMP.tar.gz"
+  mkdir -p "$PANEL_DIR/data/backups"
+  tar -czf "$BACKUP_FILE" -C "$PANEL_DIR" storage data config
+  echo -e "${GREEN}✓ Backup created:${NC} $BACKUP_FILE\n"
+}
+
+interactive_menu() {
+  while true; do
+    show_banner
+    echo -e "  ${YELLOW}1.${NC} Open Panel URL (http://127.0.0.1:9000)"
+    echo -e "  ${YELLOW}2.${NC} Server Status"
+    echo -e "  ${YELLOW}3.${NC} Start Server"
+    echo -e "  ${YELLOW}4.${NC} Stop Server"
+    echo -e "  ${YELLOW}5.${NC} Restart Server"
+    echo -e "  ${YELLOW}6.${NC} View Live Logs"
+    echo -e "  ${YELLOW}7.${NC} Configure Cloudflare Tunnel"
+    echo -e "  ${YELLOW}8.${NC} Create Backup"
+    echo -e "  ${YELLOW}9.${NC} Run Self Health Check"
+    echo -e "  ${YELLOW}0.${NC} Exit"
+    echo ""
+    read -p "Select an option [0-9]: " choice
+
+    case $choice in
+      1)
+        if command -v termux-open-url >/dev/null 2>&1; then
+          termux-open-url "http://127.0.0.1:9000"
+        else
+          echo -e "\nOpen in your browser: ${CYAN}http://127.0.0.1:9000${NC}\n"
+        fi
+        ;;
+      2) check_status ;;
+      3) start_panel ;;
+      4) stop_panel ;;
+      5) restart_panel ;;
+      6) view_logs ;;
+      7) configure_cloudflare ;;
+      8) create_backup ;;
+      9)
+        echo -e "\n${BLUE}▶ Health Check:${NC}"
+        node -v && python --version && php -v && sqlite3 --version
+        echo ""
+        ;;
+      0)
+        echo -e "\nGoodbye!"
+        exit 0
+        ;;
+      *)
+        echo -e "\n${RED}Invalid option.${NC}\n"
+        ;;
+    esac
+    read -p "Press Enter to continue..."
+  done
+}
+
+# CLI Argument dispatcher
+case "$1" in
+  status) check_status ;;
+  start) start_panel ;;
+  stop) stop_panel ;;
+  restart) restart_panel ;;
+  logs) view_logs ;;
+  cloudflare|tunnel) configure_cloudflare ;;
+  backup) create_backup ;;
+  *) interactive_menu ;;
+esac
