@@ -35,6 +35,39 @@ router.post('/connect', requireAuth, async (req, res) => {
 });
 
 /**
+ * All-In-One Subdomain Creator with dedicated website & database
+ */
+router.post('/create-subdomain', requireAuth, async (req, res) => {
+  try {
+    const {
+      subdomainPrefix,
+      rootDomain,
+      appType,
+      createSite,
+      createDatabase,
+      dbTemplate,
+      autoCloudflare,
+      cfApiToken
+    } = req.body;
+
+    const result = await domainService.createSubdomain({
+      subdomainPrefix,
+      rootDomain,
+      appType: appType || 'html',
+      createSite: createSite !== false && createSite !== 'false',
+      createDatabase: createDatabase === true || createDatabase === 'true',
+      dbTemplate: dbTemplate || 'blank',
+      autoCloudflare: autoCloudflare === true || autoCloudflare === 'true',
+      cfApiToken
+    });
+
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * Update domain target website mapping
  */
 router.put('/:id/target', requireAuth, async (req, res) => {

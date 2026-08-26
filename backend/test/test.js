@@ -152,8 +152,8 @@ async function runTests() {
   fs.rmSync(testDbDir, { recursive: true, force: true });
   console.log('  ✓ ZIP compression and safe extraction verified.');
 
-  // 8. Domain Management Service
-  console.log('[8/8] Testing Domain Management Service...');
+  // 8. Domain Management & Subdomain Provisioning Service
+  console.log('[8/8] Testing Domain & Subdomain Provisioning Service...');
   const domainService = require('../services/domain.service');
   const testDomainName = `test-${Date.now()}.example.com`;
 
@@ -170,7 +170,32 @@ async function runTests() {
 
   const delRes = await domainService.deleteDomain(connectRes.id);
   assert(delRes.success, 'Domain deletion failed');
-  console.log('  ✓ Domain registration, target binding, and deletion verified.');
+
+  // Test All-In-One Subdomain Creator
+  const subPrefix = `blog${Date.now().toString().slice(-4)}`;
+  const subRes = await domainService.createSubdomain({
+    subdomainPrefix: subPrefix,
+    rootDomain: 'example.com',
+    appType: 'html',
+    createSite: true,
+    createDatabase: true,
+    dbTemplate: 'blog_cms'
+  });
+  assert(subRes.success, 'Subdomain creation failed');
+  assert(subRes.domain === `${subPrefix}.example.com`, 'Subdomain domain mismatch');
+  assert(subRes.websiteId > 0, 'Dedicated website ID missing');
+  assert(subRes.database && fs.existsSync(subRes.database.path), 'Dedicated database was not created on disk');
+
+  // Cleanup created site & DB
+  if (subRes.database && fs.existsSync(subRes.database.path)) {
+    fs.unlinkSync(subRes.database.path);
+  }
+  const createdSiteDir = path.join(process.env.TERMUX_PANEL_ROOT, 'storage', 'websites', subPrefix);
+  if (fs.existsSync(createdSiteDir)) {
+    fs.rmSync(createdSiteDir, { recursive: true, force: true });
+  }
+
+  console.log('  ✓ Domain registration, target binding, and Subdomain All-In-One wizard verified.');
 
   console.log('--------------------------------------------------');
   console.log('  All TermuxPanel 8/8 Verifications Passed!       ');

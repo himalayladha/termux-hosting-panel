@@ -8,14 +8,63 @@ const domainsManager = {
   },
 
   bindEvents() {
-    const openBtn = document.getElementById('open-connect-domain-btn');
-    if (openBtn) {
-      openBtn.addEventListener('click', () => this.openConnectModal());
+    const openConnectBtn = document.getElementById('open-connect-domain-btn');
+    if (openConnectBtn) {
+      openConnectBtn.addEventListener('click', () => this.openConnectModal());
     }
 
-    const form = document.getElementById('connect-domain-form');
-    if (form) {
-      form.addEventListener('submit', (e) => this.handleConnectDomain(e));
+    const openSubdomainBtn = document.getElementById('open-create-subdomain-btn');
+    if (openSubdomainBtn) {
+      openSubdomainBtn.addEventListener('click', () => this.openSubdomainModal());
+    }
+
+    const connectForm = document.getElementById('connect-domain-form');
+    if (connectForm) {
+      connectForm.addEventListener('submit', (e) => this.handleConnectDomain(e));
+    }
+
+    const subForm = document.getElementById('create-subdomain-form');
+    if (subForm) {
+      subForm.addEventListener('submit', (e) => this.handleCreateSubdomain(e));
+    }
+
+    // Dynamic Subdomain Preview Listeners
+    const prefixInput = document.getElementById('subdomain-prefix-input');
+    const rootInput = document.getElementById('subdomain-root-input');
+    const updatePreview = () => {
+      const p = (prefixInput ? prefixInput.value.trim() : '') || 'subdomain';
+      const r = (rootInput ? rootInput.value.trim() : '') || 'yourdomain.com';
+      const previewEl = document.getElementById('subdomain-preview-text');
+      if (previewEl) {
+        previewEl.textContent = `https://${p.toLowerCase().replace(/[^a-z0-9-]/g, '')}.${r.toLowerCase().replace(/^https?:\/\//, '')}`;
+      }
+    };
+    if (prefixInput) prefixInput.addEventListener('input', updatePreview);
+    if (rootInput) rootInput.addEventListener('input', updatePreview);
+
+    // Dynamic Checkbox Toggles in Subdomain Modal
+    const siteCb = document.getElementById('subdomain-enable-site');
+    const siteFields = document.getElementById('subdomain-site-fields');
+    if (siteCb && siteFields) {
+      siteCb.addEventListener('change', (e) => {
+        siteFields.classList.toggle('hidden', !e.target.checked);
+      });
+    }
+
+    const dbCb = document.getElementById('subdomain-enable-db');
+    const dbFields = document.getElementById('subdomain-db-fields');
+    if (dbCb && dbFields) {
+      dbCb.addEventListener('change', (e) => {
+        dbFields.classList.toggle('hidden', !e.target.checked);
+      });
+    }
+
+    const cfCb = document.getElementById('subdomain-enable-cf');
+    const cfFields = document.getElementById('subdomain-cf-fields');
+    if (cfCb && cfFields) {
+      cfCb.addEventListener('change', (e) => {
+        cfFields.classList.toggle('hidden', !e.target.checked);
+      });
     }
   },
 
@@ -57,6 +106,22 @@ const domainsManager = {
     if (window.lucide) lucide.createIcons();
   },
 
+  async openSubdomainModal() {
+    // If user has existing domains configured, pre-fill root domain
+    const rootInput = document.getElementById('subdomain-root-input');
+    if (rootInput && this.domainsList && this.domainsList.length > 0) {
+      const firstDomain = this.domainsList[0].domain;
+      const parts = firstDomain.split('.');
+      if (parts.length >= 2) {
+        rootInput.value = parts.slice(-2).join('.');
+      }
+    }
+
+    const modal = document.getElementById('modal-create-subdomain');
+    if (modal) modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  },
+
   async loadDomains() {
     try {
       this.domainsList = await API.get('/api/domains');
@@ -75,7 +140,7 @@ const domainsManager = {
         <tr>
           <td colspan="6" class="text-muted text-center" style="padding: 32px;">
             <i data-lucide="globe-2" style="width: 36px; height: 36px; color: #475569; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
-            No custom domains connected yet. Click "+ Connect Domain" to route your custom domain to any hosted website.
+            No custom domains or subdomains connected yet. Click "+ Create Subdomain" or "+ Connect Domain" to start.
           </td>
         </tr>
       `;
@@ -173,6 +238,66 @@ const domainsManager = {
       }
     } catch (err) {
       // toast shown by API client
+    }
+  },
+
+  async handleCreateSubdomain(e) {
+    e.preventDefault();
+    const prefix = document.getElementById('subdomain-prefix-input').value.trim();
+    const root = document.getElementById('subdomain-root-input').value.trim();
+    const createSite = document.getElementById('subdomain-enable-site').checked;
+    const appType = document.getElementById('subdomain-app-type').value;
+    const createDb = document.getElementById('subdomain-enable-db').checked;
+    const dbTemplate = document.getElementById('subdomain-db-template').value;
+    const autoCf = document.getElementById('subdomain-enable-cf').checked;
+    const cfToken = document.getElementById('subdomain-cf-token').value.trim();
+
+    if (!prefix || !root) return;
+
+    const btn = document.getElementById('subdomain-submit-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" style="width: 14px; height: 14px; margin-right: 4px;"></i> Provisioning...`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    try {
+      API.toast('Provisioning subdomain, dedicated website & database...', 'info');
+      const res = await API.post('/api/domains/create-subdomain', {
+        subdomainPrefix: prefix,
+        rootDomain: root,
+        appType,
+        createSite,
+        createDatabase: createDb,
+        dbTemplate,
+        autoCloudflare: autoCf,
+        cfApiToken: cfToken
+      });
+
+      API.toast(`Subdomain ${res.domain} created!`, 'success');
+      document.getElementById('modal-create-subdomain').classList.add('hidden');
+      document.getElementById('create-subdomain-form').reset();
+      this.loadDomains();
+
+      let msg = `Subdomain "${res.domain}" has been successfully provisioned!\n\n`;
+      if (res.websiteId) {
+        msg += `• Dedicated Website: Port :${res.targetPort}\n`;
+        msg += `• Storage Root: ~/termux-panel/storage/websites/${prefix}/\n`;
+      }
+      if (res.database) {
+        msg += `• Dedicated Database: data/${res.database.name} (${res.database.template})\n`;
+      }
+      msg += `\nYour site is live and reachable locally & globally via Cloudflare Tunnel!`;
+
+      await UI.alert(msg, 'Subdomain Ready', 'success');
+    } catch (err) {
+      // toast shown by API client
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="sparkles" style="width: 14px; height: 14px; margin-right: 4px;"></i> Provision Subdomain`;
+        if (window.lucide) lucide.createIcons();
+      }
     }
   },
 

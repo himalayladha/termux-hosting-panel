@@ -1,8 +1,30 @@
+const fs = require('fs');
+const path = require('path');
 const dns = require('dns');
 const https = require('https');
 const db = require('../database/db');
 const config = require('../config/app.config');
+const { findAvailablePort } = require('../config/ports.config');
 const cloudflareService = require('./cloudflare.service');
+const databaseService = require('./database.service');
+const processService = require('./process.service');
+
+// Helper to copy starter templates recursively
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
 
 /**
  * List all configured custom domains with target website info
@@ -69,7 +91,8 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
   let cfResult = null;
 
   // If 1-Click Cloudflare Auto Setup is requested
-  if (autoCloudflare && cfApiToken && cfZoneDomain) {
+  if (autoCloudflare && cfApiToken && (cfZoneDomain || cleanDomain.split('.').slice(-2).join('.'))) {
+    const rootZone = cfZoneDomain || cleanDomain.split('.').slice(-2).join('.');
     const route = {
       hostname: cleanDomain,
       service: `http://localhost:${targetPort}`
@@ -77,7 +100,7 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
 
     cfResult = await cloudflareService.setupTunnelViaApi({
       apiToken: cfApiToken,
-      domain: cfZoneDomain,
+      domain: rootZone,
       tunnelName: 'termux-android-tunnel',
       routes: [route]
     });
@@ -101,6 +124,129 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
     targetPort,
     cnameTarget,
     cloudflareAuto: !!cfResult
+  };
+}
+
+/**
+ * All-In-One Subdomain Provisioning Wizard
+ * Automatically provisions:
+ * 1. Dedicated Subdomain (e.g. blog.himalay.digital)
+ * 2. Dedicated Hosted Website / App (HTML, Node.js, Python, or PHP)
+ * 3. Dedicated SQLite Database (with schema template presets)
+ * 4. Automatic Cloudflare Tunnel Ingress & DNS CNAME mapping
+ */
+async function createSubdomain({
+  subdomainPrefix,
+  rootDomain,
+  appType = 'html',
+  createSite = true,
+  createDatabase = false,
+  dbTemplate = 'blank',
+  autoCloudflare = false,
+  cfApiToken = null
+}) {
+  const prefix = (subdomainPrefix || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const root = (rootDomain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+
+  if (!prefix) {
+    throw new Error('Please specify a subdomain prefix (e.g. "blog", "api", "store")');
+  }
+  if (!root || !root.includes('.')) {
+    throw new Error('Please specify a valid root domain (e.g. "himalay.digital" or "example.com")');
+  }
+
+  const fullDomain = `${prefix}.${root}`;
+
+  // Check if domain already exists
+  const existingDomain = await db.get('SELECT * FROM domains WHERE domain = ?', [fullDomain]);
+  if (existingDomain) {
+    throw new Error(`Subdomain "${fullDomain}" is already connected.`);
+  }
+
+  let siteId = null;
+  let targetPort = config.PORT;
+  let createdDbInfo = null;
+
+  // 1. Create Dedicated Website if requested
+  if (createSite) {
+    let siteName = prefix;
+    let nameCheck = await db.get('SELECT id FROM websites WHERE name = ?', [siteName]);
+    if (nameCheck) {
+      siteName = `${prefix}-${root.split('.')[0]}`;
+      nameCheck = await db.get('SELECT id FROM websites WHERE name = ?', [siteName]);
+      if (nameCheck) {
+        siteName = `${siteName}-${Date.now().toString().slice(-4)}`;
+      }
+    }
+
+    // Allocate Port
+    const usedPortsRows = await db.all('SELECT port FROM websites WHERE port IS NOT NULL');
+    const usedPorts = usedPortsRows.map((r) => r.port);
+    targetPort = await findAvailablePort(usedPorts);
+
+    // Setup Directory Root
+    const siteRoot = path.join(config.STORAGE_DIR, siteName);
+    if (!fs.existsSync(siteRoot)) {
+      fs.mkdirSync(siteRoot, { recursive: true });
+    }
+
+    // Copy Starter Template
+    const templatePath = path.join(config.TEMPLATES_DIR, appType);
+    if (fs.existsSync(templatePath)) {
+      copyDirRecursive(templatePath, siteRoot);
+    }
+
+    let defaultEntry = 'public/index.html';
+    if (appType === 'node') defaultEntry = 'server.js';
+    else if (appType === 'python') defaultEntry = 'app.py';
+    else if (appType === 'php') defaultEntry = 'public/index.php';
+
+    // 2. Create Dedicated SQLite Database if requested
+    if (createDatabase) {
+      const dbFilename = `${siteName}.db`;
+      const fullDbPath = path.join(config.DATA_DIR, dbFilename);
+      await databaseService.createDatabase(fullDbPath, dbTemplate || 'blank');
+      createdDbInfo = {
+        name: dbFilename,
+        path: fullDbPath,
+        template: dbTemplate || 'blank'
+      };
+    }
+
+    // Insert Website record
+    const siteInsert = await db.run(
+      `INSERT INTO websites (name, type, domain, root_path, entry_file, port, status, autostart)
+       VALUES (?, ?, ?, ?, ?, ?, 'stopped', 1)`,
+      [siteName, appType, fullDomain, siteRoot, defaultEntry, targetPort]
+    );
+
+    siteId = siteInsert.lastID;
+
+    // Start website process immediately
+    try {
+      await processService.startWebsite(siteId);
+    } catch (startErr) {
+      console.warn(`[Subdomains] Warning: Could not autostart ${siteName}:`, startErr.message);
+    }
+  }
+
+  // 3. Connect domain record & Cloudflare DNS
+  const domainRes = await connectDomain({
+    domain: fullDomain,
+    websiteId: siteId,
+    autoCloudflare,
+    cfApiToken,
+    cfZoneDomain: root
+  });
+
+  return {
+    success: true,
+    domain: fullDomain,
+    websiteId: siteId,
+    targetPort,
+    database: createdDbInfo,
+    cnameTarget: domainRes.cnameTarget,
+    cloudflareAuto: domainRes.cloudflareAuto
   };
 }
 
@@ -202,6 +348,7 @@ async function verifyDomainDns(domainName) {
 module.exports = {
   listDomains,
   connectDomain,
+  createSubdomain,
   updateDomainTarget,
   deleteDomain,
   verifyDomainDns

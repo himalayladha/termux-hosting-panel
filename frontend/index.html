@@ -267,13 +267,19 @@
         <section id="view-domains" class="tab-view">
           <div class="view-header flex-between flex-wrap gap-2">
             <div>
-              <h3>Connected Custom Domains</h3>
+              <h3>Connected Custom Domains & Subdomains</h3>
               <p class="text-muted">Route custom domains & subdomains directly to your hosted websites via Cloudflare Tunnels</p>
             </div>
-            <button id="open-connect-domain-btn" class="btn btn-primary">
-              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
-              Connect Domain
-            </button>
+            <div class="flex-align gap-2">
+              <button id="open-create-subdomain-btn" class="btn btn-primary">
+                <i data-lucide="sparkles" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                Create Subdomain
+              </button>
+              <button id="open-connect-domain-btn" class="btn btn-secondary">
+                <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                Connect Existing Domain
+              </button>
+            </div>
           </div>
 
           <!-- Cloudflare Routing Info Banner -->
@@ -968,6 +974,106 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
           <button type="submit" class="btn btn-primary">Start Backup</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Subdomain Wizard Modal -->
+  <div id="modal-create-subdomain" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>
+          <i data-lucide="sparkles" style="width: 20px; height: 20px; margin-right: 6px; color: #38bdf8;"></i>
+          Create Subdomain with Dedicated App & Database
+        </h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="create-subdomain-form">
+        <div class="modal-body">
+          <!-- Subdomain & Root Domain -->
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label for="subdomain-prefix-input"><strong>Subdomain Prefix</strong></label>
+              <input type="text" id="subdomain-prefix-input" required placeholder="e.g. blog, store, api" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="subdomain-root-input"><strong>Root Domain</strong></label>
+              <input type="text" id="subdomain-root-input" required placeholder="e.g. himalay.digital" class="form-control">
+            </div>
+          </div>
+          <div class="mb-3" style="background: rgba(56, 189, 248, 0.08); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.2);">
+            <small class="text-muted">Target Hostname:</small>
+            <span style="font-family: monospace; font-weight: 600; color: #38bdf8;" id="subdomain-preview-text">prefix.domain.com</span>
+          </div>
+
+          <!-- Dedicated Website Provisioning Section -->
+          <div class="card bg-darker p-3 mb-3">
+            <div class="flex-align gap-2 mb-2">
+              <input type="checkbox" id="subdomain-enable-site" checked style="width: 16px; height: 16px; accent-color: #38bdf8;">
+              <label for="subdomain-enable-site" style="margin: 0; font-weight: 600; cursor: pointer;">
+                Provision Dedicated Website & App Directory
+              </label>
+            </div>
+            <div id="subdomain-site-fields">
+              <p class="text-muted text-sm mb-2">Creates an isolated directory in <code>~/termux-panel/storage/websites/</code> with its own port.</p>
+              <div class="form-group mb-0">
+                <label for="subdomain-app-type">Runtime / Technology Stack</label>
+                <select id="subdomain-app-type" class="form-control">
+                  <option value="html">Static HTML / CSS / Vanilla JavaScript</option>
+                  <option value="node">Node.js Web App (Express / API)</option>
+                  <option value="python">Python Web Service (Flask / FastAPI)</option>
+                  <option value="php">PHP Application / Script</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dedicated SQLite Database Section -->
+          <div class="card bg-darker p-3 mb-3">
+            <div class="flex-align gap-2 mb-2">
+              <input type="checkbox" id="subdomain-enable-db" style="width: 16px; height: 16px; accent-color: #38bdf8;">
+              <label for="subdomain-enable-db" style="margin: 0; font-weight: 600; cursor: pointer;">
+                Provision Dedicated SQLite Database
+              </label>
+            </div>
+            <div id="subdomain-db-fields" class="hidden">
+              <p class="text-muted text-sm mb-2">Creates a dedicated database in <code>data/</code> accessible to this subdomain and in Database Explorer.</p>
+              <div class="form-group mb-0">
+                <label for="subdomain-db-template">Starter Schema Template</label>
+                <select id="subdomain-db-template" class="form-control">
+                  <option value="blank">Blank Database (Empty)</option>
+                  <option value="auth_users">User Authentication & Sessions (users, sessions)</option>
+                  <option value="blog_cms">Blog & CMS Engine (posts, categories, comments)</option>
+                  <option value="ecommerce">E-Commerce Store (products, orders, customers)</option>
+                  <option value="key_value">Key-Value Store (key_value_store)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cloudflare Auto Sync Options -->
+          <div class="card bg-darker p-3">
+            <div class="flex-align gap-2 mb-2">
+              <input type="checkbox" id="subdomain-enable-cf" style="width: 16px; height: 16px; accent-color: #38bdf8;">
+              <label for="subdomain-enable-cf" style="margin: 0; font-weight: 600; cursor: pointer;">
+                Auto-Create Cloudflare DNS CNAME & Tunnel Route
+              </label>
+            </div>
+            <div id="subdomain-cf-fields" class="hidden">
+              <div class="form-group mb-0">
+                <label for="subdomain-cf-token">Cloudflare API Token</label>
+                <input type="password" id="subdomain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="subdomain-submit-btn">
+            <i data-lucide="sparkles" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+            Provision Subdomain
+          </button>
         </div>
       </form>
     </div>
