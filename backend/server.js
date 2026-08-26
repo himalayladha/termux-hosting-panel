@@ -19,6 +19,7 @@ const cronRoutes = require('./routes/cron.routes');
 const logsRoutes = require('./routes/logs.routes');
 const backupsRoutes = require('./routes/backups.routes');
 const tunnelRoutes = require('./routes/tunnel.routes');
+const domainsRoutes = require('./routes/domains.routes');
 const settingsRoutes = require('./routes/settings.routes');
 
 const app = express();
@@ -56,6 +57,7 @@ const authLimiter = rateLimit({
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/websites', websitesRoutes);
+app.use('/api/domains', domainsRoutes);
 app.use('/api/files', filesRoutes);
 app.use('/api/databases', databasesRoutes);
 app.use('/api/cron', cronRoutes);

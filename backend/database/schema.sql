@@ -35,8 +35,9 @@ CREATE TABLE IF NOT EXISTS websites (
 CREATE TABLE IF NOT EXISTS domains (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT UNIQUE NOT NULL,
-    website_id INTEGER NOT NULL,
-    is_primary INTEGER DEFAULT 0,
+    website_id INTEGER,
+    ssl_enabled INTEGER DEFAULT 1,
+    cname_target TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
 );

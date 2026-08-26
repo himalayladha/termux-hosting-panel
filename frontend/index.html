@@ -86,6 +86,10 @@
           <i data-lucide="globe" class="nav-icon"></i>
           <span class="nav-label">Websites</span>
         </button>
+        <button class="nav-item" data-tab="domains">
+          <i data-lucide="globe-2" class="nav-icon"></i>
+          <span class="nav-label">Domains</span>
+        </button>
         <button class="nav-item" data-tab="filemanager">
           <i data-lucide="folder-tree" class="nav-icon"></i>
           <span class="nav-label">File Manager</span>
@@ -256,6 +260,55 @@
 
           <div class="websites-grid mt-4" id="websites-list">
             <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- 2.5. DOMAINS VIEW -->
+        <section id="view-domains" class="tab-view">
+          <div class="view-header flex-between flex-wrap gap-2">
+            <div>
+              <h3>Connected Custom Domains</h3>
+              <p class="text-muted">Route custom domains & subdomains directly to your hosted websites via Cloudflare Tunnels</p>
+            </div>
+            <button id="open-connect-domain-btn" class="btn btn-primary">
+              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+              Connect Domain
+            </button>
+          </div>
+
+          <!-- Cloudflare Routing Info Banner -->
+          <div class="card mt-3" style="background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
+            <div class="card-body" style="padding: 14px 20px;">
+              <div class="flex-align gap-3 flex-wrap">
+                <div class="icon-circle" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                  <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div style="flex: 1;">
+                  <strong style="color: #fff; font-size: 14px;">Automatic HTTPS / SSL via Cloudflare Edge</strong>
+                  <div class="text-muted text-sm">Every connected domain receives automatic free SSL certificates, DDoS mitigation, and global edge CDN proxying.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-4">
+            <div class="table-responsive">
+              <table class="table" id="domains-table">
+                <thead>
+                  <tr>
+                    <th>Domain / Hostname</th>
+                    <th>Target App / Service</th>
+                    <th>SSL / HTTPS</th>
+                    <th>Cloudflare Ingress</th>
+                    <th>Added Date</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="domains-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -858,6 +911,82 @@
     </div>
   </div>
 
+  <!-- Connect Domain Modal -->
+  <div id="modal-connect-domain" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>
+          <i data-lucide="globe-2" style="width: 20px; height: 20px; margin-right: 6px; color: #38bdf8;"></i>
+          Connect Custom Domain / Subdomain
+        </h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="connect-domain-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="connect-domain-input">Custom Domain / Subdomain</label>
+            <input type="text" id="connect-domain-input" required placeholder="e.g. store.mybrand.com or myportfolio.dev" class="form-control">
+            <small class="text-muted">Enter the fully qualified domain or subdomain you want to route to this device.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="domain-target-select">Route Traffic To</label>
+            <select id="domain-target-select" class="form-control">
+              <!-- Populated dynamically with websites + TermuxPanel -->
+            </select>
+          </div>
+
+          <!-- Setup Method Mode Selector -->
+          <div class="mt-3 mb-2">
+            <label><strong>Cloudflare Configuration Method:</strong></label>
+            <div class="flex-align gap-2 mt-1">
+              <button type="button" id="domain-tab-btn-auto" class="btn btn-primary btn-sm" onclick="domainsManager.switchMode('auto')">
+                <i data-lucide="zap" style="width: 13px; height: 13px; margin-right: 3px;"></i>
+                Option 1: 1-Click Auto (Cloudflare API)
+              </button>
+              <button type="button" id="domain-tab-btn-manual" class="btn btn-secondary btn-sm" onclick="domainsManager.switchMode('manual')">
+                <i data-lucide="edit-3" style="width: 13px; height: 13px; margin-right: 3px;"></i>
+                Option 2: Manual CNAME Setup
+              </button>
+            </div>
+          </div>
+
+          <!-- Option 1: 1-Click Auto Fields -->
+          <div id="domain-cf-auto-fields" class="card mt-3 bg-darker p-3">
+            <p class="text-muted text-sm mb-2">TermuxPanel will automatically call Cloudflare API to create the DNS CNAME record and configure the tunnel ingress rule.</p>
+            <div class="form-group">
+              <label for="domain-cf-token">Cloudflare API Token (Edit Zone DNS + Cloudflare Tunnel)</label>
+              <input type="password" id="domain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token">
+            </div>
+            <div class="form-group mb-0">
+              <label for="domain-cf-zone">Cloudflare Zone / Root Domain</label>
+              <input type="text" id="domain-cf-zone" class="form-control" placeholder="e.g. mybrand.com">
+            </div>
+          </div>
+
+          <!-- Option 2: Manual CNAME Instructions -->
+          <div id="domain-cf-manual-fields" class="card mt-3 bg-darker p-3 hidden">
+            <h4>Manual DNS Configuration in Cloudflare Dashboard:</h4>
+            <p class="text-muted text-sm mt-1">Log in to your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare DNS Dashboard</a> and add this record:</p>
+            <div style="background: #050811; padding: 10px 14px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-top: 8px; border: 1px solid var(--border-color);">
+              <div><strong>Type:</strong> <code>CNAME</code></div>
+              <div><strong>Name:</strong> <code>your domain or subdomain</code></div>
+              <div><strong>Target:</strong> <code>&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
+              <div><strong>Proxy:</strong> <span style="color: #f59e0b;">Proxied (Orange Cloud)</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+            Save & Connect Domain
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -865,6 +994,7 @@
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/websites.js"></script>
+  <script src="js/domains.js"></script>
   <script src="js/filemanager.js"></script>
   <script src="js/databases.js"></script>
   <script src="js/cron.js"></script>

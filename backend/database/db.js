@@ -152,6 +152,18 @@ async function initDb() {
     await run(statement);
   }
 
+  // Auto-migrate domains table columns if missing
+  try {
+    const domainCols = await all("PRAGMA table_info('domains')");
+    const colNames = domainCols.map((c) => c.name);
+    if (!colNames.includes('ssl_enabled')) {
+      await run('ALTER TABLE domains ADD COLUMN ssl_enabled INTEGER DEFAULT 1');
+    }
+    if (!colNames.includes('cname_target')) {
+      await run('ALTER TABLE domains ADD COLUMN cname_target TEXT');
+    }
+  } catch (_) {}
+
   // Insert default settings if not set
   const panelPortSetting = await get('SELECT value FROM settings WHERE key = ?', ['panel_port']);
   if (!panelPortSetting) {

@@ -109,6 +109,7 @@ const app = {
     // Initialize all modules
     dashboard.init();
     websites.init();
+    domainsManager.init();
     fileManager.init();
     databases.init();
     cronManager.init();
@@ -171,6 +172,7 @@ const app = {
     const titles = {
       dashboard: 'Dashboard',
       websites: 'Websites & Applications',
+      domains: 'Custom Domain Management',
       filemanager: 'File Manager',
       databases: 'SQLite Database Explorer',
       cron: 'Scheduled Cron Jobs',
@@ -186,6 +188,7 @@ const app = {
     // Trigger tab-specific refresh
     if (tabId === 'dashboard') dashboard.loadSummary();
     if (tabId === 'websites') websites.loadWebsites();
+    if (tabId === 'domains') domainsManager.loadDomains();
     if (tabId === 'filemanager') fileManager.populateSiteSelector();
     if (tabId === 'databases') databases.loadDatabases();
     if (tabId === 'cron') cronManager.loadJobs();

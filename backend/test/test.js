@@ -152,8 +152,28 @@ async function runTests() {
   fs.rmSync(testDbDir, { recursive: true, force: true });
   console.log('  ✓ ZIP compression and safe extraction verified.');
 
+  // 8. Domain Management Service
+  console.log('[8/8] Testing Domain Management Service...');
+  const domainService = require('../services/domain.service');
+  const testDomainName = `test-${Date.now()}.example.com`;
+
+  const connectRes = await domainService.connectDomain({
+    domain: testDomainName,
+    websiteId: null
+  });
+  assert(connectRes.success && connectRes.id > 0, 'Domain connection failed');
+
+  const domainList = await domainService.listDomains();
+  const found = domainList.find((d) => d.domain === testDomainName);
+  assert(found, 'Connected domain not found in list');
+  assert(found.targetName === 'TermuxPanel Control Plane', 'Default target incorrect');
+
+  const delRes = await domainService.deleteDomain(connectRes.id);
+  assert(delRes.success, 'Domain deletion failed');
+  console.log('  ✓ Domain registration, target binding, and deletion verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 7/7 Verifications Passed!       ');
+  console.log('  All TermuxPanel 8/8 Verifications Passed!       ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }
