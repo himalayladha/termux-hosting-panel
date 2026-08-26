@@ -6,6 +6,7 @@ const fs = require('fs');
 process.env.TERMUX_PANEL_ROOT = path.resolve(__dirname, '../../');
 
 const db = require('../database/db');
+const config = require('../config/app.config');
 const authService = require('../auth/auth.service');
 const systemService = require('../services/system.service');
 const fileService = require('../services/file.service');
@@ -204,8 +205,38 @@ async function runTests() {
 
   console.log('  ✓ Domain registration, target binding, and Subdomain All-In-One wizard verified.');
 
+  // 9. Multi-Tunnel Fallback Service
+  console.log('[9/9] Testing Multi-Tunnel Fallback Service (Cloudflare, Ngrok, LocalXpose, Tailscale)...');
+  const multitunnelService = require('../services/multitunnel.service');
+  
+  // Test provider status reporting
+  const providers = await multitunnelService.getAllProvidersStatus();
+  assert(providers.cloudflare && providers.cloudflare.id === 'cloudflare', 'Cloudflare provider missing');
+  assert(providers.ngrok && providers.ngrok.id === 'ngrok', 'Ngrok provider missing');
+  assert(providers.localxpose && providers.localxpose.id === 'localxpose', 'LocalXpose provider missing');
+  assert(providers.tailscale && providers.tailscale.id === 'tailscale', 'Tailscale provider missing');
+
+  // Test token saving for Ngrok and LocalXpose
+  const ngrokRes = await multitunnelService.saveProviderToken('ngrok', 'test_ngrok_token_123456');
+  assert(ngrokRes.success, 'Ngrok token saving failed');
+  assert(fs.existsSync(config.NGROK_TOKEN_FILE), 'Ngrok token file was not created on disk');
+
+  const loclxRes = await multitunnelService.saveProviderToken('localxpose', 'test_loclx_token_789101');
+  assert(loclxRes.success, 'LocalXpose token saving failed');
+  assert(fs.existsSync(config.LOCLX_TOKEN_FILE), 'LocalXpose token file was not created on disk');
+
+  // Test log tailing for providers
+  const cfLogs = await multitunnelService.getProviderLogs('cloudflare', 10);
+  assert(cfLogs.provider === 'cloudflare', 'Provider log mismatch');
+
+  // Cleanup test tokens
+  if (fs.existsSync(config.NGROK_TOKEN_FILE)) fs.unlinkSync(config.NGROK_TOKEN_FILE);
+  if (fs.existsSync(config.LOCLX_TOKEN_FILE)) fs.unlinkSync(config.LOCLX_TOKEN_FILE);
+
+  console.log('  ✓ Multi-Tunnel provider abstraction, token storage, and log tailing verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 8/8 Verifications Passed!       ');
+  console.log('  All TermuxPanel 9/9 Verifications Passed!       ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

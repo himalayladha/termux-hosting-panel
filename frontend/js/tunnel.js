@@ -1,5 +1,7 @@
 const tunnelManager = {
-  currentMode: 'semi',
+  currentProvider: 'cloudflare',
+  currentMode: 'api',
+  providersData: null,
   tunnelState: {
     isRunning: false,
     isConfigured: false,
@@ -10,6 +12,7 @@ const tunnelManager = {
   init() {
     this.bindEvents();
     this.loadStatus();
+    this.loadProviders();
   },
 
   bindEvents() {
@@ -22,25 +25,283 @@ const tunnelManager = {
     if (apiForm) {
       apiForm.addEventListener('submit', (e) => this.handleAutoSetup(e));
     }
+
+    const ngrokTokenForm = document.getElementById('ngrok-token-form');
+    if (ngrokTokenForm) {
+      ngrokTokenForm.addEventListener('submit', (e) => this.handleSaveFallbackToken('ngrok', e));
+    }
+
+    const loclxTokenForm = document.getElementById('loclx-token-form');
+    if (loclxTokenForm) {
+      loclxTokenForm.addEventListener('submit', (e) => this.handleSaveFallbackToken('localxpose', e));
+    }
+  },
+
+  switchProvider(provider) {
+    this.currentProvider = provider;
+
+    // Update tab buttons
+    document.querySelectorAll('.tunnel-provider-tab-btn').forEach((btn) => {
+      if (btn.dataset.provider === provider) {
+        btn.className = 'btn btn-primary btn-sm tunnel-provider-tab-btn';
+      } else {
+        btn.className = 'btn btn-secondary btn-sm tunnel-provider-tab-btn';
+      }
+    });
+
+    // Toggle panels
+    const panels = ['cloudflare', 'ngrok', 'localxpose', 'tailscale'];
+    panels.forEach((p) => {
+      const panelEl = document.getElementById(`tunnel-panel-${p}`);
+      if (panelEl) {
+        if (p === provider) {
+          panelEl.classList.remove('hidden');
+        } else {
+          panelEl.classList.add('hidden');
+        }
+      }
+    });
+
+    this.populateTargetSelects();
+    this.loadProviders();
+    if (window.lucide) lucide.createIcons();
   },
 
   switchMode(mode) {
     this.currentMode = mode;
-    const semiBtn = document.getElementById('tunnel-tab-btn-semi');
-    const autoBtn = document.getElementById('tunnel-tab-btn-auto');
-    const semiCard = document.getElementById('tunnel-mode-semi');
-    const autoCard = document.getElementById('tunnel-mode-auto');
+    const apiBtn = document.getElementById('tab-btn-cf-api');
+    const tokenBtn = document.getElementById('tab-btn-cf-token');
+    const apiCard = document.getElementById('tunnel-mode-api');
+    const tokenCard = document.getElementById('tunnel-mode-token');
 
-    if (mode === 'semi') {
-      if (semiBtn) semiBtn.className = 'btn btn-primary btn-sm';
-      if (autoBtn) autoBtn.className = 'btn btn-secondary btn-sm';
-      if (semiCard) semiCard.classList.remove('hidden');
-      if (autoCard) autoCard.classList.add('hidden');
+    if (mode === 'api') {
+      if (apiBtn) apiBtn.className = 'btn btn-primary btn-sm';
+      if (tokenBtn) tokenBtn.className = 'btn btn-secondary btn-sm';
+      if (apiCard) apiCard.classList.remove('hidden');
+      if (tokenCard) tokenCard.classList.add('hidden');
     } else {
-      if (semiBtn) semiBtn.className = 'btn btn-secondary btn-sm';
-      if (autoBtn) autoBtn.className = 'btn btn-primary btn-sm';
-      if (semiCard) semiCard.classList.add('hidden');
-      if (autoCard) autoCard.classList.remove('hidden');
+      if (apiBtn) apiBtn.className = 'btn btn-secondary btn-sm';
+      if (tokenBtn) tokenBtn.className = 'btn btn-primary btn-sm';
+      if (apiCard) apiCard.classList.add('hidden');
+      if (tokenCard) tokenCard.classList.remove('hidden');
+    }
+    if (window.lucide) lucide.createIcons();
+  },
+
+  async populateTargetSelects() {
+    let sites = [];
+    try {
+      if (typeof websites !== 'undefined' && websites.list && websites.list.length > 0) {
+        sites = websites.list;
+      } else {
+        sites = await API.get('/api/websites');
+      }
+    } catch (_) {}
+
+    const options = [
+      '<option value="9000">TermuxPanel Control Plane (Port 9000)</option>',
+      ...sites.map((s) => `<option value="${s.port}">Website: ${s.name} (Port ${s.port} • ${(s.type || 'html').toUpperCase()})</option>`)
+    ].join('');
+
+    const ngrokSel = document.getElementById('ngrok-target-select');
+    if (ngrokSel) ngrokSel.innerHTML = options;
+
+    const loclxSel = document.getElementById('loclx-target-select');
+    if (loclxSel) loclxSel.innerHTML = options;
+
+    const tailscaleSel = document.getElementById('tailscale-target-select');
+    if (tailscaleSel) tailscaleSel.innerHTML = options;
+  },
+
+  async loadProviders() {
+    try {
+      const providers = await API.get('/api/tunnel/providers');
+      this.providersData = providers;
+
+      // 1. Ngrok UI Update
+      if (providers.ngrok) {
+        const n = providers.ngrok;
+        const statusBadge = document.getElementById('ngrok-status-badge');
+        const statusText = document.getElementById('ngrok-status-text');
+        const maskedToken = document.getElementById('ngrok-masked-token');
+        const binaryInfo = document.getElementById('ngrok-binary-info');
+        const liveCard = document.getElementById('ngrok-live-url-card');
+        const publicUrlLink = document.getElementById('ngrok-public-url-link');
+        const openUrlBtn = document.getElementById('ngrok-open-url-btn');
+        const copyUrlBtn = document.getElementById('ngrok-copy-url-btn');
+        const startBtn = document.getElementById('btn-start-ngrok');
+        const stopBtn = document.getElementById('btn-stop-ngrok');
+
+        if (statusBadge) {
+          statusBadge.textContent = n.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
+          statusBadge.className = n.isRunning ? 'badge badge-success' : 'badge badge-secondary';
+        }
+        if (statusText) {
+          statusText.textContent = n.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
+          statusText.style.color = n.isRunning ? '#22c55e' : '#f59e0b';
+        }
+        if (maskedToken) {
+          maskedToken.textContent = n.tokenMask || (n.isConfigured ? 'Token Configured' : 'Not Configured');
+        }
+        if (binaryInfo) {
+          binaryInfo.textContent = n.isInstalled ? 'Installed' : 'Not Installed (pkg install -y ngrok)';
+          binaryInfo.style.color = n.isInstalled ? '#22c55e' : '#f87171';
+        }
+
+        if (n.isRunning && n.publicUrl) {
+          if (liveCard) liveCard.classList.remove('hidden');
+          if (publicUrlLink) {
+            publicUrlLink.textContent = n.publicUrl;
+            publicUrlLink.href = n.publicUrl;
+          }
+          if (openUrlBtn) openUrlBtn.href = n.publicUrl;
+          if (copyUrlBtn) {
+            copyUrlBtn.onclick = () => {
+              navigator.clipboard.writeText(n.publicUrl).then(() => API.toast(`Copied ${n.publicUrl}`, 'success'));
+            };
+          }
+        } else if (liveCard) {
+          liveCard.classList.add('hidden');
+        }
+      }
+
+      // 2. LocalXpose UI Update
+      if (providers.localxpose) {
+        const l = providers.localxpose;
+        const statusBadge = document.getElementById('loclx-status-badge');
+        const statusText = document.getElementById('loclx-status-text');
+        const maskedToken = document.getElementById('loclx-masked-token');
+        const binaryInfo = document.getElementById('loclx-binary-info');
+        const liveCard = document.getElementById('loclx-live-url-card');
+        const publicUrlLink = document.getElementById('loclx-public-url-link');
+        const openUrlBtn = document.getElementById('loclx-open-url-btn');
+        const copyUrlBtn = document.getElementById('loclx-copy-url-btn');
+
+        if (statusBadge) {
+          statusBadge.textContent = l.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
+          statusBadge.className = l.isRunning ? 'badge badge-success' : 'badge badge-secondary';
+        }
+        if (statusText) {
+          statusText.textContent = l.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
+          statusText.style.color = l.isRunning ? '#22c55e' : '#f59e0b';
+        }
+        if (maskedToken) {
+          maskedToken.textContent = l.tokenMask || (l.isConfigured ? 'Token Configured' : 'Not Configured');
+        }
+        if (binaryInfo) {
+          binaryInfo.textContent = l.isInstalled ? 'Installed' : 'Not Installed (curl installer)';
+          binaryInfo.style.color = l.isInstalled ? '#22c55e' : '#f87171';
+        }
+
+        if (l.isRunning && l.publicUrl) {
+          if (liveCard) liveCard.classList.remove('hidden');
+          if (publicUrlLink) {
+            publicUrlLink.textContent = l.publicUrl;
+            publicUrlLink.href = l.publicUrl;
+          }
+          if (openUrlBtn) openUrlBtn.href = l.publicUrl;
+          if (copyUrlBtn) {
+            copyUrlBtn.onclick = () => {
+              navigator.clipboard.writeText(l.publicUrl).then(() => API.toast(`Copied ${l.publicUrl}`, 'success'));
+            };
+          }
+        } else if (liveCard) {
+          liveCard.classList.add('hidden');
+        }
+      }
+
+      // 3. Tailscale UI Update
+      if (providers.tailscale) {
+        const t = providers.tailscale;
+        const statusBadge = document.getElementById('tailscale-status-badge');
+        const statusText = document.getElementById('tailscale-status-text');
+        const binaryInfo = document.getElementById('tailscale-binary-info');
+
+        if (statusBadge) {
+          statusBadge.textContent = t.isRunning ? 'FUNNEL ACTIVE' : 'STOPPED';
+          statusBadge.className = t.isRunning ? 'badge badge-success' : 'badge badge-secondary';
+        }
+        if (statusText) {
+          statusText.textContent = t.isRunning ? 'FUNNEL ACTIVE' : 'STOPPED';
+          statusText.style.color = t.isRunning ? '#22c55e' : '#f59e0b';
+        }
+        if (binaryInfo) {
+          binaryInfo.textContent = t.isInstalled ? 'Installed' : 'Not Installed (pkg install -y tailscale)';
+          binaryInfo.style.color = t.isInstalled ? '#22c55e' : '#f87171';
+        }
+      }
+
+      if (window.lucide) lucide.createIcons();
+    } catch (_) {}
+  },
+
+  async startFallback(provider) {
+    let targetPort = 9000;
+    let subdomain = null;
+
+    if (provider === 'ngrok') {
+      const sel = document.getElementById('ngrok-target-select');
+      if (sel) targetPort = sel.value;
+    } else if (provider === 'localxpose') {
+      const sel = document.getElementById('loclx-target-select');
+      if (sel) targetPort = sel.value;
+      const subInput = document.getElementById('loclx-subdomain-input');
+      if (subInput) subdomain = subInput.value.trim();
+    } else if (provider === 'tailscale') {
+      const sel = document.getElementById('tailscale-target-select');
+      if (sel) targetPort = sel.value;
+    }
+
+    try {
+      API.toast(`Starting ${provider} tunnel on port ${targetPort}...`, 'info');
+      const res = await API.post(`/api/tunnel/${provider}/start`, { targetPort, subdomain });
+      API.toast(res.message || `${provider} started!`, 'success');
+      await this.loadProviders();
+    } catch (err) {
+      // toast shown by API client
+    }
+  },
+
+  async stopFallback(provider) {
+    try {
+      API.toast(`Stopping ${provider} tunnel...`, 'info');
+      const res = await API.post(`/api/tunnel/${provider}/stop`);
+      API.toast(res.message || `${provider} stopped`, 'info');
+      await this.loadProviders();
+    } catch (err) {}
+  },
+
+  async handleSaveFallbackToken(provider, e) {
+    e.preventDefault();
+    let token = '';
+    if (provider === 'ngrok') {
+      token = document.getElementById('ngrok-token-input').value.trim();
+    } else if (provider === 'localxpose') {
+      token = document.getElementById('loclx-token-input').value.trim();
+    }
+
+    if (!token) return;
+
+    try {
+      API.toast(`Saving ${provider} token...`, 'info');
+      const res = await API.post(`/api/tunnel/${provider}/token`, { token });
+      API.toast(res.message || 'Token saved!', 'success');
+      if (provider === 'ngrok') document.getElementById('ngrok-token-input').value = '';
+      if (provider === 'localxpose') document.getElementById('loclx-token-input').value = '';
+      await this.loadProviders();
+    } catch (err) {}
+  },
+
+  async viewFallbackLogs(provider) {
+    document.getElementById('modal-tunnel-logs').classList.remove('hidden');
+    const pre = document.getElementById('tunnel-log-content');
+    if (pre) pre.textContent = `Fetching latest runtime logs for ${provider}...`;
+
+    try {
+      const res = await API.get(`/api/tunnel/${provider}/logs`);
+      if (pre) pre.textContent = res.logs || 'No logs available';
+    } catch (e) {
+      if (pre) pre.textContent = 'Failed to load logs: ' + e.message;
     }
     if (window.lucide) lucide.createIcons();
   },
@@ -196,10 +457,11 @@ const tunnelManager = {
 
   async handleAutoSetup(e) {
     e.preventDefault();
-    const apiToken = document.getElementById('cf-api-token').value.trim();
-    const domain = document.getElementById('cf-domain').value.trim();
-    const panelSubdomain = document.getElementById('cf-subdomain').value.trim() || 'panel';
-    const btn = document.getElementById('cf-auto-btn');
+    const apiToken = document.getElementById('tunnel-api-token').value.trim();
+    const domain = document.getElementById('tunnel-api-domain').value.trim();
+    const panelSubdomain = document.getElementById('tunnel-api-subdomain').value.trim() || 'panel';
+    const tunnelName = document.getElementById('tunnel-api-name').value.trim() || 'termux-android-tunnel';
+    const btn = document.getElementById('btn-submit-api-tunnel');
 
     if (btn) {
       btn.disabled = true;
@@ -212,7 +474,8 @@ const tunnelManager = {
       const res = await API.post('/api/tunnel/auto-setup', {
         apiToken,
         domain,
-        panelSubdomain
+        panelSubdomain,
+        tunnelName
       });
 
       API.toast('Cloudflare Tunnel & DNS configured automatically!', 'success');
@@ -229,7 +492,7 @@ const tunnelManager = {
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="zap" style="width: 14px; height: 14px; margin-right: 4px;"></i> Run Fully-Automatic Setup`;
+        btn.innerHTML = `<i data-lucide="zap" style="width: 15px; height: 15px; margin-right: 4px;"></i> Auto-Create Tunnel & DNS Records`;
         if (window.lucide) lucide.createIcons();
       }
     }

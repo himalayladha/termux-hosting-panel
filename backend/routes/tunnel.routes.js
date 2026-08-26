@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../auth/auth.middleware');
 const cloudflareService = require('../services/cloudflare.service');
+const multitunnelService = require('../services/multitunnel.service');
 const db = require('../database/db');
 const config = require('../config/app.config');
 
@@ -288,9 +289,65 @@ router.delete('/token', requireAuth, async (req, res) => {
 /**
  * Get Cloudflare Tunnel runtime logs
  */
-router.get('/logs', requireAuth, async (req, res) => {
+/**
+ * Get all tunnel providers status (Cloudflare, Ngrok, LocalXpose, Tailscale)
+ */
+router.get('/providers', requireAuth, async (req, res) => {
   try {
-    const result = await cloudflareService.getTunnelLogs(req.query.limit || 100);
+    const providers = await multitunnelService.getAllProvidersStatus();
+    return res.json(providers);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Save provider token (ngrok, localxpose, cloudflare)
+ */
+router.post('/:provider/token', requireAuth, async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'Token is required' });
+    }
+    const result = await multitunnelService.saveProviderToken(req.params.provider, token);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Start specific tunnel provider
+ */
+router.post('/:provider/start', requireAuth, async (req, res) => {
+  try {
+    const { targetPort, subdomain } = req.body;
+    const result = await multitunnelService.startTunnel(req.params.provider, { targetPort, subdomain });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Stop specific tunnel provider
+ */
+router.post('/:provider/stop', requireAuth, async (req, res) => {
+  try {
+    const result = await multitunnelService.stopTunnel(req.params.provider);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Get logs for a specific tunnel provider
+ */
+router.get('/:provider/logs', requireAuth, async (req, res) => {
+  try {
+    const result = await multitunnelService.getProviderLogs(req.params.provider, req.query.limit || 100);
     return res.json(result);
   } catch (err) {
     return res.status(500).json({ error: err.message });
