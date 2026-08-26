@@ -26,8 +26,8 @@ show_banner() {
 check_status() {
   echo -e "\n${BLUE}▶ Checking TermuxPanel Status...${NC}"
   
-  # Detect Wi-Fi LAN IP
-  WIFI_IP=$(ip -4 addr show wlan0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' || hostname -I 2>/dev/null | awk '{print $1}')
+  # Detect Wi-Fi LAN IP using Node.js os.networkInterfaces (bypasses Android 11+ netlink permission restrictions)
+  WIFI_IP=$(node -e "const n=require('os').networkInterfaces();for(const k in n){for(const i of n[k]){if(i.family==='IPv4'&&!i.internal){console.log(i.address);process.exit(0);}}}" 2>/dev/null || echo "")
   
   # Check Node server
   if pgrep -f "node.*server.js" > /dev/null; then
