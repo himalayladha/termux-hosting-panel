@@ -163,7 +163,35 @@ async function getSystemMetrics() {
       arch: os.arch(),
       hostname: os.hostname(),
       isAndroidTermux: !!process.env.TERMUX_VERSION || fs.existsSync('/data/data/com.termux')
+    },
+    network: getNetworkAccessUrls()
+  };
+}
+
+/**
+ * Get local and Wi-Fi network access URLs
+ */
+function getNetworkAccessUrls() {
+  const port = config.PORT || 9000;
+  let wifiIp = null;
+
+  try {
+    const interfaces = os.networkInterfaces();
+    for (const name in interfaces) {
+      for (const iface of interfaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          wifiIp = iface.address;
+          break;
+        }
+      }
+      if (wifiIp) break;
     }
+  } catch (_) {}
+
+  return {
+    localUrl: `http://127.0.0.1:${port}`,
+    wifiIp: wifiIp || null,
+    networkUrl: wifiIp ? `http://${wifiIp}:${port}` : null
   };
 }
 

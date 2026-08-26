@@ -92,7 +92,12 @@ async function startServer() {
     await db.initDb();
 
     app.listen(config.PORT, config.HOST, async () => {
-      console.log(`[TermuxPanel] Server running on http://${config.HOST}:${config.PORT}`);
+      const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;
+      console.log(`[TermuxPanel] Server is LIVE & Listening on 0.0.0.0:${config.PORT}`);
+      console.log(`  • On Phone:           http://127.0.0.1:${config.PORT}`);
+      if (netUrls && netUrls.networkUrl) {
+        console.log(`  • On PC (Same Wi-Fi): ${netUrls.networkUrl}`);
+      }
       console.log(`[TermuxPanel] Storage root: ${config.STORAGE_DIR}`);
       console.log(`[TermuxPanel] Ready for Cloudflare Tunnel connection`);
       console.log('----------------------------------------------');

@@ -61,12 +61,28 @@ const dashboard = {
     if (diskBar) diskBar.style.width = `${m.disk.percentage}%`;
     if (diskPercent) diskPercent.textContent = `${m.disk.percentage}% Used (${m.disk.freeFormatted} free)`;
 
-    // Uptime
+    // Uptime & Network
     const uptimeEl = document.getElementById('metric-uptime');
     const envEl = document.getElementById('metric-env');
+    const localUrlEl = document.getElementById('dash-local-url');
+    const wifiUrlEl = document.getElementById('dash-wifi-url');
+
     if (uptimeEl) uptimeEl.textContent = m.uptime.formatted;
     if (envEl) {
       envEl.textContent = m.os.isAndroidTermux ? 'Android Termux Online' : `${m.os.platform} (${m.os.arch})`;
+    }
+
+    if (m.network) {
+      if (localUrlEl && m.network.localUrl) {
+        localUrlEl.textContent = m.network.localUrl;
+      }
+      if (wifiUrlEl) {
+        if (m.network.networkUrl) {
+          wifiUrlEl.textContent = m.network.networkUrl;
+        } else {
+          wifiUrlEl.textContent = 'Wi-Fi not connected';
+        }
+      }
     }
   },
 

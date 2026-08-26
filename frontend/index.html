@@ -129,6 +129,29 @@
       <main class="content-body">
         <!-- 1. DASHBOARD VIEW -->
         <section id="view-dashboard" class="tab-view active">
+          <!-- Server Access Endpoints Banner -->
+          <div class="card mb-4" style="background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.25);">
+            <div class="card-body" style="padding: 16px 20px;">
+              <div class="flex-between flex-wrap gap-3">
+                <div class="flex-align gap-3">
+                  <div style="font-size: 24px;">🌐</div>
+                  <div>
+                    <strong style="color: #fff; font-size: 15px;">Server Access Endpoints</strong>
+                    <div class="text-muted" style="font-size: 13px;">Connect locally, from any PC on the same Wi-Fi, or globally.</div>
+                  </div>
+                </div>
+                <div class="flex-align gap-2 flex-wrap" id="access-urls-container">
+                  <span class="badge badge-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: normal;">
+                    📱 Phone: <code id="dash-local-url" style="color: #60a5fa;">http://127.0.0.1:9000</code>
+                  </span>
+                  <span class="badge badge-success" style="padding: 6px 12px; font-size: 12px; font-weight: normal;">
+                    💻 PC (Wi-Fi): <code id="dash-wifi-url" style="color: #4ade80;">Detecting...</code>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Metrics Grid -->
           <div class="metrics-grid">
             <div class="metric-card">

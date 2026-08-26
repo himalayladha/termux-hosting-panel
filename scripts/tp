@@ -23,11 +23,26 @@ show_banner() {
   echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
 }
 
+get_wifi_ip() {
+  local ip=$(ifconfig wlan0 2>/dev/null | grep 'inet ' | awk '{print $2}')
+  if [ -n "$ip" ]; then
+    echo "$ip"
+    return
+  fi
+  ip=$(ifconfig 2>/dev/null | grep -A 2 'wlan0' | grep 'inet ' | awk '{print $2}')
+  if [ -n "$ip" ]; then
+    echo "$ip"
+    return
+  fi
+  ip=$(node -e "const n=require('os').networkInterfaces();for(const k in n){for(const i of n[k]){if(i.family==='IPv4'&&!i.internal){console.log(i.address);process.exit(0);}}}" 2>/dev/null || echo "")
+  echo "$ip"
+}
+
 check_status() {
   echo -e "\n${BLUE}▶ Checking TermuxPanel Status...${NC}"
   
-  # Detect Wi-Fi LAN IP using Node.js os.networkInterfaces (bypasses Android 11+ netlink permission restrictions)
-  WIFI_IP=$(node -e "const n=require('os').networkInterfaces();for(const k in n){for(const i of n[k]){if(i.family==='IPv4'&&!i.internal){console.log(i.address);process.exit(0);}}}" 2>/dev/null || echo "")
+  # Detect Wi-Fi LAN IP
+  WIFI_IP=$(get_wifi_ip)
   
   # Check Node server
   if pgrep -f "node.*server.js" > /dev/null; then
@@ -90,7 +105,14 @@ start_panel() {
     fi
   fi
 
-  echo -e "\n${GREEN}TermuxPanel is live at http://127.0.0.1:9000${NC}\n"
+  WIFI_IP=$(get_wifi_ip)
+  echo -e "\n${GREEN}TermuxPanel is live at:${NC}"
+  echo -e "  • Local Phone:      ${CYAN}http://127.0.0.1:9000${NC}"
+  if [ -n "$WIFI_IP" ]; then
+    echo -e "  • PC on same Wi-Fi: ${GREEN}http://${WIFI_IP}:9000${NC}\n"
+  else
+    echo ""
+  fi
 }
 
 stop_panel() {
@@ -130,8 +152,12 @@ create_backup() {
 
 interactive_menu() {
   while true; do
+    WIFI_IP=$(get_wifi_ip)
     show_banner
     echo -e "  ${YELLOW}1.${NC} Open Panel URL (http://127.0.0.1:9000)"
+    if [ -n "$WIFI_IP" ]; then
+      echo -e "     ${GREEN}PC Link: http://${WIFI_IP}:9000${NC}"
+    fi
     echo -e "  ${YELLOW}2.${NC} Server Status"
     echo -e "  ${YELLOW}3.${NC} Start Server"
     echo -e "  ${YELLOW}4.${NC} Stop Server"
@@ -149,7 +175,10 @@ interactive_menu() {
         if command -v termux-open-url >/dev/null 2>&1; then
           termux-open-url "http://127.0.0.1:9000"
         else
-          echo -e "\nOpen in your browser: ${CYAN}http://127.0.0.1:9000${NC}\n"
+          echo -e "\n  Phone: ${CYAN}http://127.0.0.1:9000${NC}"
+          if [ -n "$WIFI_IP" ]; then
+            echo -e "  PC on same Wi-Fi: ${GREEN}http://${WIFI_IP}:9000${NC}\n"
+          fi
         fi
         ;;
       2) check_status ;;
