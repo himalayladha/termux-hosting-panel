@@ -80,7 +80,12 @@ const backupsManager = {
   },
 
   async deleteBackup(filename) {
-    if (!confirm(`Delete backup archive "${filename}"?`)) return;
+    const confirmed = await UI.confirm(
+      `Are you sure you want to permanently delete backup archive "${filename}"?`,
+      'Delete Backup Archive',
+      { confirmText: 'Delete Backup', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.delete(`/api/backups/${encodeURIComponent(filename)}`);

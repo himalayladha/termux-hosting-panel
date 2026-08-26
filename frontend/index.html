@@ -564,9 +564,69 @@
 
         <!-- 8. CLOUDFLARE TUNNEL VIEW -->
         <section id="view-tunnel" class="tab-view">
-          <div class="card">
+          <!-- Active Connected Management Panel -->
+          <div id="tunnel-connected-panel" class="card hidden mb-4" style="border-left: 4px solid var(--success); background: rgba(34, 197, 94, 0.04);">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <div class="icon-circle" style="background: rgba(34, 197, 94, 0.15); color: #22c55e; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                  <i data-lucide="cloud" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div>
+                  <h3 style="margin-bottom: 2px;">Cloudflare Tunnel is Connected</h3>
+                  <p class="text-muted text-sm" style="margin: 0;">Your server is live and routing traffic securely over Cloudflare Zero Trust</p>
+                </div>
+              </div>
+              <span id="tunnel-badge-live" class="badge badge-success">
+                <i data-lucide="check-circle-2" style="width: 12px; height: 12px; margin-right: 3px;"></i>
+                ACTIVE & ROUTING
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="grid grid-3 gap-3 mb-3">
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">Tunnel Status</div>
+                  <div style="font-size: 15px; font-weight: 600; color: #22c55e; margin-top: 4px;" id="tunnel-status-text">RUNNING</div>
+                </div>
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">Configured Token</div>
+                  <div style="font-size: 14px; font-weight: 500; color: #38bdf8; margin-top: 4px; font-family: monospace;" id="tunnel-masked-token">eyJh...</div>
+                </div>
+                <div class="card bg-darker p-3">
+                  <div class="text-muted text-sm">cloudflared Binary</div>
+                  <div style="font-size: 14px; font-weight: 500; color: #fff; margin-top: 4px;" id="tunnel-binary-info">Installed</div>
+                </div>
+              </div>
+
+              <!-- Tunnel Management Controls -->
+              <div class="flex-align gap-2 flex-wrap">
+                <button class="btn btn-primary btn-sm" onclick="tunnelManager.restart()" id="tunnel-btn-restart">
+                  <i data-lucide="refresh-cw" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Restart Tunnel
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="tunnelManager.togglePower()" id="tunnel-btn-power">
+                  <i data-lucide="power" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Stop Tunnel
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="tunnelManager.viewLogs()">
+                  <i data-lucide="terminal" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  View Tunnel Logs
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="tunnelManager.showSetupOptions()">
+                  <i data-lucide="settings" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Update / Reconfigure
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="tunnelManager.disconnect()">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                  Disconnect
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Setup & Configuration Card -->
+          <div id="tunnel-setup-card" class="card">
             <div class="card-header flex-between">
-              <h3>Cloudflare Zero Trust Tunnel</h3>
+              <h3>Cloudflare Zero Trust Configuration</h3>
               <span id="tunnel-badge" class="badge badge-secondary">Checking...</span>
             </div>
             <div class="card-body">
@@ -622,6 +682,8 @@
                   </form>
                 </div>
               </div>
+            </div>
+          </div>
 
               <div class="mt-4">
                 <h4>Cloudflare Zero Trust Hostname Routing Map</h4>
@@ -984,6 +1046,50 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Cloudflare Tunnel Logs Modal -->
+  <div id="modal-tunnel-logs" class="modal-overlay hidden">
+    <div class="modal-card modal-lg" style="max-width: 750px;">
+      <div class="modal-header flex-between">
+        <h3>
+          <i data-lucide="terminal" style="width: 18px; height: 18px; margin-right: 6px; color: #38bdf8;"></i>
+          Cloudflare Tunnel Live Logs
+        </h3>
+        <div class="flex-align gap-2">
+          <button class="btn btn-secondary btn-sm" onclick="tunnelManager.fetchLogs()">
+            <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 3px;"></i> Refresh
+          </button>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="log-viewer" style="max-height: 400px; background: #050811; border-radius: 8px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto;">
+          <pre id="tunnel-log-content" style="font-family: monospace; font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0; white-space: pre-wrap;">Loading tunnel logs...</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Fullscreen Modal Dialog (No browser alert/confirm) -->
+  <div id="modal-app-dialog" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-card" style="max-width: 460px; text-align: center; padding: 28px 24px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);">
+      <div id="dialog-icon-container" style="margin: 0 auto 16px auto; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+        <i data-lucide="info" id="dialog-icon" style="width: 28px; height: 28px;"></i>
+      </div>
+      <h3 id="dialog-title" style="margin-bottom: 10px; font-size: 18px; color: #fff;">Notice</h3>
+      <div id="dialog-message" style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px; white-space: pre-wrap; word-break: break-word;"></div>
+      <div id="dialog-prompt-container" class="hidden" style="margin-bottom: 20px; text-align: left;">
+        <input type="text" id="dialog-prompt-input" class="form-control" style="width: 100%;">
+      </div>
+      <div class="modal-footer" style="padding: 0; justify-content: center; gap: 12px; border: none; background: transparent;">
+        <button type="button" id="dialog-btn-cancel" class="btn btn-secondary hidden" style="min-width: 100px;">Cancel</button>
+        <button type="button" id="dialog-btn-confirm" class="btn btn-primary" style="min-width: 110px;">OK</button>
+      </div>
     </div>
   </div>
 

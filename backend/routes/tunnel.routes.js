@@ -105,4 +105,64 @@ router.post('/auto-setup', requireAuth, async (req, res) => {
   }
 });
 
+/**
+ * Restart Cloudflare Tunnel process
+ */
+router.post('/restart', requireAuth, async (req, res) => {
+  try {
+    const result = await cloudflareService.restartTunnel();
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Stop Cloudflare Tunnel process
+ */
+router.post('/stop', requireAuth, async (req, res) => {
+  try {
+    const result = await cloudflareService.stopTunnel();
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Start Cloudflare Tunnel process
+ */
+router.post('/start', requireAuth, async (req, res) => {
+  try {
+    const result = await cloudflareService.startTunnel();
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Disconnect and delete Cloudflare Tunnel token
+ */
+router.delete('/token', requireAuth, async (req, res) => {
+  try {
+    const result = await cloudflareService.deleteTunnelToken();
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Get Cloudflare Tunnel runtime logs
+ */
+router.get('/logs', requireAuth, async (req, res) => {
+  try {
+    const result = await cloudflareService.getTunnelLogs(req.query.limit || 100);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

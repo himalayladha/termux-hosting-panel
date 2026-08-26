@@ -165,8 +165,10 @@ const domainsManager = {
       this.loadDomains();
 
       if (!isAuto) {
-        alert(
-          `Domain ${domain} registered!\n\nTo complete DNS setup in Cloudflare Dashboard:\n1. Add a CNAME record with Name: "${domain}"\n2. Target: "<YOUR_TUNNEL_ID>.cfargotunnel.com"\n3. Proxy status: Proxied (Orange Cloud)`
+        await UI.alert(
+          `Domain ${domain} registered!\n\nTo complete DNS setup in Cloudflare Dashboard:\n1. Add a CNAME record with Name: "${domain}"\n2. Target: "<YOUR_TUNNEL_ID>.cfargotunnel.com"\n3. Proxy status: Proxied (Orange Cloud)`,
+          'DNS Setup Instructions',
+          'info'
         );
       }
     } catch (err) {
@@ -179,17 +181,22 @@ const domainsManager = {
       API.toast(`Checking DNS and SSL for ${domainName}...`, 'info');
       const res = await API.post('/api/domains/verify', { domain: domainName });
       if (res.httpsReachable) {
-        API.toast(`✓ ${domainName} is LIVE with active HTTPS SSL!`, 'success');
+        await UI.alert(`Domain ${domainName} is LIVE and routing securely with active HTTPS SSL!`, 'Domain Verified', 'success');
       } else if (res.resolved) {
-        API.toast(`DNS resolved (${res.ipAddresses.join(', ') || 'CNAME mapped'}). Tunnel connecting.`, 'info');
+        await UI.alert(`DNS resolved (${res.ipAddresses.join(', ') || 'CNAME mapped'}). Tunnel is connecting.`, 'DNS Resolved', 'info');
       } else {
-        API.toast(`DNS for ${domainName} is not yet propagated. Check CNAME in Cloudflare.`, 'warning');
+        await UI.alert(`DNS for ${domainName} is not yet propagated. Please check your CNAME record in Cloudflare.`, 'DNS Pending', 'warning');
       }
     } catch (e) {}
   },
 
   async deleteDomain(id, name) {
-    if (!confirm(`Are you sure you want to disconnect domain "${name}"?`)) return;
+    const confirmed = await UI.confirm(
+      `Are you sure you want to disconnect domain "${name}"?`,
+      'Disconnect Domain',
+      { confirmText: 'Disconnect', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.delete(`/api/domains/${id}`);

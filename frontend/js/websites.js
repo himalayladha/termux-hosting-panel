@@ -201,9 +201,12 @@ const websites = {
   },
 
   async deleteSite(id, name) {
-    if (!confirm(`Are you sure you want to delete ${name}? All files and records will be deleted.`)) {
-      return;
-    }
+    const confirmed = await UI.confirm(
+      `Are you sure you want to delete website "${name}"?\nAll files, databases, and records associated with this website will be permanently removed.`,
+      `Delete Website: ${name}`,
+      { confirmText: 'Delete Website', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.delete(`/api/websites/${id}`);

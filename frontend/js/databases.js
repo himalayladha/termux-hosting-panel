@@ -152,9 +152,12 @@ const databases = {
 
     const dbName = currentDb ? currentDb.name : 'this database';
 
-    if (!confirm(`Are you sure you want to permanently delete ${dbName}? This action cannot be undone.`)) {
-      return;
-    }
+    const confirmed = await UI.confirm(
+      `Are you sure you want to permanently delete "${dbName}"?\nAll SQLite tables and data inside will be permanently deleted.`,
+      `Delete Database: ${dbName}`,
+      { confirmText: 'Delete Database', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.post('/api/databases/delete', { dbId: this.currentDbId });

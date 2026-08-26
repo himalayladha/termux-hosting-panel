@@ -326,7 +326,12 @@ const fileManager = {
   },
 
   async extractZipPrompt(zipRelPath) {
-    if (!confirm(`Extract archive "${zipRelPath}" into current folder?`)) return;
+    const confirmed = await UI.confirm(
+      `Extract archive "${zipRelPath}" into the current folder?\nAll files inside the ZIP will be extracted here.`,
+      'Extract ZIP Archive',
+      { confirmText: 'Extract Files', cancelText: 'Cancel', type: 'info' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.post(`/api/files/${this.currentSiteId}/extract`, {
@@ -341,7 +346,7 @@ const fileManager = {
   async handleBatchCompress() {
     if (this.selectedFiles.size === 0) return;
 
-    const zipName = prompt('Enter ZIP archive filename:', 'archive.zip');
+    const zipName = await UI.prompt('Enter ZIP archive filename:', 'Create ZIP Archive', 'archive.zip', 'archive.zip');
     if (!zipName || !zipName.trim()) return;
 
     try {
@@ -351,6 +356,8 @@ const fileManager = {
         destination: this.currentPath
       });
       API.toast('ZIP archive created successfully!', 'success');
+      this.selectedFiles.clear();
+      this.updateBatchBar();
       this.loadFiles();
     } catch (e) {}
   },
@@ -358,13 +365,20 @@ const fileManager = {
   async handleBatchDelete() {
     const count = this.selectedFiles.size;
     if (count === 0) return;
-    if (!confirm(`Are you sure you want to permanently delete ${count} selected item(s)?`)) return;
+    const confirmed = await UI.confirm(
+      `Are you sure you want to permanently delete ${count} selected item(s)?\nThis action cannot be undone.`,
+      `Batch Delete (${count} items)`,
+      { confirmText: `Delete ${count} Items`, cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.post(`/api/files/${this.currentSiteId}/batch-delete`, {
         paths: Array.from(this.selectedFiles)
       });
       API.toast(`Deleted ${count} items`, 'info');
+      this.selectedFiles.clear();
+      this.updateBatchBar();
       this.loadFiles();
     } catch (e) {}
   },
@@ -404,7 +418,7 @@ const fileManager = {
   },
 
   async handleNewFolder() {
-    const folderName = prompt('Enter new folder name:');
+    const folderName = await UI.prompt('Enter new folder name:', 'New Folder', '', 'folder_name');
     if (!folderName || !folderName.trim()) return;
 
     const targetPath = `${this.currentPath}/${folderName.trim()}`.replace(/\/+/g, '/');
@@ -416,7 +430,7 @@ const fileManager = {
   },
 
   async handleNewFile() {
-    const fileName = prompt('Enter new file name: (e.g. script.js)');
+    const fileName = await UI.prompt('Enter new file name: (e.g. index.html or script.js)', 'New File', '', 'index.html');
     if (!fileName || !fileName.trim()) return;
 
     const targetPath = `${this.currentPath}/${fileName.trim()}`.replace(/\/+/g, '/');
@@ -429,7 +443,7 @@ const fileManager = {
   },
 
   async renameItemPrompt(oldRelPath, oldName) {
-    const newName = prompt('Enter new name:', oldName);
+    const newName = await UI.prompt('Enter new name:', `Rename "${oldName}"`, oldName, oldName);
     if (!newName || newName === oldName) return;
 
     const parentDir = oldRelPath.substring(0, oldRelPath.lastIndexOf('/'));
@@ -446,7 +460,12 @@ const fileManager = {
   },
 
   async deleteItem(relPath) {
-    if (!confirm(`Are you sure you want to delete "${relPath}"?`)) return;
+    const confirmed = await UI.confirm(
+      `Are you sure you want to permanently delete "${relPath}"?`,
+      'Delete Item',
+      { confirmText: 'Delete', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.post(`/api/files/${this.currentSiteId}/delete`, { path: relPath });

@@ -67,7 +67,12 @@ const logsViewer = {
 
   async clearCurrentLog() {
     if (!this.currentLogPath) return;
-    if (!confirm('Are you sure you want to clear this log file?')) return;
+    const confirmed = await UI.confirm(
+      'Are you sure you want to clear all contents of this log file?',
+      'Clear Log File',
+      { confirmText: 'Clear Log', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
 
     try {
       await API.post('/api/logs/clear', { path: this.currentLogPath });

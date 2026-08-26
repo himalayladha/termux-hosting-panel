@@ -313,10 +313,85 @@ async function getTunnelStatus() {
   };
 }
 
+/**
+ * Stop cloudflared tunnel process
+ */
+async function stopTunnel() {
+  if (process.platform !== 'win32') {
+    try {
+      await execPromise('pkill -9 -x cloudflared || true');
+    } catch (e) {}
+  }
+  return { success: true, isRunning: false };
+}
+
+/**
+ * Start cloudflared tunnel process
+ */
+async function startTunnel() {
+  if (!fs.existsSync(config.CLOUDFLARE_TOKEN_FILE)) {
+    throw new Error('No Cloudflare tunnel token configured. Please configure token first.');
+  }
+
+  const token = fs.readFileSync(config.CLOUDFLARE_TOKEN_FILE, 'utf8').trim();
+  if (!token) {
+    throw new Error('Configured tunnel token is empty');
+  }
+
+  await stopTunnel();
+
+  const logFile = config.CLOUDFLARE_LOG_FILE;
+  const cmd = `cloudflared tunnel run --token "${token}" > "${logFile}" 2>&1 &`;
+  exec(cmd);
+
+  return { success: true, isRunning: true };
+}
+
+/**
+ * Restart cloudflared tunnel
+ */
+async function restartTunnel() {
+  return await startTunnel();
+}
+
+/**
+ * Disconnect & delete tunnel token
+ */
+async function deleteTunnelToken() {
+  await stopTunnel();
+  if (fs.existsSync(config.CLOUDFLARE_TOKEN_FILE)) {
+    fs.unlinkSync(config.CLOUDFLARE_TOKEN_FILE);
+  }
+  return { success: true, isConfigured: false, isRunning: false };
+}
+
+/**
+ * Get Cloudflare tunnel logs
+ */
+async function getTunnelLogs(limit = 100) {
+  if (!fs.existsSync(config.CLOUDFLARE_LOG_FILE)) {
+    return { logs: 'No tunnel logs generated yet.' };
+  }
+
+  try {
+    const content = fs.readFileSync(config.CLOUDFLARE_LOG_FILE, 'utf8');
+    const lines = content.split('\n');
+    const recent = lines.slice(-limit).join('\n');
+    return { logs: recent };
+  } catch (err) {
+    return { logs: `Error reading logs: ${err.message}` };
+  }
+}
+
 module.exports = {
   checkCloudflaredInstalled,
   getTunnelConfig,
   saveTunnelToken,
   setupTunnelViaApi,
-  getTunnelStatus
+  getTunnelStatus,
+  startTunnel,
+  stopTunnel,
+  restartTunnel,
+  deleteTunnelToken,
+  getTunnelLogs
 };

@@ -117,7 +117,12 @@ const cronManager = {
   },
 
   async deleteJob(id) {
-    if (!confirm('Are you sure you want to delete this cron job?')) return;
+    const confirmed = await UI.confirm(
+      'Are you sure you want to delete this scheduled cron job?',
+      'Delete Cron Job',
+      { confirmText: 'Delete Job', cancelText: 'Cancel', type: 'danger' }
+    );
+    if (!confirmed) return;
     try {
       await API.delete(`/api/cron/${id}`);
       API.toast('Cron job deleted', 'info');

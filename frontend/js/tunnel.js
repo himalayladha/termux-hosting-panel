@@ -1,5 +1,11 @@
 const tunnelManager = {
   currentMode: 'semi',
+  tunnelState: {
+    isRunning: false,
+    isConfigured: false,
+    maskedToken: null,
+    binaryVersion: null
+  },
 
   init() {
     this.bindEvents();
@@ -26,13 +32,13 @@ const tunnelManager = {
     const autoCard = document.getElementById('tunnel-mode-auto');
 
     if (mode === 'semi') {
-      if (semiBtn) { semiBtn.className = 'btn btn-primary btn-sm'; }
-      if (autoBtn) { autoBtn.className = 'btn btn-secondary btn-sm'; }
+      if (semiBtn) semiBtn.className = 'btn btn-primary btn-sm';
+      if (autoBtn) autoBtn.className = 'btn btn-secondary btn-sm';
       if (semiCard) semiCard.classList.remove('hidden');
       if (autoCard) autoCard.classList.add('hidden');
     } else {
-      if (semiBtn) { semiBtn.className = 'btn btn-secondary btn-sm'; }
-      if (autoBtn) { autoBtn.className = 'btn btn-primary btn-sm'; }
+      if (semiBtn) semiBtn.className = 'btn btn-secondary btn-sm';
+      if (autoBtn) autoBtn.className = 'btn btn-primary btn-sm';
       if (semiCard) semiCard.classList.add('hidden');
       if (autoCard) autoCard.classList.remove('hidden');
     }
@@ -42,21 +48,52 @@ const tunnelManager = {
   async loadStatus() {
     try {
       const data = await API.get('/api/tunnel/status');
+      this.tunnelState = data.status;
       this.renderStatus(data.status);
       this.renderRoutes(data.recommendedRoutes);
     } catch (e) {}
   },
 
   renderStatus(s) {
+    const connectedPanel = document.getElementById('tunnel-connected-panel');
+    const setupCard = document.getElementById('tunnel-setup-card');
     const badge = document.getElementById('tunnel-badge');
-    if (badge) {
-      if (s.isRunning) {
-        badge.className = 'badge badge-success';
-        badge.textContent = 'ONLINE / TUNNEL ACTIVE';
-      } else if (s.isConfigured) {
-        badge.className = 'badge badge-primary';
-        badge.textContent = 'TOKEN CONFIGURED';
-      } else {
+    const statusText = document.getElementById('tunnel-status-text');
+    const maskedToken = document.getElementById('tunnel-masked-token');
+    const binaryInfo = document.getElementById('tunnel-binary-info');
+    const powerBtn = document.getElementById('tunnel-btn-power');
+
+    if (s.isConfigured || s.isRunning) {
+      if (connectedPanel) connectedPanel.classList.remove('hidden');
+      if (setupCard) setupCard.classList.add('hidden');
+
+      if (statusText) {
+        statusText.textContent = s.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
+        statusText.style.color = s.isRunning ? '#22c55e' : '#f59e0b';
+      }
+
+      if (maskedToken) {
+        maskedToken.textContent = s.maskedToken || 'Token Saved';
+      }
+
+      if (binaryInfo) {
+        binaryInfo.textContent = s.binaryVersion ? s.binaryVersion.split(' ')[0] + ' ' + (s.binaryVersion.split(' ')[2] || '') : (s.binaryInstalled ? 'Installed' : 'cloudflared ready');
+      }
+
+      if (powerBtn) {
+        if (s.isRunning) {
+          powerBtn.innerHTML = `<i data-lucide="square" style="width: 14px; height: 14px; margin-right: 4px;"></i> Stop Tunnel`;
+          powerBtn.className = 'btn btn-secondary btn-sm';
+        } else {
+          powerBtn.innerHTML = `<i data-lucide="play" style="width: 14px; height: 14px; margin-right: 4px;"></i> Start Tunnel`;
+          powerBtn.className = 'btn btn-success btn-sm';
+        }
+      }
+    } else {
+      if (connectedPanel) connectedPanel.classList.add('hidden');
+      if (setupCard) setupCard.classList.remove('hidden');
+
+      if (badge) {
         badge.className = 'badge badge-secondary';
         badge.textContent = 'TOKEN REQUIRED';
       }
@@ -65,6 +102,18 @@ const tunnelManager = {
     const input = document.getElementById('tunnel-token-input');
     if (input && s.maskedToken) {
       input.placeholder = `Configured (${s.maskedToken})`;
+    }
+
+    if (window.lucide) lucide.createIcons();
+  },
+
+  showSetupOptions() {
+    const setupCard = document.getElementById('tunnel-setup-card');
+    if (setupCard) {
+      setupCard.classList.toggle('hidden');
+      if (!setupCard.classList.contains('hidden')) {
+        setupCard.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
 
@@ -93,21 +142,24 @@ const tunnelManager = {
 
   async handleSaveToken(e) {
     e.preventDefault();
-    const token = document.getElementById('tunnel-token-input').value;
+    const token = document.getElementById('tunnel-token-input').value.trim();
+
+    if (!token) return;
 
     try {
       await API.post('/api/tunnel/token', { token });
-      API.toast('Cloudflare Tunnel token saved securely (chmod 600)!', 'success');
+      API.toast('Cloudflare Tunnel token saved and connector started!', 'success');
       document.getElementById('tunnel-token-input').value = '';
-      this.loadStatus();
+      await this.loadStatus();
+      await UI.alert('Cloudflare Tunnel is now active and routing traffic to your Termux websites!', 'Tunnel Connected', 'success');
     } catch (e) {}
   },
 
   async handleAutoSetup(e) {
     e.preventDefault();
-    const apiToken = document.getElementById('cf-api-token').value;
-    const domain = document.getElementById('cf-domain').value;
-    const panelSubdomain = document.getElementById('cf-subdomain').value || 'panel';
+    const apiToken = document.getElementById('cf-api-token').value.trim();
+    const domain = document.getElementById('cf-domain').value.trim();
+    const panelSubdomain = document.getElementById('cf-subdomain').value.trim() || 'panel';
     const btn = document.getElementById('cf-auto-btn');
 
     if (btn) {
@@ -125,9 +177,14 @@ const tunnelManager = {
       });
 
       API.toast('Cloudflare Tunnel & DNS configured automatically!', 'success');
-      alert(`Success! Cloudflare Tunnel is active.\n\nYour panel is available at: ${res.panelUrl}\n\nDNS CNAME records have been created.`);
       document.getElementById('tunnel-api-form').reset();
-      this.loadStatus();
+      await this.loadStatus();
+
+      await UI.alert(
+        `Cloudflare Tunnel is connected and ready!\n\nYour Panel URL: ${res.panelUrl}\n\nDNS CNAME records have been created and proxied with free SSL.`,
+        'Tunnel Connected Successfully',
+        'success'
+      );
     } catch (err) {
       // toast shown by API client
     } finally {
@@ -136,6 +193,63 @@ const tunnelManager = {
         btn.innerHTML = `<i data-lucide="zap" style="width: 14px; height: 14px; margin-right: 4px;"></i> Run Fully-Automatic Setup`;
         if (window.lucide) lucide.createIcons();
       }
+    }
+  },
+
+  async restart() {
+    try {
+      API.toast('Restarting Cloudflare Tunnel...', 'info');
+      await API.post('/api/tunnel/restart');
+      API.toast('Cloudflare Tunnel restarted successfully!', 'success');
+      this.loadStatus();
+    } catch (e) {}
+  },
+
+  async togglePower() {
+    try {
+      if (this.tunnelState.isRunning) {
+        await API.post('/api/tunnel/stop');
+        API.toast('Cloudflare Tunnel stopped', 'info');
+      } else {
+        await API.post('/api/tunnel/start');
+        API.toast('Cloudflare Tunnel started', 'success');
+      }
+      this.loadStatus();
+    } catch (e) {}
+  },
+
+  async disconnect() {
+    const confirmed = await UI.confirm(
+      'Are you sure you want to disconnect Cloudflare Tunnel? This will stop the connector and remove the saved token.',
+      'Disconnect Cloudflare Tunnel',
+      { confirmText: 'Disconnect', cancelText: 'Keep Connected', type: 'danger' }
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await API.delete('/api/tunnel/token');
+      API.toast('Cloudflare Tunnel disconnected', 'info');
+      this.loadStatus();
+    } catch (e) {}
+  },
+
+  async viewLogs() {
+    document.getElementById('modal-tunnel-logs').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+    this.fetchLogs();
+  },
+
+  async fetchLogs() {
+    const pre = document.getElementById('tunnel-log-content');
+    if (!pre) return;
+    pre.textContent = 'Fetching latest tunnel logs...';
+
+    try {
+      const res = await API.get('/api/tunnel/logs');
+      pre.textContent = res.logs || 'No logs available';
+    } catch (e) {
+      pre.textContent = 'Failed to load logs: ' + e.message;
     }
   }
 };
