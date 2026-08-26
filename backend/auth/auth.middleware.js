@@ -21,6 +21,12 @@ async function requireAuth(req, res, next) {
       return res.status(401).json({ success: false, error: 'Unauthorized: Session invalid' });
     }
 
+    // Detect Cloudflare Access 2nd layer verification header
+    const cfAccessEmail = req.headers['cf-access-authenticated-user-email'];
+    if (cfAccessEmail) {
+      user.cfAccessEmail = cfAccessEmail;
+    }
+
     req.user = user;
     req.sessionToken = token;
     next();

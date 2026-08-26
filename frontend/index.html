@@ -435,6 +435,27 @@
                   </table>
                 </div>
               </div>
+
+              <!-- 2nd Layer Security Assistant Card -->
+              <div class="card mt-4 bg-darker" style="border-left: 4px solid var(--success);">
+                <div class="card-body">
+                  <div class="flex-between">
+                    <h4>🛡️ 2nd Layer Security: Cloudflare Access</h4>
+                    <span class="badge badge-success">RECOMMENDED</span>
+                  </div>
+                  <p class="text-muted text-sm mt-1">
+                    Require your personal Google Login or One-Time Email PIN code before anyone can even see your TermuxPanel login screen.
+                  </p>
+                  <div class="mt-3">
+                    <ol class="text-muted text-sm" style="padding-left: 20px; line-height: 1.8;">
+                      <li>Go to <a href="https://one.dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare Zero Trust</a> ➔ <strong>Access</strong> ➔ <strong>Applications</strong> ➔ <strong>Add an application</strong>.</li>
+                      <li>Select <strong>Self-hosted</strong> ➔ Set Application domain to <code>panel.yourdomain.com</code>.</li>
+                      <li>Under <strong>Policies</strong>, set Action to <strong>Allow</strong> and add your email under <strong>Include Emails</strong>.</li>
+                      <li>Click <strong>Save application</strong>.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
