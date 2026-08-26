@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const config = require('./config/app.config');
 const db = require('./database/db');
 const processService = require('./services/process.service');
+const systemService = require('./services/system.service');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
