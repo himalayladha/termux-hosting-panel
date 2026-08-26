@@ -11,98 +11,122 @@ function parseCookies(cookieHeader) {
   if (!cookieHeader) return list;
   cookieHeader.split(';').forEach((cookie) => {
     const parts = cookie.split('=');
-    list[parts.shift().trim()] = decodeURI(parts.join('='));
+    if (parts.length >= 2) {
+      list[parts[0].trim()] = decodeURIComponent(parts.slice(1).join('=').trim());
+    }
   });
   return list;
 }
 
-// Detect default shell
-function getDefaultShell() {
+// Detect default shell and appropriate interactive arguments
+function getShellConfig() {
   if (process.platform === 'win32') {
-    return process.env.COMSPEC || 'powershell.exe';
+    const comspec = process.env.COMSPEC || 'powershell.exe';
+    return {
+      command: comspec,
+      args: comspec.toLowerCase().includes('powershell') ? ['-NoLogo'] : []
+    };
   }
 
   const termuxBash = '/data/data/com.termux/files/usr/bin/bash';
-  if (fs.existsSync(termuxBash)) return termuxBash;
+  if (fs.existsSync(termuxBash)) {
+    return { command: termuxBash, args: ['-i'] };
+  }
 
   const usrBash = '/usr/bin/bash';
-  if (fs.existsSync(usrBash)) return usrBash;
+  if (fs.existsSync(usrBash)) {
+    return { command: usrBash, args: ['-i'] };
+  }
 
   const binBash = '/bin/bash';
-  if (fs.existsSync(binBash)) return binBash;
+  if (fs.existsSync(binBash)) {
+    return { command: binBash, args: ['-i'] };
+  }
 
-  return process.env.SHELL || '/bin/sh';
+  return { command: process.env.SHELL || '/bin/sh', args: ['-i'] };
+}
+
+function getDefaultShell() {
+  return getShellConfig().command;
 }
 
 function initTerminalServer(server) {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on('upgrade', async (request, socket, head) => {
-    const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+    try {
+      const urlObj = new URL(request.url, `http://${request.headers.host || '127.0.0.1'}`);
+      const pathname = urlObj.pathname;
 
-    if (pathname === '/api/terminal/ws') {
-      // 1. Authenticate WebSocket upgrade
-      const cookies = parseCookies(request.headers.cookie);
-      const token = cookies.token || new URL(request.url, `http://${request.headers.host}`).searchParams.get('token');
+      if (pathname === '/api/terminal/ws') {
+        // Extract session token from cookies or query string
+        const cookies = parseCookies(request.headers.cookie);
+        const token = cookies.tp_session || cookies.token || urlObj.searchParams.get('token');
 
-      if (!token) {
-        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-        socket.destroy();
-        return;
+        if (!token) {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+
+        const user = await authService.validateSession(token);
+        if (!user) {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          wss.emit('connection', ws, request, user);
+        });
       }
-
-      const user = await authService.verifySession(token);
-      if (!user) {
-        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-        socket.destroy();
-        return;
-      }
-
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request, user);
-      });
+    } catch (err) {
+      console.error('[Terminal Upgrade Error]', err);
+      socket.destroy();
     }
   });
 
   wss.on('connection', (ws, req, user) => {
-    const shell = getDefaultShell();
+    const shellConf = getShellConfig();
     const workingDir = process.env.HOME || config.ROOT_DIR;
 
-    // Banner message
+    // Welcome banner
     const welcomeBanner = `\r\n\x1b[1;36m==================================================\x1b[0m\r\n` +
       `\x1b[1;32m  📱 TermuxPanel Interactive Web Terminal\x1b[0m\r\n` +
-      `  User: \x1b[1;33m${user.username}\x1b[0m | Shell: \x1b[1;35m${path.basename(shell)}\x1b[0m\r\n` +
+      `  User: \x1b[1;33m${user.username}\x1b[0m | Shell: \x1b[1;35m${path.basename(shellConf.command)}\x1b[0m\r\n` +
       `  Root: \x1b[1;34m${workingDir}\x1b[0m\r\n` +
       `\x1b[1;36m==================================================\x1b[0m\r\n\r\n`;
 
     ws.send(welcomeBanner);
 
-    // Spawn interactive shell process
+    // Spawn shell process
     let shellProcess = null;
     try {
-      shellProcess = spawn(shell, [], {
+      shellProcess = spawn(shellConf.command, shellConf.args, {
         cwd: workingDir,
         env: {
           ...process.env,
           TERM: 'xterm-256color',
           COLORTERM: 'truecolor',
           LINES: '30',
-          COLUMNS: '100'
+          COLUMNS: '100',
+          PS1: '\\[\\033[01;32m\\]termux@android\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ '
         }
       });
     } catch (err) {
-      ws.send(`\r\n\x1b[1;31mFailed to spawn shell: ${err.message}\x1b[0m\r\n`);
+      ws.send(`\r\n\x1b[1;31mFailed to spawn shell (${shellConf.command}): ${err.message}\x1b[0m\r\n`);
       ws.close();
       return;
     }
 
-    // Pipe stdout and stderr to WebSocket
+    // Forward stdout
     shellProcess.stdout.on('data', (data) => {
       if (ws.readyState === ws.OPEN) {
         ws.send(data.toString('utf8'));
       }
     });
 
+    // Forward stderr
     shellProcess.stderr.on('data', (data) => {
       if (ws.readyState === ws.OPEN) {
         ws.send(data.toString('utf8'));
@@ -111,7 +135,7 @@ function initTerminalServer(server) {
 
     shellProcess.on('exit', (code) => {
       if (ws.readyState === ws.OPEN) {
-        ws.send(`\r\n\x1b[1;33m[Process exited with code ${code}]\x1b[0m\r\n`);
+        ws.send(`\r\n\x1b[1;33m[Shell process exited with code ${code}]\x1b[0m\r\n`);
         ws.close();
       }
     });
@@ -122,15 +146,15 @@ function initTerminalServer(server) {
       }
     });
 
-    // Handle messages from client
+    // Handle incoming terminal input
     ws.on('message', (message) => {
       try {
         const text = message.toString('utf8');
-        // Check if message is a JSON control command
+        // Handle control JSON or raw input
         if (text.startsWith('{') && text.endsWith('}')) {
           try {
             const parsed = JSON.parse(text);
-            if (parsed.type === 'input' && parsed.data) {
+            if (parsed.type === 'input' && parsed.data !== undefined) {
               shellProcess.stdin.write(parsed.data);
               return;
             }

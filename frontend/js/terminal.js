@@ -17,9 +17,19 @@ const terminalManager = {
     const clearBtn = document.getElementById('terminal-btn-clear');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        if (this.term) this.term.clear();
+        if (this.term) {
+          this.term.clear();
+          this.term.focus();
+        }
       });
     }
+  },
+
+  getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
   },
 
   openTerminal() {
@@ -31,7 +41,8 @@ const terminalManager = {
         this.term = new Terminal({
           cursorBlink: true,
           fontSize: 14,
-          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+          fontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
+          convertEol: true,
           theme: {
             background: '#090d16',
             foreground: '#f8fafc',
@@ -54,7 +65,6 @@ const terminalManager = {
         }
 
         this.term.open(container);
-        if (this.fitAddon) this.fitAddon.fit();
 
         this.term.onData((data) => {
           if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -63,13 +73,25 @@ const terminalManager = {
         });
 
         window.addEventListener('resize', () => {
-          if (this.fitAddon) this.fitAddon.fit();
+          if (this.fitAddon) {
+            try {
+              this.fitAddon.fit();
+            } catch (_) {}
+          }
         });
       } else {
-        // Fallback simple pre element if xterm.js not yet loaded
         container.innerHTML = '<div style="padding: 20px; color: #94a3b8;">Initializing terminal engine...</div>';
       }
     }
+
+    setTimeout(() => {
+      if (this.fitAddon) {
+        try {
+          this.fitAddon.fit();
+        } catch (_) {}
+      }
+      if (this.term) this.term.focus();
+    }, 100);
 
     if (!this.isConnected) {
       this.connect();
@@ -84,11 +106,13 @@ const terminalManager = {
       } catch (_) {}
     }
 
+    const sessionToken = this.getCookie('tp_session') || '';
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/api/terminal/ws`;
+    const wsUrl = `${protocol}//${window.location.host}/api/terminal/ws${sessionToken ? `?token=${encodeURIComponent(sessionToken)}` : ''}`;
 
     if (statusText) {
       statusText.textContent = 'CONNECTING...';
+      statusText.className = 'badge badge-secondary';
       statusText.style.color = '#f59e0b';
     }
 
@@ -98,10 +122,16 @@ const terminalManager = {
       this.socket.onopen = () => {
         this.isConnected = true;
         if (statusText) {
-          statusText.textContent = 'CONNECTED (LIVE SHELL)';
-          statusText.style.color = '#22c55e';
+          statusText.textContent = 'ONLINE (LIVE SHELL)';
+          statusText.className = 'badge badge-success';
+          statusText.style.color = '';
         }
-        if (this.fitAddon) this.fitAddon.fit();
+        if (this.fitAddon) {
+          try {
+            this.fitAddon.fit();
+          } catch (_) {}
+        }
+        if (this.term) this.term.focus();
       };
 
       this.socket.onmessage = (event) => {
@@ -114,10 +144,8 @@ const terminalManager = {
         this.isConnected = false;
         if (statusText) {
           statusText.textContent = 'DISCONNECTED';
-          statusText.style.color = '#f87171';
-        }
-        if (this.term) {
-          this.term.write('\r\n\x1b[1;31m[Session closed. Click "Reconnect" above to start a new shell session]\x1b[0m\r\n');
+          statusText.className = 'badge badge-danger';
+          statusText.style.color = '';
         }
       };
 
@@ -125,13 +153,15 @@ const terminalManager = {
         this.isConnected = false;
         if (statusText) {
           statusText.textContent = 'CONNECTION ERROR';
-          statusText.style.color = '#f87171';
+          statusText.className = 'badge badge-danger';
+          statusText.style.color = '';
         }
       };
     } catch (err) {
       if (statusText) {
         statusText.textContent = 'FAILED TO CONNECT';
-        statusText.style.color = '#f87171';
+        statusText.className = 'badge badge-danger';
+        statusText.style.color = '';
       }
     }
   }
