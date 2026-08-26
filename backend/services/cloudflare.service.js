@@ -142,6 +142,7 @@ function getTunnelConfig() {
   const tokenExists = fs.existsSync(config.CLOUDFLARE_TOKEN_FILE);
   let maskedToken = null;
   let tunnelId = null;
+  let accountId = null;
   let cnameTarget = '<YOUR_TUNNEL_ID>.cfargotunnel.com';
 
   if (tokenExists) {
@@ -153,13 +154,16 @@ function getTunnelConfig() {
         maskedToken = '****';
       }
 
-      // Try decoding base64 tunnel token to extract tunnelId
+      // Try decoding base64 tunnel token to extract tunnelId & accountId
       try {
         const decoded = Buffer.from(content, 'base64').toString('utf8');
         const parsed = JSON.parse(decoded);
         if (parsed.t) {
           tunnelId = parsed.t;
           cnameTarget = `${tunnelId}.cfargotunnel.com`;
+        }
+        if (parsed.a) {
+          accountId = parsed.a;
         }
       } catch (_) {}
     } catch (e) {
@@ -172,8 +176,40 @@ function getTunnelConfig() {
     tokenPath: config.CLOUDFLARE_TOKEN_FILE,
     maskedToken,
     tunnelId,
+    accountId,
     cnameTarget
   };
+}
+
+/**
+ * Fetch remote Tunnel Ingress rules directly from Cloudflare API
+ */
+async function getRemoteTunnelIngress(apiToken = null) {
+  const effectiveToken = (apiToken && apiToken.trim()) || getSavedApiToken();
+  if (!effectiveToken) return [];
+
+  const tunnelConf = getTunnelConfig();
+  if (!tunnelConf.isConfigured || !tunnelConf.tunnelId) return [];
+
+  try {
+    let accountId = tunnelConf.accountId;
+    if (!accountId) {
+      const accounts = await cfApiRequest('/accounts', effectiveToken);
+      if (accounts && accounts.length > 0) {
+        accountId = accounts[0].id;
+      }
+    }
+
+    if (!accountId) return [];
+
+    const configRes = await cfApiRequest(`/accounts/${accountId}/cfd_tunnel/${tunnelConf.tunnelId}/configurations`, effectiveToken);
+    if (configRes && configRes.config && Array.isArray(configRes.config.ingress)) {
+      return configRes.config.ingress.filter((rule) => rule.hostname && rule.service && rule.service !== 'http_status:404');
+    }
+  } catch (err) {
+    // Graceful fallback if Cloudflare token lacks specific permissions
+  }
+  return [];
 }
 
 /**
@@ -471,6 +507,7 @@ module.exports = {
   getSavedApiToken,
   getApiTokenConfig,
   setupTunnelViaApi,
+  getRemoteTunnelIngress,
   getTunnelStatus,
   listZones,
   startTunnel,

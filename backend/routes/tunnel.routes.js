@@ -11,7 +11,39 @@ const config = require('../config/app.config');
 router.get('/status', requireAuth, async (req, res) => {
   try {
     const tunnelStatus = await cloudflareService.getTunnelStatus();
-    
+    const tunnelConf = cloudflareService.getTunnelConfig();
+
+    // 1. Check if Cloudflare API has remote ingress hostnames configured and auto-sync to domains table
+    try {
+      const remoteRules = await cloudflareService.getRemoteTunnelIngress();
+      if (remoteRules && remoteRules.length > 0) {
+        const websites = await db.all('SELECT id, name, domain, port, type FROM websites');
+        for (const rule of remoteRules) {
+          const cleanHostname = rule.hostname.trim().toLowerCase();
+          const isPanel = rule.service.includes('9000');
+          let mappedSiteId = 0;
+
+          if (!isPanel) {
+            const portMatch = rule.service.match(/:(\d+)/);
+            if (portMatch) {
+              const portNum = parseInt(portMatch[1], 10);
+              const matchedSite = websites.find((w) => w.port === portNum);
+              if (matchedSite) mappedSiteId = matchedSite.id;
+            }
+          }
+
+          // Auto-insert into domains if not already tracked
+          const exists = await db.get('SELECT id FROM domains WHERE domain = ?', [cleanHostname]);
+          if (!exists) {
+            await db.run(
+              'INSERT INTO domains (domain, website_id, ssl_enabled, cname_target) VALUES (?, ?, 1, ?)',
+              [cleanHostname, mappedSiteId, tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com']
+            );
+          }
+        }
+      }
+    } catch (_) {}
+
     // Fetch all connected domains with their mapped websites
     const domains = await db.all(`
       SELECT d.id, d.domain, d.website_id, d.ssl_enabled, d.cname_target,
@@ -27,7 +59,7 @@ router.get('/status', requireAuth, async (req, res) => {
     const mappedDomainSet = new Set();
     const dynamicRoutes = [];
 
-    // 1. Add all active connected domains from database
+    // 2. Add all active connected domains from database
     for (const d of domains) {
       mappedDomainSet.add(d.domain);
       const isPanel = !d.website_id || parseInt(d.website_id, 10) === 0;
@@ -46,7 +78,7 @@ router.get('/status', requireAuth, async (req, res) => {
       });
     }
 
-    // 2. Add any hosted websites that do not have a custom domain mapped yet
+    // 3. Add any hosted websites that do not have a custom domain mapped yet
     for (const site of websites) {
       if (site.domain && !mappedDomainSet.has(site.domain)) {
         dynamicRoutes.push({
@@ -73,7 +105,7 @@ router.get('/status', requireAuth, async (req, res) => {
       }
     }
 
-    // 3. If no panel domain is mapped yet, show local panel binding
+    // 4. If no panel domain is mapped yet, show local panel binding
     const hasPanelDomain = domains.some((d) => !d.website_id || parseInt(d.website_id, 10) === 0);
     if (!hasPanelDomain) {
       dynamicRoutes.unshift({
@@ -153,6 +185,33 @@ router.post('/auto-setup', requireAuth, async (req, res) => {
       tunnelName: tunnelName || 'termux-android-tunnel',
       routes
     });
+
+    const cnameTarget = result.cnameTarget || `${result.tunnelId}.cfargotunnel.com`;
+
+    // Persist panel domain in domains table
+    const existingPanelDomain = await db.get('SELECT id FROM domains WHERE domain = ?', [panelHostname]);
+    if (!existingPanelDomain) {
+      await db.run(
+        'INSERT INTO domains (domain, website_id, ssl_enabled, cname_target) VALUES (?, 0, 1, ?)',
+        [panelHostname, cnameTarget]
+      );
+    }
+
+    // Persist website domains
+    for (const site of websites) {
+      let siteHostname = site.domain ? site.domain.trim().toLowerCase() : `${site.name}.${cleanDomain}`;
+      if (!siteHostname.includes('.')) {
+        siteHostname = `${siteHostname}.${cleanDomain}`;
+      }
+      const existingSiteDom = await db.get('SELECT id FROM domains WHERE domain = ?', [siteHostname]);
+      if (!existingSiteDom) {
+        await db.run(
+          'INSERT INTO domains (domain, website_id, ssl_enabled, cname_target) VALUES (?, ?, 1, ?)',
+          [siteHostname, site.id, cnameTarget]
+        );
+      }
+      await db.run('UPDATE websites SET domain = ? WHERE id = ?', [siteHostname, site.id]);
+    }
 
     return res.json({
       success: true,
