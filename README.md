@@ -12,7 +12,7 @@
 
 ---
 
-## 📖 Zero-Assumption Table of Contents
+## 📖 Table of Contents
 
 1. [What is TermuxPanel?](#1-what-is-termuxpanel)
 2. [How Does It Connect to the Internet? (No Port Forwarding)](#2-how-does-it-connect-to-the-internet-no-port-forwarding)
@@ -42,7 +42,7 @@
 
 ---
 
-## 1. What is TermuxPanel? (Explained in Plain English)
+## 1. What is TermuxPanel?
 
 Normally, if you want to host a website, you have to pay a hosting company every month. 
 
@@ -119,7 +119,7 @@ You only need 3 things:
 
 ---
 
-## 4. Step-by-Step Installation Guide (From Scratch)
+## 4. Step-by-Step Installation Guide
 
 Follow these exact steps on your Android device:
 
