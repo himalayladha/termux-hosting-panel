@@ -17,28 +17,35 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 /**
- * Get active Cloudflare Tunnel configuration & CNAME target
+ * Get active Cloudflare Tunnel configuration & CNAME target + API token status
  */
 router.get('/tunnel-info', requireAuth, async (req, res) => {
   try {
     const config = cloudflareService.getTunnelConfig();
-    return res.json(config);
+    const apiTokenConfig = cloudflareService.getApiTokenConfig();
+    return res.json({
+      ...config,
+      hasSavedApiToken: apiTokenConfig.hasSavedApiToken,
+      maskedApiToken: apiTokenConfig.maskedApiToken
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 });
 
 /**
- * Fetch all zones/domains linked to a Cloudflare API Token
+ * Fetch all zones/domains linked to Cloudflare API Token (automatically using saved token if available)
  */
 router.get('/cloudflare/zones', requireAuth, async (req, res) => {
   try {
     const { apiToken } = req.query;
-    if (!apiToken) {
-      return res.status(400).json({ error: 'API Token is required' });
-    }
-    const zones = await cloudflareService.listZones(apiToken);
-    return res.json(zones);
+    const zones = await cloudflareService.listZones(apiToken || null);
+    const apiTokenConfig = cloudflareService.getApiTokenConfig();
+    return res.json({
+      zones,
+      hasSavedApiToken: apiTokenConfig.hasSavedApiToken,
+      maskedApiToken: apiTokenConfig.maskedApiToken
+    });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }

@@ -117,39 +117,70 @@ const domainsManager = {
     try {
       const data = await API.get('/api/domains/tunnel-info');
       this.tunnelInfo = data;
+
       const targetEl = document.getElementById('manual-cname-target');
       if (targetEl && data.cnameTarget) {
         targetEl.textContent = data.cnameTarget;
       }
+
+      // Update Saved Token UI Indicators
+      if (data.hasSavedApiToken && data.maskedApiToken) {
+        const domTokenStatus = document.getElementById('domain-token-status');
+        const domTokenText = document.getElementById('domain-token-status-text');
+        if (domTokenStatus && domTokenText) {
+          domTokenStatus.classList.remove('hidden');
+          domTokenText.textContent = `Auto-Connected: Saved Cloudflare API Token (${data.maskedApiToken})`;
+        }
+
+        const subTokenStatus = document.getElementById('subdomain-token-status');
+        const subTokenText = document.getElementById('subdomain-token-status-text');
+        if (subTokenStatus && subTokenText) {
+          subTokenStatus.classList.remove('hidden');
+          subTokenText.textContent = `Auto-Connected: Saved Cloudflare API Token (${data.maskedApiToken})`;
+        }
+
+        const domTokenIn = document.getElementById('domain-cf-token');
+        if (domTokenIn && !domTokenIn.value) {
+          domTokenIn.placeholder = `Saved Token: ${data.maskedApiToken} (leave blank to use saved)`;
+        }
+
+        const subTokenIn = document.getElementById('subdomain-cf-token');
+        if (subTokenIn && !subTokenIn.value) {
+          subTokenIn.placeholder = `Saved Token: ${data.maskedApiToken} (leave blank to use saved)`;
+        }
+
+        // Pre-fetch zones automatically in background if not already loaded
+        if (!this.cfZones || this.cfZones.length === 0) {
+          this.fetchCfZones(null, true);
+        }
+      }
     } catch (e) {}
   },
 
-  async fetchCfZones() {
+  async fetchCfZones(token = null, isAuto = false) {
     const tokenInput = document.getElementById('domain-cf-token');
-    const token = tokenInput ? tokenInput.value.trim() : '';
-    if (!token) {
-      API.toast('Please paste your Cloudflare API Token first', 'warning');
-      return;
-    }
+    const tokenToUse = (token && token.trim()) || (tokenInput ? tokenInput.value.trim() : '');
 
     const fetchBtn = document.getElementById('btn-fetch-cf-zones');
-    if (fetchBtn) {
+    if (fetchBtn && !isAuto) {
       fetchBtn.disabled = true;
       fetchBtn.innerHTML = `<i data-lucide="loader" style="width: 13px; height: 13px; margin-right: 3px;"></i> Fetching...`;
       if (window.lucide) lucide.createIcons();
     }
 
     try {
-      API.toast('Fetching domains from your Cloudflare account...', 'info');
-      const zones = await API.get(`/api/domains/cloudflare/zones?apiToken=${encodeURIComponent(token)}`);
+      if (!isAuto) API.toast('Fetching domains from Cloudflare API...', 'info');
+      const url = tokenToUse ? `/api/domains/cloudflare/zones?apiToken=${encodeURIComponent(tokenToUse)}` : '/api/domains/cloudflare/zones';
+      const res = await API.get(url);
+      const zones = res.zones || res;
       this.cfZones = zones;
 
       if (!zones || zones.length === 0) {
-        API.toast('No domains found in this Cloudflare account', 'warning');
+        if (!isAuto) API.toast('No domains found in this Cloudflare account', 'warning');
         return;
       }
 
-      API.toast(`Found ${zones.length} domain(s) in your Cloudflare account!`, 'success');
+      if (!isAuto) API.toast(`Loaded ${zones.length} domain(s) from your Cloudflare account!`, 'success');
 
       const selectContainer = document.getElementById('domain-cf-zones-container');
       const select = document.getElementById('domain-cf-zone-select');
@@ -167,14 +198,20 @@ const domainsManager = {
           }
         });
 
-        // Set initial
+        // Set initial domain
         const domainIn = document.getElementById('connect-domain-input');
         if (domainIn && !domainIn.value && zones.length > 0) {
           domainIn.value = zones[0].name;
         }
+
+        // Also pre-populate Subdomain Modal Root Domain
+        const subRootIn = document.getElementById('subdomain-root-input');
+        if (subRootIn && !subRootIn.value && zones.length > 0) {
+          subRootIn.value = zones[0].name;
+        }
       }
     } catch (err) {
-      // Toast displayed by API
+      if (!isAuto) API.toast(err.message || 'Failed to fetch Cloudflare domains', 'error');
     } finally {
       if (fetchBtn) {
         fetchBtn.disabled = false;
@@ -196,19 +233,25 @@ const domainsManager = {
       } catch (e) {}
     }
 
-    this.loadTunnelInfo();
+    await this.loadTunnelInfo();
     document.getElementById('modal-connect-domain').classList.remove('hidden');
     this.switchMode('auto');
     if (window.lucide) lucide.createIcons();
   },
 
   async openSubdomainModal() {
+    await this.loadTunnelInfo();
+
     const rootInput = document.getElementById('subdomain-root-input');
-    if (rootInput && this.domainsList && this.domainsList.length > 0) {
-      const firstDomain = this.domainsList[0].domain;
-      const parts = firstDomain.split('.');
-      if (parts.length >= 2) {
-        rootInput.value = parts.slice(-2).join('.');
+    if (rootInput && !rootInput.value) {
+      if (this.cfZones && this.cfZones.length > 0) {
+        rootInput.value = this.cfZones[0].name;
+      } else if (this.domainsList && this.domainsList.length > 0) {
+        const firstDomain = this.domainsList[0].domain;
+        const parts = firstDomain.split('.');
+        if (parts.length >= 2) {
+          rootInput.value = parts.slice(-2).join('.');
+        }
       }
     }
 
@@ -324,7 +367,8 @@ const domainsManager = {
     const domain = document.getElementById('connect-domain-input').value.trim();
     const websiteId = document.getElementById('domain-target-select').value || null;
     const isAuto = this.currentMode === 'auto';
-    const cfApiToken = isAuto ? document.getElementById('domain-cf-token').value.trim() : null;
+    const tokenIn = document.getElementById('domain-cf-token');
+    const cfApiToken = isAuto && tokenIn && tokenIn.value.trim() ? tokenIn.value.trim() : null;
     const zoneSelect = document.getElementById('domain-cf-zone-select');
     const manualZoneInput = document.getElementById('domain-cf-zone');
     const cfZoneDomain = isAuto ? (zoneSelect && !zoneSelect.closest('.hidden') ? zoneSelect.value : (manualZoneInput ? manualZoneInput.value.trim() : null)) : null;
@@ -385,7 +429,8 @@ const domainsManager = {
     const createDb = document.getElementById('subdomain-enable-db').checked;
     const dbTemplate = document.getElementById('subdomain-db-template').value;
     const autoCf = document.getElementById('subdomain-enable-cf').checked;
-    const cfToken = document.getElementById('subdomain-cf-token').value.trim();
+    const tokenIn = document.getElementById('subdomain-cf-token');
+    const cfToken = tokenIn && tokenIn.value.trim() ? tokenIn.value.trim() : null;
 
     if (!prefix || !root) return;
 

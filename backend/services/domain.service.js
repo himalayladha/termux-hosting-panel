@@ -89,9 +89,10 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
 
   let cnameTarget = null;
   let cfResult = null;
+  const effectiveApiToken = (cfApiToken && cfApiToken.trim()) || cloudflareService.getSavedApiToken();
 
   // If 1-Click Cloudflare Auto Setup is requested
-  if (autoCloudflare && cfApiToken && (cfZoneDomain || cleanDomain.split('.').slice(-2).join('.'))) {
+  if (autoCloudflare && effectiveApiToken && (cfZoneDomain || cleanDomain.split('.').slice(-2).join('.'))) {
     const rootZone = cfZoneDomain || cleanDomain.split('.').slice(-2).join('.');
     const route = {
       hostname: cleanDomain,
@@ -99,7 +100,7 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
     };
 
     cfResult = await cloudflareService.setupTunnelViaApi({
-      apiToken: cfApiToken,
+      apiToken: effectiveApiToken,
       domain: rootZone,
       tunnelName: 'termux-android-tunnel',
       routes: [route]

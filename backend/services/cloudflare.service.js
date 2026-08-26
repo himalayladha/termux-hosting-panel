@@ -52,13 +52,62 @@ function cfApiRequest(endpoint, apiToken, method = 'GET', body = null) {
 }
 
 /**
- * Fetch all zones/domains linked to a Cloudflare API Token
+ * Save Cloudflare API Token to disk securely
  */
-async function listZones(apiToken) {
-  if (!apiToken || !apiToken.trim()) {
-    throw new Error('Cloudflare API Token is required');
+function saveApiToken(apiToken) {
+  const clean = (apiToken || '').trim();
+  if (!clean) return;
+  if (!fs.existsSync(config.CONFIG_DIR)) {
+    fs.mkdirSync(config.CONFIG_DIR, { recursive: true });
   }
-  const zones = await cfApiRequest('/zones', apiToken);
+  fs.writeFileSync(config.CLOUDFLARE_API_TOKEN_FILE, clean, { encoding: 'utf8', mode: 0o600 });
+}
+
+/**
+ * Get saved Cloudflare API Token
+ */
+function getSavedApiToken() {
+  if (fs.existsSync(config.CLOUDFLARE_API_TOKEN_FILE)) {
+    try {
+      const token = fs.readFileSync(config.CLOUDFLARE_API_TOKEN_FILE, 'utf8').trim();
+      return token || null;
+    } catch (_) {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get Cloudflare API token status and masked version
+ */
+function getApiTokenConfig() {
+  const token = getSavedApiToken();
+  if (!token) {
+    return { hasSavedApiToken: false, maskedApiToken: null };
+  }
+  let masked = '****';
+  if (token.length > 8) {
+    masked = `${token.substring(0, 4)}...${token.substring(token.length - 4)}`;
+  }
+  return { hasSavedApiToken: true, maskedApiToken: masked };
+}
+
+/**
+ * Fetch all zones/domains linked to a Cloudflare API Token (or auto-fetch using saved token)
+ */
+async function listZones(apiToken = null) {
+  const effectiveToken = (apiToken && apiToken.trim()) || getSavedApiToken();
+  if (!effectiveToken) {
+    throw new Error('Cloudflare API Token not found. Please provide or save your API Token.');
+  }
+
+  // If user provided a new valid token, save it for future automated calls
+  if (apiToken && apiToken.trim()) {
+    saveApiToken(apiToken);
+  }
+
+  const zones = await cfApiRequest('/zones', effectiveToken);
   return (zones || []).map((z) => ({
     id: z.id,
     name: z.name,
@@ -176,6 +225,7 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
     throw new Error('Cloudflare API Token and domain are required');
   }
 
+  saveApiToken(apiToken);
   const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
   // 1. Get Zone and Account directly from /zones
@@ -417,6 +467,9 @@ module.exports = {
   checkCloudflaredInstalled,
   getTunnelConfig,
   saveTunnelToken,
+  saveApiToken,
+  getSavedApiToken,
+  getApiTokenConfig,
   setupTunnelViaApi,
   getTunnelStatus,
   listZones,

@@ -21,6 +21,7 @@ module.exports = {
   CLOUDFLARE_LOG_FILE: path.join(ROOT_DIR, 'logs', 'cloudflared.log'),
   CONFIG_DIR: path.join(ROOT_DIR, 'config'),
   CLOUDFLARE_TOKEN_FILE: path.join(ROOT_DIR, 'config', 'cloudflare-token'),
+  CLOUDFLARE_API_TOKEN_FILE: path.join(ROOT_DIR, 'config', 'cloudflare-api-token'),
   TEMPLATES_DIR: path.join(ROOT_DIR, 'templates'),
   PORT_RANGE_START: 8100,
   PORT_RANGE_END: 8999,
