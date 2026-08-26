@@ -45,7 +45,7 @@ check_status() {
   WIFI_IP=$(get_wifi_ip)
   
   # Check Node server
-  if pgrep -f "node.*server.js" > /dev/null; then
+  if pgrep -f "server.js" > /dev/null; then
     echo -e "  [Panel Service]     ${GREEN}RUNNING${NC}"
     echo -e "    • Local Phone:    ${CYAN}http://127.0.0.1:9000${NC}"
     if [ -n "$WIFI_IP" ]; then
@@ -86,13 +86,19 @@ start_panel() {
     pgrep -x crond >/dev/null || crond
   fi
 
-  # Start server in background or via termux-services
-  if command -v sv >/dev/null 2>&1 && [ -d "$PREFIX/var/service/termux-panel" ]; then
-    sv up termux-panel
-    echo -e "  ${GREEN}✓${NC} Started via termux-services (termux-panel)"
+  # Stop any stale instance
+  pkill -9 -f "server.js" 2>/dev/null || true
+  sleep 1
+
+  # Start node server in background
+  nohup node server.js > "$PANEL_DIR/logs/panel.log" 2>&1 &
+  SERVER_PID=$!
+  sleep 1
+
+  if pgrep -f "server.js" > /dev/null; then
+    echo -e "  ${GREEN}✓${NC} TermuxPanel server started (PID: $SERVER_PID)"
   else
-    nohup node server.js > "$PANEL_DIR/logs/panel.log" 2>&1 &
-    echo -e "  ${GREEN}✓${NC} Node server started in background (PID: $!)"
+    echo -e "  ${YELLOW}Notice: Check logs with 'tp logs' or cat logs/panel.log${NC}"
   fi
 
   # Check if cloudflared token configured
