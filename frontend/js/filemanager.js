@@ -217,8 +217,8 @@ const fileManager = {
                 <i data-lucide="${iconName}" style="width: 16px; height: 16px; color: ${item.isDirectory ? '#38bdf8' : (item.isZip ? '#f59e0b' : '#94a3b8')};"></i>
                 ${
                   item.isDirectory
-                    ? `<a href="javascript:void(0)" onclick="fileManager.navigateTo('${item.relativePath}')" style="font-weight: 600;">${item.name}</a>`
-                    : `<a href="javascript:void(0)" onclick="fileManager.openEditor('${item.relativePath}')">${item.name}</a>`
+                    ? `<a href="javascript:void(0)" onclick="fileManager.navigateTo('${item.relativePath}')" class="folder-link" style="color: #38bdf8; font-weight: 600; font-size: 13.5px;">${item.name}</a>`
+                    : `<a href="javascript:void(0)" onclick="fileManager.openEditor('${item.relativePath}')" style="color: #f1f5f9; font-weight: 500; font-size: 13.5px;">${item.name}</a>`
                 }
               </div>
             </td>

@@ -212,11 +212,12 @@ svg[data-lucide], i[data-lucide] {
 }
 
 .table th {
-  background: rgba(0, 0, 0, 0.25);
-  color: var(--text-muted);
-  font-size: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.75px;
   padding: 13px 16px;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
@@ -226,10 +227,32 @@ svg[data-lucide], i[data-lucide] {
   padding: 13px 16px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
+  color: #f1f5f9;
+}
+
+.table td a {
+  color: #f1f5f9;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.table td a:hover {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+.table td a.folder-link {
+  color: #38bdf8 !important;
+  font-weight: 600;
+}
+
+.table td a.folder-link:hover {
+  color: #7dd3fc !important;
+  text-decoration: underline;
 }
 
 .table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .table td .actions-wrap {

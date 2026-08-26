@@ -53,6 +53,20 @@ body {
   overflow-x: hidden;
 }
 
+/* High Contrast Link Defaults (No dark-blue unreadable links) */
+a {
+  color: #38bdf8;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+a:visited {
+  color: #38bdf8;
+}
+a:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
 /* Authentication Screen */
 .auth-wrapper {
   display: flex;
