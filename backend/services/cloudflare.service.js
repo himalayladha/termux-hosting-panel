@@ -145,20 +145,46 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
     throw new Error('Cloudflare API Token and domain are required');
   }
 
-  // 1. Verify token & get Account ID
-  const accounts = await cfApiRequest('/accounts', apiToken);
-  if (!accounts || accounts.length === 0) {
-    throw new Error('No Cloudflare accounts found for this API token');
-  }
-  const accountId = accounts[0].id;
-  const accountName = accounts[0].name;
+  const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
-  // 2. Get Zone ID for the specified domain
-  const zones = await cfApiRequest(`/zones?name=${encodeURIComponent(domain.trim())}`, apiToken);
-  if (!zones || zones.length === 0) {
-    throw new Error(`Domain "${domain}" was not found in your Cloudflare account. Please check domain name.`);
+  // 1. Get Zone and Account directly from /zones
+  let zoneId = null;
+  let accountId = null;
+  let accountName = 'Cloudflare Account';
+
+  try {
+    const zones = await cfApiRequest(`/zones?name=${encodeURIComponent(cleanDomain)}`, apiToken);
+    if (zones && zones.length > 0) {
+      zoneId = zones[0].id;
+      if (zones[0].account && zones[0].account.id) {
+        accountId = zones[0].account.id;
+        accountName = zones[0].account.name || 'Cloudflare Account';
+      }
+    }
+  } catch (err) {
+    if (err.message.includes('Authentication') || err.message.includes('Invalid') || err.message.includes('Unauthorized')) {
+      throw new Error(`Cloudflare API Token authentication failed: ${err.message}. Please verify your API token.`);
+    }
   }
-  const zoneId = zones[0].id;
+
+  // Fallback to /accounts if account was not returned with zone
+  if (!accountId) {
+    try {
+      const accounts = await cfApiRequest('/accounts', apiToken);
+      if (accounts && accounts.length > 0) {
+        accountId = accounts[0].id;
+        accountName = accounts[0].name || 'Cloudflare Account';
+      }
+    } catch (_) {}
+  }
+
+  if (!zoneId) {
+    throw new Error(`Domain "${cleanDomain}" was not found in your Cloudflare account. Ensure your API Token has "Zone:Read" permission and domain is active.`);
+  }
+
+  if (!accountId) {
+    throw new Error(`Could not determine Account ID for "${cleanDomain}". Ensure your Cloudflare API token has "Account.Cloudflare Tunnel:Edit" and "Account.Account Settings:Read" permissions.`);
+  }
 
   // 3. Create or find existing tunnel
   let tunnel = null;
@@ -250,7 +276,7 @@ async function setupTunnelViaApi({ apiToken, domain, tunnelName = 'termux-androi
   return {
     success: true,
     account: { id: accountId, name: accountName },
-    zone: { id: zoneId, name: domain },
+    zone: { id: zoneId, name: cleanDomain },
     tunnel: { id: tunnelId, name: tunnelName },
     cnameTarget: dnsTarget,
     dnsRecords: createdRecords
