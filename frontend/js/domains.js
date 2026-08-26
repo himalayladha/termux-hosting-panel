@@ -1,6 +1,7 @@
 const domainsManager = {
   domainsList: [],
   currentMode: 'auto',
+  subdomainCfMode: 'auto',
   tunnelInfo: null,
   cfZones: [],
   currentEditingDomainId: null,
@@ -55,8 +56,15 @@ const domainsManager = {
       const p = (prefixInput ? prefixInput.value.trim() : '') || 'subdomain';
       const r = (rootInput ? rootInput.value.trim() : '') || 'example.com';
       const previewEl = document.getElementById('subdomain-preview-text');
+      const hostEl = document.getElementById('subdomain-manual-cname-host');
+      const cleanP = p.toLowerCase().replace(/[^a-z0-9-]/g, '');
+      const cleanR = r.toLowerCase().replace(/^https?:\/\//, '');
+
       if (previewEl) {
-        previewEl.textContent = `https://${p.toLowerCase().replace(/[^a-z0-9-]/g, '')}.${r.toLowerCase().replace(/^https?:\/\//, '')}`;
+        previewEl.textContent = `https://${cleanP || 'prefix'}.${cleanR || 'example.com'}`;
+      }
+      if (hostEl) {
+        hostEl.textContent = cleanP || 'prefix';
       }
     };
     if (prefixInput) prefixInput.addEventListener('input', updatePreview);
@@ -99,14 +107,6 @@ const domainsManager = {
         dbFields.classList.toggle('hidden', !e.target.checked);
       });
     }
-
-    const cfCb = document.getElementById('subdomain-enable-cf');
-    const cfFields = document.getElementById('subdomain-cf-fields');
-    if (cfCb && cfFields) {
-      cfCb.addEventListener('change', (e) => {
-        cfFields.classList.toggle('hidden', !e.target.checked);
-      });
-    }
   },
 
   switchMode(mode) {
@@ -130,6 +130,27 @@ const domainsManager = {
     if (window.lucide) lucide.createIcons();
   },
 
+  switchSubdomainCfMode(mode) {
+    this.subdomainCfMode = mode;
+    const autoBtn = document.getElementById('subdomain-cf-tab-auto');
+    const manualBtn = document.getElementById('subdomain-cf-tab-manual');
+    const noneBtn = document.getElementById('subdomain-cf-tab-none');
+
+    const autoFields = document.getElementById('subdomain-cf-mode-auto-fields');
+    const manualFields = document.getElementById('subdomain-cf-mode-manual-fields');
+    const noneFields = document.getElementById('subdomain-cf-mode-none-fields');
+
+    if (autoBtn) autoBtn.className = mode === 'auto' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    if (manualBtn) manualBtn.className = mode === 'manual' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    if (noneBtn) noneBtn.className = mode === 'none' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+
+    if (autoFields) autoFields.classList.toggle('hidden', mode !== 'auto');
+    if (manualFields) manualFields.classList.toggle('hidden', mode !== 'manual');
+    if (noneFields) noneFields.classList.toggle('hidden', mode !== 'none');
+
+    if (window.lucide) lucide.createIcons();
+  },
+
   async loadTunnelInfo() {
     try {
       const data = await API.get('/api/domains/tunnel-info');
@@ -138,6 +159,11 @@ const domainsManager = {
       const targetEl = document.getElementById('manual-cname-target');
       if (targetEl && data.cnameTarget) {
         targetEl.textContent = data.cnameTarget;
+      }
+
+      const subTargetEl = document.getElementById('subdomain-manual-cname-target');
+      if (subTargetEl && data.cnameTarget) {
+        subTargetEl.textContent = data.cnameTarget;
       }
 
       // Update Saved Token UI Indicators
@@ -272,6 +298,7 @@ const domainsManager = {
       }
     }
 
+    this.switchSubdomainCfMode('auto');
     const modal = document.getElementById('modal-create-subdomain');
     if (modal) modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
@@ -498,9 +525,11 @@ const domainsManager = {
     const appType = document.getElementById('subdomain-app-type').value;
     const createDb = document.getElementById('subdomain-enable-db').checked;
     const dbTemplate = document.getElementById('subdomain-db-template').value;
-    const autoCf = document.getElementById('subdomain-enable-cf').checked;
+    const cfMode = this.subdomainCfMode; // 'auto', 'manual', 'none'
+    const isAuto = cfMode === 'auto';
+    const isNone = cfMode === 'none';
     const tokenIn = document.getElementById('subdomain-cf-token');
-    const cfToken = tokenIn && tokenIn.value.trim() ? tokenIn.value.trim() : null;
+    const cfToken = isAuto && tokenIn && tokenIn.value.trim() ? tokenIn.value.trim() : null;
 
     if (!prefix || !root) return;
 
@@ -520,7 +549,7 @@ const domainsManager = {
         createSite,
         createDatabase: createDb,
         dbTemplate,
-        autoCloudflare: autoCf,
+        autoCloudflare: isAuto,
         cfApiToken: cfToken
       });
 
@@ -528,6 +557,8 @@ const domainsManager = {
       document.getElementById('modal-create-subdomain').classList.add('hidden');
       document.getElementById('create-subdomain-form').reset();
       this.loadDomains();
+
+      const cnameTarget = (this.tunnelInfo && this.tunnelInfo.cnameTarget) || res.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com';
 
       let msg = `Subdomain "${res.domain}" has been successfully provisioned!\n\n`;
       if (res.websiteId) {
@@ -537,7 +568,19 @@ const domainsManager = {
       if (res.database) {
         msg += `• Dedicated Database: data/${res.database.name} (${res.database.template})\n`;
       }
-      msg += `\nYour site is live and reachable locally & globally via Cloudflare Tunnel!`;
+
+      if (cfMode === 'manual') {
+        msg += `\nDNS Setup for Cloudflare Dashboard (dash.cloudflare.com):\n`;
+        msg += `• Record Type: CNAME\n`;
+        msg += `• Name / Host: ${prefix}\n`;
+        msg += `• Target: ${cnameTarget}\n`;
+        msg += `• Proxy Status: Proxied (Orange Cloud ☁️ Enabled)\n\n`;
+        msg += `Once added in Cloudflare, your subdomain is live with free HTTPS SSL!`;
+      } else if (cfMode === 'auto') {
+        msg += `\nCloudflare API automatically created your DNS CNAME and tunnel route!\nLive at: https://${res.domain}`;
+      } else {
+        msg += `\nSubdomain is live locally on your network.`;
+      }
 
       await UI.alert(msg, 'Subdomain Ready', 'success');
     } catch (err) {

@@ -109,6 +109,11 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
     cnameTarget = cfResult.cnameTarget;
   }
 
+  if (!cnameTarget) {
+    const tunnelConf = cloudflareService.getTunnelConfig();
+    cnameTarget = tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com';
+  }
+
   // Insert into database (use 0 for panel to satisfy NOT NULL constraints across existing DBs)
   const numericWebId = (websiteId && parseInt(websiteId, 10) > 0) ? parseInt(websiteId, 10) : 0;
 

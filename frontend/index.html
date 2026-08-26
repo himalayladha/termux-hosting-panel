@@ -1108,23 +1108,51 @@
             </div>
           </div>
 
-          <!-- Cloudflare Auto Sync Options -->
+          <!-- Cloudflare Routing Options -->
           <div class="card bg-darker p-3">
-            <div class="flex-align gap-2 mb-2">
-              <input type="checkbox" id="subdomain-enable-cf" style="width: 16px; height: 16px; accent-color: #38bdf8;">
-              <label for="subdomain-enable-cf" style="margin: 0; font-weight: 600; cursor: pointer;">
-                Auto-Create Cloudflare DNS CNAME & Tunnel Route
-              </label>
+            <label class="mb-2" style="display: block; font-weight: 600;">
+              <i data-lucide="cloud" style="width: 15px; height: 15px; margin-right: 4px; color: #38bdf8;"></i>
+              Cloudflare Ingress & DNS Routing:
+            </label>
+            
+            <div class="flex-align gap-2 mb-3">
+              <button type="button" id="subdomain-cf-tab-auto" class="btn btn-primary btn-sm" onclick="domainsManager.switchSubdomainCfMode('auto')">
+                <i data-lucide="zap" style="width: 13px; height: 13px; margin-right: 3px;"></i> Auto (API)
+              </button>
+              <button type="button" id="subdomain-cf-tab-manual" class="btn btn-secondary btn-sm" onclick="domainsManager.switchSubdomainCfMode('manual')">
+                <i data-lucide="edit-3" style="width: 13px; height: 13px; margin-right: 3px;"></i> Manual DNS CNAME
+              </button>
+              <button type="button" id="subdomain-cf-tab-none" class="btn btn-secondary btn-sm" onclick="domainsManager.switchSubdomainCfMode('none')">
+                <i data-lucide="slash" style="width: 13px; height: 13px; margin-right: 3px;"></i> None (Local Only)
+              </button>
             </div>
-            <div id="subdomain-cf-fields" class="hidden">
+
+            <!-- Auto Mode Fields -->
+            <div id="subdomain-cf-mode-auto-fields">
               <div id="subdomain-token-status" class="hidden mb-2" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: #4ade80;">
                 <i data-lucide="check-circle" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
                 <span id="subdomain-token-status-text">Cloudflare API Token saved</span>
               </div>
               <div class="form-group mb-0">
                 <label for="subdomain-cf-token">Cloudflare API Token <span class="text-muted text-sm">(Auto-loaded if saved)</span></label>
-                <input type="password" id="subdomain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token">
+                <input type="password" id="subdomain-cf-token" class="form-control" placeholder="Paste Cloudflare API Token (leave blank to use saved)">
               </div>
+            </div>
+
+            <!-- Manual Mode Fields -->
+            <div id="subdomain-cf-mode-manual-fields" class="hidden">
+              <p class="text-muted text-sm mb-2">TermuxPanel will register the tunnel ingress route. Add this CNAME in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Cloudflare DNS</a>:</p>
+              <div style="background: #050811; padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 12.5px; border: 1px solid var(--border-color); line-height: 1.8;">
+                <div><strong>Type:</strong> <code style="color: #38bdf8;">CNAME</code></div>
+                <div><strong>Name / Host:</strong> <code id="subdomain-manual-cname-host" style="color: #f1f5f9;">prefix</code></div>
+                <div><strong>Target:</strong> <code id="subdomain-manual-cname-target" style="color: #22c55e;">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
+                <div><strong>Proxy Status:</strong> <span style="color: #f59e0b; font-weight: 600;">Proxied (Orange Cloud ☁️)</span></div>
+              </div>
+            </div>
+
+            <!-- None Mode Fields -->
+            <div id="subdomain-cf-mode-none-fields" class="hidden">
+              <p class="text-muted text-sm mb-0">No public Cloudflare routing will be created. The subdomain will be accessible on your local network / Wi-Fi only.</p>
             </div>
           </div>
         </div>
