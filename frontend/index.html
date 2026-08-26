@@ -695,16 +695,26 @@
           </div>
 
               <div class="mt-4">
-                <h4>Cloudflare Zero Trust Hostname Routing Map</h4>
-                <p class="text-muted text-sm">Active routes mapping your public hostnames to local Termux services:</p>
+                <div class="flex-between flex-wrap gap-2 mb-2">
+                  <div>
+                    <h4 style="margin-bottom: 2px;">Cloudflare Zero Trust Hostname Routing Map</h4>
+                    <p class="text-muted text-sm" style="margin: 0;">Active routes mapping your public hostnames and direct tunnel URLs to local Termux services:</p>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="tunnelManager.loadStatus()">
+                    <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 3px;"></i> Refresh Routes
+                  </button>
+                </div>
                 <div class="table-responsive mt-2">
                   <table class="table">
                     <thead>
                       <tr>
                         <th>Public Hostname</th>
+                        <th>Live Public Tunnel URL</th>
                         <th>Type</th>
-                        <th>URL / Local Service</th>
-                        <th>Target</th>
+                        <th>Local Service</th>
+                        <th>Target Application</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Action</th>
                       </tr>
                     </thead>
                     <tbody id="tunnel-routes-body">

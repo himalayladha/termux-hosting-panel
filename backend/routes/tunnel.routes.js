@@ -67,13 +67,17 @@ router.get('/status', requireAuth, async (req, res) => {
       const targetDesc = isPanel
         ? 'TermuxPanel Web Administration Dashboard'
         : `Hosted Website: ${d.website_name || 'App'} (${(d.website_type || 'html').toUpperCase()})`;
+      const rawTarget = d.cname_target || tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com';
 
       dynamicRoutes.push({
         hostname: d.domain,
+        tunnelUrl: `https://${d.domain}`,
+        rawTarget,
         type: d.ssl_enabled ? 'HTTPS (Auto SSL)' : 'HTTP',
         service: `http://127.0.0.1:${targetPort}`,
         description: targetDesc,
-        status: 'Connected & Routing',
+        status: tunnelStatus.isRunning ? 'Active & Routing' : 'Tunnel Ready',
+        isLive: true,
         isPanel
       });
     }
@@ -83,10 +87,13 @@ router.get('/status', requireAuth, async (req, res) => {
       if (site.domain && !mappedDomainSet.has(site.domain)) {
         dynamicRoutes.push({
           hostname: site.domain,
+          tunnelUrl: `https://${site.domain}`,
+          rawTarget: tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com',
           type: 'HTTP',
           service: `http://127.0.0.1:${site.port}`,
           description: `Hosted Website: ${site.name} (${site.type.toUpperCase()})`,
           status: 'Local Domain',
+          isLive: false,
           isPanel: false
         });
         mappedDomainSet.add(site.domain);
@@ -94,11 +101,14 @@ router.get('/status', requireAuth, async (req, res) => {
         const hasMapped = domains.some((d) => d.website_id === site.id);
         if (!hasMapped) {
           dynamicRoutes.push({
-            hostname: `${site.name} (Local Service)`,
-            type: 'Local Only',
+            hostname: site.name,
+            tunnelUrl: `http://localhost:${site.port}`,
+            rawTarget: tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com',
+            type: 'Local Port',
             service: `http://127.0.0.1:${site.port}`,
             description: `Website: ${site.name} (${site.type.toUpperCase()} • Unmapped)`,
-            status: 'Pending Domain Mapping',
+            status: 'Local Only',
+            isLive: false,
             isPanel: false
           });
         }
@@ -110,10 +120,13 @@ router.get('/status', requireAuth, async (req, res) => {
     if (!hasPanelDomain) {
       dynamicRoutes.unshift({
         hostname: `localhost:${config.PORT} (TermuxPanel)`,
-        type: 'Local Service',
+        tunnelUrl: `http://localhost:${config.PORT}`,
+        rawTarget: tunnelConf.cnameTarget || '<YOUR_TUNNEL_ID>.cfargotunnel.com',
+        type: 'Local Host',
         service: `http://127.0.0.1:${config.PORT}`,
-        description: 'TermuxPanel Control Plane (Local Host)',
+        description: 'TermuxPanel Control Plane',
         status: 'Local Only',
+        isLive: false,
         isPanel: true
       });
     }

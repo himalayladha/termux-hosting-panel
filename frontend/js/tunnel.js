@@ -122,7 +122,7 @@ const tunnelManager = {
     if (!tbody) return;
 
     if (!routes || routes.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-muted text-center" style="padding: 24px;">No routes mapped yet. Connect a domain in the Domains tab to map public hostnames to local services.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-muted text-center" style="padding: 24px;">No routes mapped yet. Connect a domain in the Domains tab to map public hostnames to local services.</td></tr>`;
       return;
     }
 
@@ -136,14 +136,39 @@ const tunnelManager = {
               <strong>${r.hostname}</strong>
             </div>
           </td>
-          <td><span class="badge ${r.type && r.type.includes('HTTPS') ? 'badge-success' : 'badge-secondary'}">${r.type || 'HTTP'}</span></td>
-          <td><code>${r.service}</code></td>
           <td>
-            <div class="flex-between">
-              <span>${r.description}</span>
-              <span class="badge ${r.status && r.status.includes('Connected') ? 'badge-success' : 'badge-secondary'}" style="font-size: 10px; margin-left: 8px;">
-                ${r.status}
-              </span>
+            ${
+              r.isLive
+                ? `<a href="${r.tunnelUrl}" target="_blank" style="color: #38bdf8; font-weight: 600; text-decoration: underline;">${r.tunnelUrl}</a>`
+                : `<code class="text-muted">${r.tunnelUrl}</code>`
+            }
+          </td>
+          <td>
+            <span class="badge ${r.type && r.type.includes('HTTPS') ? 'badge-success' : 'badge-secondary'}">
+              ${r.type || 'HTTP'}
+            </span>
+          </td>
+          <td><code>${r.service}</code></td>
+          <td>${r.description}</td>
+          <td>
+            <span class="badge ${r.isLive ? 'badge-success' : 'badge-secondary'}" style="font-size: 10.5px;">
+              ${r.status}
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <div class="flex-align gap-1" style="justify-content: flex-end;">
+              <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${r.tunnelUrl}').then(() => API.toast('Copied ${r.tunnelUrl}', 'success'))" title="Copy URL">
+                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+              </button>
+              ${
+                r.isLive
+                  ? `<a href="${r.tunnelUrl}" target="_blank" class="btn btn-primary btn-sm" title="Open live URL" style="text-decoration: none;">
+                      <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                     </a>`
+                  : `<button class="btn btn-secondary btn-sm" onclick="domainsManager.openConnectModal()" title="Connect Custom Domain">
+                      <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+                     </button>`
+              }
             </div>
           </td>
         </tr>
