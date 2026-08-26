@@ -131,7 +131,7 @@ async function connectDomain({ domain, websiteId, autoCloudflare = false, cfApiT
 /**
  * All-In-One Subdomain Provisioning Wizard
  * Automatically provisions:
- * 1. Dedicated Subdomain (e.g. blog.himalay.digital)
+ * 1. Dedicated Subdomain (e.g. blog.example.com)
  * 2. Dedicated Hosted Website / App (HTML, Node.js, Python, or PHP)
  * 3. Dedicated SQLite Database (with schema template presets)
  * 4. Automatic Cloudflare Tunnel Ingress & DNS CNAME mapping
@@ -153,7 +153,7 @@ async function createSubdomain({
     throw new Error('Please specify a subdomain prefix (e.g. "blog", "api", "store")');
   }
   if (!root || !root.includes('.')) {
-    throw new Error('Please specify a valid root domain (e.g. "himalay.digital" or "example.com")');
+    throw new Error('Please specify a valid root domain (e.g. "example.com" or "mydomain.org")');
   }
 
   const fullDomain = `${prefix}.${root}`;
