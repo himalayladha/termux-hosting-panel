@@ -150,27 +150,126 @@ router.get('/:id', requireAuth, async (req, res) => {
 });
 
 /**
- * Update website settings
+ * Update website settings, rename sitename & directory, update runtime or port
  */
 router.put('/:id', requireAuth, async (req, res) => {
   try {
-    const { domain, entry_file, autostart, env_vars } = req.body;
+    const { name, type, domain, entry_file, port, autostart, env_vars } = req.body;
     const site = await db.get('SELECT * FROM websites WHERE id = ?', [req.params.id]);
     if (!site) return res.status(404).json({ error: 'Website not found' });
 
+    let finalName = site.name;
+    let finalRoot = site.root_path;
+    let wasRunning = site.status === 'running';
+
+    // 1. Handle Sitename Rename
+    if (name && name.trim() && name.trim() !== site.name) {
+      const cleanName = name.trim();
+      if (!/^[a-zA-Z0-9._-]+$/.test(cleanName)) {
+        return res.status(400).json({ error: 'Valid site name required (letters, numbers, dot, dash)' });
+      }
+
+      const checkName = await db.get('SELECT id FROM websites WHERE name = ? AND id != ?', [cleanName, site.id]);
+      if (checkName) {
+        return res.status(400).json({ error: `Website name "${cleanName}" is already in use` });
+      }
+
+      // Stop process before renaming directory
+      if (wasRunning) {
+        try {
+          await processService.stopWebsite(site.id);
+        } catch (_) {}
+      }
+
+      const oldRoot = site.root_path;
+      const newRoot = path.join(config.STORAGE_DIR, cleanName);
+
+      if (fs.existsSync(oldRoot) && oldRoot !== newRoot) {
+        try {
+          fs.renameSync(oldRoot, newRoot);
+        } catch (renameErr) {
+          return res.status(500).json({ error: `Failed to rename website directory: ${renameErr.message}` });
+        }
+      }
+
+      // Rename log files if they exist
+      try {
+        const oldLogs = processService.getWebsiteLogPaths(site.name);
+        const newLogs = processService.getWebsiteLogPaths(cleanName);
+        if (fs.existsSync(oldLogs.accessLog)) fs.renameSync(oldLogs.accessLog, newLogs.accessLog);
+        if (fs.existsSync(oldLogs.errorLog)) fs.renameSync(oldLogs.errorLog, newLogs.errorLog);
+      } catch (_) {}
+
+      finalName = cleanName;
+      finalRoot = newRoot;
+    }
+
+    // 2. Handle Port Change
+    let finalPort = site.port;
+    if (port && parseInt(port, 10) !== site.port) {
+      const numPort = parseInt(port, 10);
+      if (numPort < 1024 || numPort > 65535) {
+        return res.status(400).json({ error: 'Port must be between 1024 and 65535' });
+      }
+      const portCheck = await db.get('SELECT id FROM websites WHERE port = ? AND id != ?', [numPort, site.id]);
+      if (portCheck) {
+        return res.status(400).json({ error: `Port :${numPort} is already assigned to another website` });
+      }
+      finalPort = numPort;
+    }
+
+    // 3. Update Database Record
+    const finalType = type && ['html', 'node', 'python', 'php'].includes(type) ? type : site.type;
+    const finalDomain = domain !== undefined ? (domain ? domain.trim() : null) : site.domain;
+    const finalEntry = entry_file !== undefined ? (entry_file ? entry_file.trim() : null) : site.entry_file;
+    const finalAutostart = autostart !== undefined ? (autostart ? 1 : 0) : site.autostart;
+
     await db.run(
       `UPDATE websites
-       SET domain = COALESCE(?, domain),
-           entry_file = COALESCE(?, entry_file),
-           autostart = COALESCE(?, autostart),
-           env_vars = COALESCE(?, env_vars),
+       SET name = ?,
+           type = ?,
+           domain = ?,
+           root_path = ?,
+           entry_file = ?,
+           port = ?,
+           autostart = ?,
+           env_vars = ?,
            updated_at = CURRENT_TIMESTAMP
        WHERE id = ?`,
-      [domain, entry_file, autostart, env_vars ? JSON.stringify(env_vars) : null, site.id]
+      [
+        finalName,
+        finalType,
+        finalDomain,
+        finalRoot,
+        finalEntry,
+        finalPort,
+        finalAutostart,
+        env_vars ? JSON.stringify(env_vars) : null,
+        site.id
+      ]
     );
 
+    // If site had a default domain mapped to its name, update domain record
+    if (finalDomain) {
+      const existingDom = await db.get('SELECT id FROM domains WHERE website_id = ?', [site.id]);
+      if (existingDom) {
+        await db.run('UPDATE domains SET domain = ? WHERE id = ?', [finalDomain, existingDom.id]);
+      } else {
+        await db.run('INSERT INTO domains (domain, website_id, ssl_enabled) VALUES (?, ?, 1)', [finalDomain, site.id]);
+      }
+    }
+
+    // 4. Restart website process if it was running or if autostart
+    if (wasRunning) {
+      try {
+        await processService.startWebsite(site.id);
+      } catch (startErr) {
+        console.warn(`[Websites] Warning restarting ${finalName}:`, startErr.message);
+      }
+    }
+
     const updated = await db.get('SELECT * FROM websites WHERE id = ?', [site.id]);
-    return res.json({ success: true, website: updated });
+    return res.json({ success: true, website: updated, message: `Website "${finalName}" updated successfully` });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

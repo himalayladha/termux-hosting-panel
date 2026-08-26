@@ -1,5 +1,6 @@
 const websites = {
   list: [],
+  currentEditingId: null,
 
   init() {
     this.bindEvents();
@@ -17,6 +18,22 @@ const websites = {
     const createForm = document.getElementById('create-site-form');
     if (createForm) {
       createForm.addEventListener('submit', (e) => this.handleCreate(e));
+    }
+
+    const editForm = document.getElementById('edit-site-form');
+    if (editForm) {
+      editForm.addEventListener('submit', (e) => this.handleEdit(e));
+    }
+
+    const editDeleteBtn = document.getElementById('edit-site-delete-btn');
+    if (editDeleteBtn) {
+      editDeleteBtn.addEventListener('click', () => {
+        if (this.currentEditingId) {
+          const site = this.list.find((s) => s.id === this.currentEditingId);
+          document.getElementById('modal-edit-site').classList.add('hidden');
+          this.deleteSite(this.currentEditingId, site ? site.name : 'website');
+        }
+      });
     }
   },
 
@@ -84,6 +101,9 @@ const websites = {
                            <i data-lucide="play" style="width: 13px; height: 13px; margin-right: 3px;"></i> Start
                          </button>`
                   }
+                  <button class="btn btn-secondary btn-sm" onclick="websites.openEditModal(${site.id})" title="Manage Website Settings">
+                    <i data-lucide="sliders" style="width: 13px; height: 13px; margin-right: 3px;"></i> Manage
+                  </button>
                   <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">
                     <i data-lucide="terminal" style="width: 13px; height: 13px; margin-right: 3px;"></i> Logs
                   </button>
@@ -128,6 +148,67 @@ const websites = {
       .join('');
 
     if (window.lucide) lucide.createIcons();
+  },
+
+  openEditModal(id) {
+    const site = this.list.find((s) => s.id === id);
+    if (!site) return;
+
+    this.currentEditingId = id;
+    document.getElementById('edit-site-id').value = site.id;
+    document.getElementById('edit-site-name').value = site.name;
+    document.getElementById('edit-site-type').value = site.type;
+    document.getElementById('edit-site-domain').value = site.domain || '';
+    document.getElementById('edit-site-port').value = site.port || '';
+    document.getElementById('edit-site-entry').value = site.entry_file || '';
+    document.getElementById('edit-site-autostart').checked = !!site.autostart;
+
+    document.getElementById('modal-edit-site').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  },
+
+  async handleEdit(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-site-id').value;
+    const name = document.getElementById('edit-site-name').value.trim();
+    const type = document.getElementById('edit-site-type').value;
+    const domain = document.getElementById('edit-site-domain').value.trim();
+    const port = document.getElementById('edit-site-port').value.trim();
+    const entry_file = document.getElementById('edit-site-entry').value.trim();
+    const autostart = document.getElementById('edit-site-autostart').checked;
+
+    if (!id || !name) return;
+
+    const btn = document.getElementById('edit-site-submit-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" style="width: 14px; height: 14px; margin-right: 4px;"></i> Saving...`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    try {
+      API.toast('Updating website settings & renaming directory...', 'info');
+      const res = await API.put(`/api/websites/${id}`, {
+        name,
+        type,
+        domain,
+        port: port ? parseInt(port, 10) : undefined,
+        entry_file,
+        autostart
+      });
+
+      API.toast(res.message || `Website "${name}" updated!`, 'success');
+      document.getElementById('modal-edit-site').classList.add('hidden');
+      this.loadWebsites();
+    } catch (err) {
+      // toast shown by API client
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i> Save & Apply Changes`;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
   },
 
   async handleCreate(e) {
