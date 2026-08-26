@@ -14,10 +14,10 @@
 
 ## 📖 Zero-Assumption Table of Contents
 
-1. [What is TermuxPanel? (Explained in Plain English)](#1-what-is-termuxpanel-explained-in-plain-english)
+1. [What is TermuxPanel?](#1-what-is-termuxpanel)
 2. [How Does It Connect to the Internet? (No Port Forwarding)](#2-how-does-it-connect-to-the-internet-no-port-forwarding)
 3. [What You Need Before Starting](#3-what-you-need-before-starting)
-4. [Step-by-Step Installation Guide (From Scratch)](#4-step-by-step-installation-guide-from-scratch)
+4. [Step-by-Step Installation Guide](#4-step-by-step-installation-guide)
 5. [First-Time Setup: Creating Your Admin Account](#5-first-time-setup-creating-your-admin-account)
 6. [Cloudflare Zero Trust Setup (Access from Anywhere)](#6-cloudflare-zero-trust-setup-access-from-anywhere)
    - [Option A: Semi-Automatic Setup (Copy & Paste Token)](#option-a-semi-automatic-setup-copy--paste-token---easiest)
