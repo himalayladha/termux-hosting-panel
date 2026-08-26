@@ -91,7 +91,7 @@ async function startServer() {
 
     await db.initDb();
 
-    app.listen(config.PORT, config.HOST, async () => {
+    app.listen(config.PORT, async () => {
       const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;
       console.log(`[TermuxPanel] Server is LIVE & Listening on 0.0.0.0:${config.PORT}`);
       console.log(`  • On Phone:           http://127.0.0.1:${config.PORT}`);

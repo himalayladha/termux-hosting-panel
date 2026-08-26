@@ -117,9 +117,13 @@ start_panel() {
 
 stop_panel() {
   echo -e "\n${BLUE}▶ Stopping TermuxPanel Server...${NC}"
-  pkill -f "node.*server.js" && echo -e "  ${GREEN}✓${NC} TermuxPanel stopped"
-  pkill -x "cloudflared" && echo -e "  ${GREEN}✓${NC} Cloudflared tunnel stopped"
-  echo ""
+  pkill -9 -f "server.js" 2>/dev/null || true
+  pkill -9 -x "cloudflared" 2>/dev/null || true
+  if command -v sv >/dev/null 2>&1 && [ -d "$PREFIX/var/service/termux-panel" ]; then
+    sv down termux-panel 2>/dev/null || true
+  fi
+  sleep 1
+  echo -e "  ${GREEN}✓${NC} TermuxPanel stopped\n"
 }
 
 restart_panel() {
