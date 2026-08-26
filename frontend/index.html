@@ -240,13 +240,17 @@
           </div>
 
           <!-- Mobile Hardware & Battery Guard Banner -->
-          <div class="card mt-4" style="background: rgba(16, 185, 129, 0.04); border-color: rgba(16, 185, 129, 0.25);">
+          <div class="card mt-4" style="background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.22);">
             <div class="card-header flex-between flex-wrap gap-2">
               <div class="flex-align gap-2">
-                <i data-lucide="battery-charging" style="width: 20px; height: 20px; color: #10b981;"></i>
-                <h3 style="margin: 0; font-size: 16px;">Android Hardware & Battery Guard</h3>
-                <span id="metric-battery-status" class="badge badge-success" style="font-size: 11px;">CHARGING</span>
-                <span id="badge-wakelock-status" class="badge badge-secondary" style="font-size: 11px;">WAKELOCK</span>
+                <div style="background: rgba(16, 185, 129, 0.15); color: #10b981; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                  <i data-lucide="battery-charging" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div>
+                  <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #fff;">Android Hardware & Battery Guard</h3>
+                </div>
+                <span id="metric-battery-status" class="badge badge-success" style="font-size: 10.5px;">CHARGING</span>
+                <span id="badge-wakelock-status" class="badge badge-secondary" style="font-size: 10.5px;">WAKELOCK</span>
               </div>
               <div class="flex-align gap-2">
                 <button id="btn-toggle-wakelock" class="btn btn-secondary btn-sm" onclick="dashboard.toggleWakeLock()">
@@ -256,33 +260,36 @@
             </div>
             <div class="card-body">
               <div class="grid grid-4 gap-3">
-                <div class="card bg-darker p-3">
+                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
                   <div class="text-muted text-sm flex-between">
-                    <span>Battery Level</span>
-                    <strong id="metric-battery-percent" style="color: #fff; font-size: 15px;">--%</strong>
+                    <span style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Level</span>
+                    <strong id="metric-battery-percent" style="color: #fff; font-size: 16px; font-weight: 700;">--%</strong>
                   </div>
-                  <div class="progress-bar-wrapper mt-2" style="height: 6px;">
+                  <div class="progress-bar-wrapper mt-2" style="height: 6px; background: rgba(255, 255, 255, 0.08);">
                     <div class="progress-bar" id="bar-battery" style="width: 0%; background: #10b981;"></div>
                   </div>
-                  <div class="text-muted text-sm mt-2" id="metric-battery-plugged" style="font-size: 11.5px;">Checking...</div>
+                  <div class="flex-between mt-2" style="font-size: 11.5px;">
+                    <span class="text-muted">Power Source:</span>
+                    <span id="metric-battery-plugged" style="font-weight: 600; color: #4ade80;">Checking...</span>
+                  </div>
                 </div>
 
-                <div class="card bg-darker p-3">
-                  <div class="text-muted text-sm">Battery Thermal</div>
-                  <div style="font-size: 16px; font-weight: 600; margin-top: 4px;" id="metric-battery-temp">--°C</div>
-                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Auto-Guard Limit: <strong>42°C</strong></div>
+                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                  <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Thermal</div>
+                  <div style="font-size: 18px; font-weight: 700; margin: 4px 0 2px 0;" id="metric-battery-temp">--°C</div>
+                  <div class="text-muted text-sm" style="font-size: 11.5px;">Auto-Guard Threshold: <strong style="color: #f1f5f9;">42°C</strong></div>
                 </div>
 
-                <div class="card bg-darker p-3">
-                  <div class="text-muted text-sm">Battery Health</div>
-                  <div style="font-size: 16px; font-weight: 600; color: #38bdf8; margin-top: 4px;" id="metric-battery-health">GOOD</div>
-                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Li-ion Sensor</div>
+                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                  <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Health</div>
+                  <div style="font-size: 18px; font-weight: 700; color: #38bdf8; margin: 4px 0 2px 0;" id="metric-battery-health">GOOD</div>
+                  <div class="text-muted text-sm" style="font-size: 11.5px;">Sensor: <span style="color: #cbd5e1;">Li-ion Battery</span></div>
                 </div>
 
-                <div class="card bg-darker p-3">
-                  <div class="text-muted text-sm">CPU Keepalive</div>
-                  <div style="font-size: 15px; font-weight: 600; color: #f59e0b; margin-top: 4px;">termux-wake-lock</div>
-                  <div class="text-muted text-sm mt-1" style="font-size: 11.5px;">Prevents screen lock sleep</div>
+                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                  <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">CPU Keepalive</div>
+                  <div style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 4px 0 2px 0;">termux-wake-lock</div>
+                  <div class="text-muted text-sm" style="font-size: 11.5px;">Prevents CPU lock sleep</div>
                 </div>
               </div>
             </div>
