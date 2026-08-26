@@ -13,6 +13,7 @@ const databases = {
     if (dbSelect) {
       dbSelect.addEventListener('change', (e) => {
         this.currentDbId = e.target.value;
+        this.updateLockStatus();
         this.loadTables();
       });
     }
@@ -63,6 +64,37 @@ const databases = {
     }
   },
 
+  updateLockStatus() {
+    const currentDb = this.dbList.find((d) => d.id === this.currentDbId);
+    const isSystem = this.currentDbId === 'panel_db' || (currentDb && currentDb.isSystem);
+    const deleteBtn = document.getElementById('db-delete-btn');
+    const lockBadge = document.getElementById('db-lock-badge');
+
+    if (deleteBtn) {
+      if (isSystem) {
+        deleteBtn.disabled = true;
+        deleteBtn.title = 'System database is protected and cannot be deleted';
+        deleteBtn.style.opacity = '0.4';
+        deleteBtn.style.cursor = 'not-allowed';
+      } else {
+        deleteBtn.disabled = false;
+        deleteBtn.title = 'Delete Database';
+        deleteBtn.style.opacity = '1';
+        deleteBtn.style.cursor = 'pointer';
+      }
+    }
+
+    if (lockBadge) {
+      if (isSystem) {
+        lockBadge.classList.remove('hidden');
+      } else {
+        lockBadge.classList.add('hidden');
+      }
+    }
+
+    if (window.lucide) lucide.createIcons();
+  },
+
   async openCreateModal() {
     const targetSelect = document.getElementById('db-website-target');
     if (targetSelect) {
@@ -100,6 +132,7 @@ const databases = {
         this.currentDbId = res.dbId;
         const select = document.getElementById('db-select');
         if (select) select.value = res.dbId;
+        this.updateLockStatus();
         this.loadTables();
       }
     } catch (err) {
@@ -109,12 +142,14 @@ const databases = {
 
   async handleDeleteCurrentDb() {
     if (!this.currentDbId) return;
-    if (this.currentDbId === 'panel_db') {
-      API.toast('Cannot delete system panel.db', 'warning');
+    const currentDb = this.dbList.find((d) => d.id === this.currentDbId);
+    const isSystem = this.currentDbId === 'panel_db' || (currentDb && currentDb.isSystem);
+
+    if (isSystem) {
+      API.toast('System database (panel.db) is protected and cannot be deleted.', 'warning');
       return;
     }
 
-    const currentDb = this.dbList.find((d) => d.id === this.currentDbId);
     const dbName = currentDb ? currentDb.name : 'this database';
 
     if (!confirm(`Are you sure you want to permanently delete ${dbName}? This action cannot be undone.`)) {
@@ -135,11 +170,12 @@ const databases = {
       if (!select) return;
 
       select.innerHTML = this.dbList
-        .map((db) => `<option value="${db.id}">${db.name}</option>`)
+        .map((db) => `<option value="${db.id}">${db.isSystem ? '🔒 ' + db.name : db.name}</option>`)
         .join('');
 
       if (this.dbList.length > 0) {
         this.currentDbId = this.dbList[0].id;
+        this.updateLockStatus();
         this.loadTables();
       } else {
         document.getElementById('db-tables-list').innerHTML = '<li class="text-muted">No databases found</li>';

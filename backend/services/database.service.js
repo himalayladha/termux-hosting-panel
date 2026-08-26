@@ -102,12 +102,12 @@ const STARTER_SCHEMAS = {
 async function discoverDatabases() {
   const dbs = [];
 
-  // 1. Add panel.db
+  // 1. Add panel.db (Marked as system and locked)
   if (fs.existsSync(config.DB_PATH)) {
     const stat = fs.statSync(config.DB_PATH);
     dbs.push({
       id: 'panel_db',
-      name: 'panel.db (System)',
+      name: 'panel.db (System Core - Locked)',
       path: config.DB_PATH,
       size: stat.size,
       isSystem: true,
@@ -210,15 +210,20 @@ async function createDatabase(fullDbPath, templateType = 'blank') {
 }
 
 /**
- * Delete a database file
+ * Delete a database file (with strict system database protection)
  */
 async function deleteDatabase(fullDbPath) {
-  if (fullDbPath === config.DB_PATH) {
-    throw new Error('Cannot delete system panel.db');
+  const normalizedTarget = path.resolve(fullDbPath);
+  const normalizedSystemDb = path.resolve(config.DB_PATH);
+
+  if (normalizedTarget === normalizedSystemDb) {
+    throw new Error('Access Denied: System database (panel.db) is locked and cannot be deleted.');
   }
+
   if (!fs.existsSync(fullDbPath)) {
     throw new Error('Database file not found');
   }
+
   await fs.promises.unlink(fullDbPath);
   return { success: true };
 }

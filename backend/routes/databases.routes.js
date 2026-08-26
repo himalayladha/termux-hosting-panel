@@ -86,12 +86,20 @@ router.post('/create', requireAuth, async (req, res) => {
 });
 
 /**
- * Delete a database file
+ * Delete a database file (Protected against system database deletion)
  */
 router.post('/delete', requireAuth, async (req, res) => {
   try {
     const { dbId } = req.body;
+    if (!dbId || dbId === 'panel_db') {
+      return res.status(403).json({ error: 'System database (panel.db) is locked and cannot be deleted.' });
+    }
+
     const dbPath = resolveDbPath(dbId);
+    if (path.resolve(dbPath) === path.resolve(config.DB_PATH)) {
+      return res.status(403).json({ error: 'System database (panel.db) is locked and cannot be deleted.' });
+    }
+
     const result = await dbService.deleteDatabase(dbPath);
     return res.json(result);
   } catch (err) {

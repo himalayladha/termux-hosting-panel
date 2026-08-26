@@ -116,7 +116,16 @@ async function runTests() {
   assert(queryRes.rows.length === 1 && queryRes.rows[0].username === 'alice', 'SQL select verification failed');
   await databaseService.deleteDatabase(testAuthDb);
   assert(!fs.existsSync(testAuthDb), 'Database deletion failed');
-  console.log('  ✓ Database creator and schema templates verified successfully.');
+
+  // Verify system database panel.db is locked against deletion
+  let systemDeleteBlocked = false;
+  try {
+    await databaseService.deleteDatabase(config.DB_PATH);
+  } catch (e) {
+    systemDeleteBlocked = true;
+  }
+  assert(systemDeleteBlocked, 'System database panel.db was NOT protected against deletion!');
+  console.log('  ✓ Database creator, schema templates, and system database locking verified successfully.');
 
   // 7. ZIP Compression & Safe Extraction
   console.log('[7/7] Testing ZIP Compression & Safe Extraction...');
