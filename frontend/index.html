@@ -6,6 +6,10 @@
   <title>TermuxPanel - Android Hosting Control Panel</title>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- xterm.js Web Terminal CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/components.css">
 </head>
@@ -86,6 +90,10 @@
           <i data-lucide="globe" class="nav-icon"></i>
           <span class="nav-label">Websites</span>
         </button>
+        <button class="nav-item" data-tab="catalog">
+          <i data-lucide="grid" class="nav-icon"></i>
+          <span class="nav-label">App Catalog</span>
+        </button>
         <button class="nav-item" data-tab="domains">
           <i data-lucide="globe-2" class="nav-icon"></i>
           <span class="nav-label">Domains</span>
@@ -101,6 +109,10 @@
         <button class="nav-item" data-tab="cron">
           <i data-lucide="clock" class="nav-icon"></i>
           <span class="nav-label">Cron Jobs</span>
+        </button>
+        <button class="nav-item" data-tab="terminal">
+          <i data-lucide="terminal-square" class="nav-icon"></i>
+          <span class="nav-label">Web Terminal</span>
         </button>
         <button class="nav-item" data-tab="logs">
           <i data-lucide="terminal" class="nav-icon"></i>
@@ -263,6 +275,20 @@
 
           <div class="websites-grid mt-4" id="websites-list">
             <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- 2.2. APP CATALOG VIEW -->
+        <section id="view-catalog" class="tab-view">
+          <div class="view-header flex-between flex-wrap gap-2">
+            <div>
+              <h3>1-Click App Catalog</h3>
+              <p class="text-muted">Deploy pre-configured lightweight web apps, CMS platforms, and databases on Android with zero setup</p>
+            </div>
+          </div>
+
+          <div class="grid grid-3 gap-3 mt-4" id="catalog-grid">
+            <!-- Rendered dynamically by catalog.js -->
           </div>
         </section>
 
@@ -508,6 +534,32 @@
                   <!-- Dynamic Cron Items -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5.5. WEB TERMINAL VIEW -->
+        <section id="view-terminal" class="tab-view">
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <i data-lucide="terminal-square" style="width: 18px; height: 18px; color: #38bdf8;"></i>
+                <h4 style="margin: 0;">Interactive Termux Shell</h4>
+                <span id="terminal-status-indicator" class="badge badge-secondary" style="font-size: 11px;">READY</span>
+              </div>
+              <div class="flex-align gap-2">
+                <button id="terminal-btn-reconnect" class="btn btn-primary btn-sm">
+                  <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 4px;"></i>
+                  Reconnect
+                </button>
+                <button id="terminal-btn-clear" class="btn btn-secondary btn-sm">
+                  <i data-lucide="trash-2" style="width: 13px; height: 13px; margin-right: 4px;"></i>
+                  Clear Screen
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-0" style="background: #090d16; border-radius: 0 0 10px 10px; overflow: hidden;">
+              <div id="terminal-container" style="height: 480px; width: 100%; padding: 8px;"></div>
             </div>
           </div>
         </section>
@@ -1752,6 +1804,109 @@
     </div>
   </div>
 
+  <!-- 1-Click App Catalog Deploy Modal -->
+  <div id="modal-deploy-catalog" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="deploy-app-title">Deploy Application</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="deploy-catalog-form">
+        <input type="hidden" id="deploy-app-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="deploy-site-name"><strong>Application Name / Directory</strong></label>
+            <input type="text" id="deploy-site-name" class="form-control" required placeholder="e.g. pocketbase-demo">
+            <small class="text-muted">Unique folder identifier under <code>~/termux-panel/storage/websites/</code></small>
+          </div>
+          <div class="form-group mb-0">
+            <label for="deploy-site-domain"><strong>Optional Custom Domain</strong></label>
+            <input type="text" id="deploy-site-domain" class="form-control" placeholder="e.g. app.example.com">
+            <small class="text-muted">You can also connect and route domains later in the Domains tab.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" id="btn-submit-catalog-deploy" class="btn btn-primary">
+            <i data-lucide="rocket" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+            Deploy & Launch
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GitHub Auto-Deploy Webhook Modal -->
+  <div id="modal-site-webhook" class="modal-overlay hidden">
+    <div class="modal-card modal-lg" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="git-branch" style="width: 18px; height: 18px; color: #a855f7;"></i>
+          <h3>GitHub CI/CD Webhook for <span id="webhook-site-name" style="color: #38bdf8;">Website</span></h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="site-webhook-form">
+        <div class="modal-body">
+          <p class="text-muted text-sm mb-3">
+            Configure this Webhook in your GitHub repository (<strong>Repo Settings ➔ Webhooks ➔ Add webhook</strong>).
+            Whenever you run <code>git push</code>, Termux will automatically pull the latest commits, install dependencies, and reload your live site!
+          </p>
+
+          <div class="form-group">
+            <label for="webhook-url-input"><strong>Payload URL (Webhook Destination)</strong></label>
+            <div class="flex-align gap-2">
+              <input type="text" id="webhook-url-input" class="form-control" readonly style="font-family: monospace; font-size: 12px; color: #38bdf8; background: #0b1120;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('webhook-url-input').value).then(() => API.toast('Webhook URL copied!', 'success'))" title="Copy URL">
+                <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label for="webhook-branch-input"><strong>Target Branch</strong></label>
+              <input type="text" id="webhook-branch-input" class="form-control" placeholder="main" value="main">
+            </div>
+            <div class="form-group">
+              <label for="webhook-secret-input"><strong>Secret Token (Optional HMAC-SHA256)</strong></label>
+              <input type="text" id="webhook-secret-input" class="form-control" placeholder="Enter or generate secret">
+            </div>
+          </div>
+
+          <div class="flex-align gap-4 my-2">
+            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="webhook-auto-npm" checked style="accent-color: #a855f7;">
+              Auto-run <code>npm install</code> on package.json changes
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="webhook-auto-pip" checked style="accent-color: #a855f7;">
+              Auto-run <code>pip install</code> on requirements.txt
+            </label>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex-between mb-2">
+              <h4 style="font-size: 14px; margin: 0;">Recent Deployment History</h4>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="websites.triggerManualDeploy()">
+                <i data-lucide="play" style="width: 12px; height: 12px; margin-right: 3px;"></i> Trigger Manual Deploy
+              </button>
+            </div>
+            <div id="webhook-deploy-history" style="max-height: 180px; overflow-y: auto; background: #070a14; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+              <p class="text-muted text-sm">Loading deployment history...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer flex-between">
+          <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i> Save & Generate Webhook
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Universal Fullscreen Modal Dialog (No browser alert/confirm) -->
   <div id="modal-app-dialog" class="modal-overlay hidden" style="z-index: 99999;">
     <div class="modal-card" style="max-width: 460px; text-align: center; padding: 28px 24px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);">
@@ -1777,10 +1932,12 @@
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/websites.js"></script>
+  <script src="js/catalog.js"></script>
   <script src="js/domains.js"></script>
   <script src="js/filemanager.js"></script>
   <script src="js/databases.js"></script>
   <script src="js/cron.js"></script>
+  <script src="js/terminal.js"></script>
   <script src="js/logs.js"></script>
   <script src="js/backups.js"></script>
   <script src="js/tunnel.js"></script>

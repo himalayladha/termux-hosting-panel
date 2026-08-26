@@ -66,3 +66,29 @@ CREATE TABLE IF NOT EXISTS settings (
     value TEXT NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS webhooks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    website_id INTEGER NOT NULL UNIQUE,
+    token TEXT UNIQUE NOT NULL,
+    branch TEXT DEFAULT 'main',
+    secret TEXT,
+    auto_npm INTEGER DEFAULT 1,
+    auto_pip INTEGER DEFAULT 1,
+    last_deployed_at DATETIME,
+    last_status TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS deployments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    website_id INTEGER NOT NULL,
+    commit_hash TEXT,
+    commit_message TEXT,
+    author TEXT,
+    status TEXT DEFAULT 'success',
+    log_output TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
+);

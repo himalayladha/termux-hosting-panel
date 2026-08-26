@@ -235,8 +235,78 @@ async function runTests() {
 
   console.log('  ✓ Multi-Tunnel provider abstraction, token storage, and log tailing verified.');
 
+  // 10. Developer Workflow & CI/CD Suite (Webhooks, App Catalog, Web Terminal)
+  console.log('[10/10] Testing Developer Workflow & CI/CD Suite...');
+  const webhookService = require('../services/webhook.service');
+  const catalogService = require('../services/catalog.service');
+  const terminalService = require('../services/terminal.service');
+
+  // Test App Catalog Listing & 1-Click Deployment
+  const catalogApps = catalogService.listCatalogApps();
+  assert(catalogApps.length >= 5, 'Catalog apps list should contain at least 5 apps');
+  assert(catalogApps.some((a) => a.id === 'pocketbase'), 'PocketBase missing in catalog');
+  assert(catalogApps.some((a) => a.id === 'wordpress_sqlite'), 'WordPress SQLite missing in catalog');
+  assert(catalogApps.some((a) => a.id === 'sqlite_web'), 'SQLite Web missing in catalog');
+
+  const catalogDeployRes = await catalogService.deployApp({
+    appId: 'pocketbase',
+    name: `test-pb-${Date.now().toString().slice(-4)}`
+  });
+  assert(catalogDeployRes.success, 'Catalog app deployment failed');
+  assert(catalogDeployRes.website && catalogDeployRes.website.id > 0, 'Deployed catalog website record missing');
+
+  const deployedSiteId = catalogDeployRes.website.id;
+
+  // Test GitHub Webhook Generation & Signature Verification
+  const webhookRes = await webhookService.createOrUpdateWebhook(deployedSiteId, {
+    branch: 'main',
+    secret: 'my_super_secret_key',
+    autoNpm: 1,
+    autoPip: 1
+  });
+  assert(webhookRes && webhookRes.token, 'Webhook creation failed');
+  assert(webhookRes.secret === 'my_super_secret_key', 'Webhook secret mismatch');
+
+  // Test HMAC-SHA256 signature verification
+  const crypto = require('crypto');
+  const dummyPayload = JSON.stringify({ ref: 'refs/heads/main', head_commit: { id: 'abc1234', message: 'Test commit', author: { name: 'Dev' } } });
+  const signature = 'sha256=' + crypto.createHmac('sha256', 'my_super_secret_key').update(dummyPayload).digest('hex');
+  const isValidSig = webhookService.verifySignature(dummyPayload, signature, 'my_super_secret_key');
+  assert(isValidSig === true, 'Webhook HMAC signature verification failed');
+
+  // Test Manual & Webhook Execution Pipeline
+  const deployResult = await webhookService.executeDeployment(deployedSiteId, {
+    commitHash: 'a1b2c3d',
+    commitMessage: 'Automated test commit',
+    author: 'CI/CD Bot',
+    triggeredBy: 'Automated Test'
+  });
+  assert(deployResult.success, 'Deployment pipeline failed');
+
+  const deployments = await webhookService.listDeployments(deployedSiteId, 5);
+  assert(deployments.length > 0, 'Deployments history should have recorded the deploy event');
+  assert(deployments[0].commit_hash === 'a1b2c3d', 'Deployment commit hash mismatch');
+
+  // Test Terminal Default Shell Detection
+  const defaultShell = terminalService.getDefaultShell();
+  assert(defaultShell && typeof defaultShell === 'string', 'Terminal default shell detection failed');
+
+  // Cleanup test catalog site
+  const processService = require('../services/process.service');
+  await processService.stopWebsite(deployedSiteId);
+  await db.run('DELETE FROM websites WHERE id = ?', [deployedSiteId]);
+
+  const siteDir = catalogDeployRes.website.root_path;
+  if (fs.existsSync(siteDir)) {
+    try {
+      fs.rmSync(siteDir, { recursive: true, force: true });
+    } catch (_) {}
+  }
+
+  console.log('  ✓ GitHub Auto-Deploy Webhooks, App Catalog, and Web Terminal verified successfully.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 9/9 Verifications Passed!       ');
+  console.log('  All TermuxPanel 10/10 Verifications Passed!     ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

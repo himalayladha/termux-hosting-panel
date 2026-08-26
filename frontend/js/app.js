@@ -133,6 +133,7 @@ const app = {
     // Initialize all modules
     dashboard.init();
     websites.init();
+    catalogManager.init();
     domainsManager.init();
     fileManager.init();
     databases.init();
@@ -140,6 +141,7 @@ const app = {
     logsViewer.init();
     backupsManager.init();
     tunnelManager.init();
+    terminalManager.init();
     settingsManager.init();
 
     this.switchTab('dashboard');
@@ -196,10 +198,12 @@ const app = {
     const titles = {
       dashboard: 'Dashboard',
       websites: 'Websites & Applications',
+      catalog: '1-Click App Catalog',
       domains: 'Custom Domain Management',
       filemanager: 'File Manager',
       databases: 'SQLite Database Explorer',
       cron: 'Scheduled Cron Jobs',
+      terminal: 'In-Browser Web Terminal',
       logs: 'System & Application Logs',
       backups: 'Backups & Archives',
       tunnel: 'Cloudflare Zero Trust Tunnel',
@@ -212,10 +216,12 @@ const app = {
     // Trigger tab-specific refresh
     if (tabId === 'dashboard') dashboard.loadSummary();
     if (tabId === 'websites') websites.loadWebsites();
+    if (tabId === 'catalog') catalogManager.loadCatalog();
     if (tabId === 'domains') domainsManager.loadDomains();
     if (tabId === 'filemanager') fileManager.populateSiteSelector();
     if (tabId === 'databases') databases.loadDatabases();
     if (tabId === 'cron') cronManager.loadJobs();
+    if (tabId === 'terminal') terminalManager.openTerminal();
     if (tabId === 'logs') logsViewer.discoverLogs();
     if (tabId === 'backups') backupsManager.loadBackups();
     if (tabId === 'tunnel') tunnelManager.loadStatus();

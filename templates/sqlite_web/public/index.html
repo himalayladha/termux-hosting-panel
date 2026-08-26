@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLite Web GUI • TermuxPanel</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+    .card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 32px; max-width: 650px; width: 100%; }
+    h1 { color: #38bdf8; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #334155; }
+    th { color: #94a3b8; font-size: 13px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>SQLite Web Explorer</h1>
+    <p style="color: #94a3b8;">Visual SQLite Database Viewer & Editor hosted on Termux.</p>
+    <table>
+      <thead>
+        <tr><th>Database</th><th>Size</th><th>Tables</th><th>Engine</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>local.db</strong></td><td>12 KB</td><td>4 tables</td><td><span style="color: #22c55e;">SQLite 3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

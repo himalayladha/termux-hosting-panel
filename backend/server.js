@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -8,6 +9,7 @@ const config = require('./config/app.config');
 const db = require('./database/db');
 const processService = require('./services/process.service');
 const systemService = require('./services/system.service');
+const terminalService = require('./services/terminal.service');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
@@ -21,8 +23,14 @@ const backupsRoutes = require('./routes/backups.routes');
 const tunnelRoutes = require('./routes/tunnel.routes');
 const domainsRoutes = require('./routes/domains.routes');
 const settingsRoutes = require('./routes/settings.routes');
+const webhooksRoutes = require('./routes/webhooks.routes');
+const catalogRoutes = require('./routes/catalog.routes');
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize WebSocket Terminal Server
+terminalService.initTerminalServer(server);
 
 // Security Headers
 app.use(
@@ -65,6 +73,8 @@ app.use('/api/logs', logsRoutes);
 app.use('/api/backups', backupsRoutes);
 app.use('/api/tunnel', tunnelRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/catalog', catalogRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');
@@ -94,7 +104,7 @@ async function startServer() {
 
     await db.initDb();
 
-    app.listen(config.PORT, async () => {
+    server.listen(config.PORT, async () => {
       const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;
       console.log(`[TermuxPanel] Server is LIVE & Listening on 0.0.0.0:${config.PORT}`);
       console.log(`  • On Phone:           http://127.0.0.1:${config.PORT}`);
@@ -122,4 +132,4 @@ if (require.main === module) {
   startServer();
 }
 
-module.exports = { app, startServer };
+module.exports = { app, server, startServer };

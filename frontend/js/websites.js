@@ -1,6 +1,7 @@
 const websites = {
   list: [],
   currentEditingId: null,
+  currentWebhookSiteId: null,
 
   init() {
     this.bindEvents();
@@ -35,6 +36,11 @@ const websites = {
         }
       });
     }
+
+    const webhookForm = document.getElementById('site-webhook-form');
+    if (webhookForm) {
+      webhookForm.addEventListener('submit', (e) => this.handleSaveWebhook(e));
+    }
   },
 
   async loadWebsites() {
@@ -54,9 +60,12 @@ const websites = {
       grid.innerHTML = `
         <div class="card p-4 text-center">
           <p class="text-muted">No websites or applications deployed yet.</p>
-          <div class="mt-3">
+          <div class="mt-3 flex-align gap-2" style="justify-content: center;">
             <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">
-              <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Create Your First Website
+              <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Create Website
+            </button>
+            <button class="btn btn-secondary" onclick="app.switchTab('catalog')">
+              <i data-lucide="grid" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Browse App Catalog
             </button>
           </div>
         </div>
@@ -89,7 +98,7 @@ const websites = {
                   ${
                     isRunning
                       ? `<a href="${openUrl}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center;">
-                           <i data-lucide="external-link" style="width: 13px; height: 13px; margin-right: 4px;"></i> Open Website
+                           <i data-lucide="external-link" style="width: 13px; height: 13px; margin-right: 4px;"></i> Open
                          </a>
                          <button class="btn btn-secondary btn-sm" onclick="websites.restartSite(${site.id})">
                            <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 3px;"></i> Restart
@@ -101,6 +110,9 @@ const websites = {
                            <i data-lucide="play" style="width: 13px; height: 13px; margin-right: 3px;"></i> Start
                          </button>`
                   }
+                  <button class="btn btn-secondary btn-sm" onclick="websites.openWebhookModal(${site.id})" title="GitHub Auto-Deploy Webhook">
+                    <i data-lucide="git-branch" style="width: 13px; height: 13px; margin-right: 3px; color: #a855f7;"></i> CI/CD
+                  </button>
                   <button class="btn btn-secondary btn-sm" onclick="websites.openEditModal(${site.id})" title="Manage Website Settings">
                     <i data-lucide="sliders" style="width: 13px; height: 13px; margin-right: 3px;"></i> Manage
                   </button>
@@ -148,6 +160,113 @@ const websites = {
       .join('');
 
     if (window.lucide) lucide.createIcons();
+  },
+
+  async openWebhookModal(siteId) {
+    const site = this.list.find((s) => s.id === siteId);
+    if (!site) return;
+
+    this.currentWebhookSiteId = siteId;
+    document.getElementById('webhook-site-name').textContent = site.name;
+
+    // Fetch existing webhook config
+    try {
+      const res = await API.get(`/api/webhooks/site/${siteId}`);
+      const webhook = res.webhook;
+
+      const host = window.location.origin;
+      const urlInput = document.getElementById('webhook-url-input');
+      const secretInput = document.getElementById('webhook-secret-input');
+      const branchInput = document.getElementById('webhook-branch-input');
+      const npmCheck = document.getElementById('webhook-auto-npm');
+      const pipCheck = document.getElementById('webhook-auto-pip');
+
+      if (webhook) {
+        urlInput.value = `${host}/api/webhooks/deploy/${webhook.token}`;
+        secretInput.value = webhook.secret || '';
+        branchInput.value = webhook.branch || 'main';
+        if (npmCheck) npmCheck.checked = !!webhook.auto_npm;
+        if (pipCheck) pipCheck.checked = !!webhook.auto_pip;
+      } else {
+        urlInput.value = 'Click "Save & Generate Webhook" below to create webhook URL';
+        secretInput.value = '';
+        branchInput.value = 'main';
+        if (npmCheck) npmCheck.checked = true;
+        if (pipCheck) pipCheck.checked = true;
+      }
+
+      this.loadDeploymentHistory(siteId);
+    } catch (_) {}
+
+    document.getElementById('modal-site-webhook').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  },
+
+  async handleSaveWebhook(e) {
+    e.preventDefault();
+    if (!this.currentWebhookSiteId) return;
+
+    const branch = document.getElementById('webhook-branch-input').value.trim() || 'main';
+    const secret = document.getElementById('webhook-secret-input').value.trim();
+    const autoNpm = document.getElementById('webhook-auto-npm').checked ? 1 : 0;
+    const autoPip = document.getElementById('webhook-auto-pip').checked ? 1 : 0;
+
+    try {
+      API.toast('Configuring GitHub Webhook...', 'info');
+      const res = await API.post(`/api/webhooks/site/${this.currentWebhookSiteId}`, {
+        branch,
+        secret,
+        autoNpm,
+        autoPip
+      });
+      API.toast('Webhook configured successfully!', 'success');
+      this.openWebhookModal(this.currentWebhookSiteId);
+    } catch (err) {}
+  },
+
+  async triggerManualDeploy() {
+    if (!this.currentWebhookSiteId) return;
+
+    try {
+      API.toast('Triggering manual deployment...', 'info');
+      const res = await API.post(`/api/webhooks/site/${this.currentWebhookSiteId}/trigger`);
+      API.toast(res.message || 'Deployment executed!', 'success');
+      this.loadDeploymentHistory(this.currentWebhookSiteId);
+    } catch (err) {}
+  },
+
+  async loadDeploymentHistory(siteId) {
+    const listEl = document.getElementById('webhook-deploy-history');
+    if (!listEl) return;
+
+    try {
+      const history = await API.get(`/api/webhooks/site/${siteId}/deployments`);
+      if (!history || history.length === 0) {
+        listEl.innerHTML = '<p class="text-muted text-sm">No deployments logged yet. Push code to GitHub or click "Trigger Manual Deploy" above.</p>';
+        return;
+      }
+
+      listEl.innerHTML = history
+        .map(
+          (d) => `
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+            <div class="flex-between flex-wrap gap-1 text-sm">
+              <div>
+                <span class="badge ${d.status === 'success' ? 'badge-success' : 'badge-danger'}" style="font-size: 11px;">
+                  ${d.status.toUpperCase()}
+                </span>
+                <strong style="margin-left: 6px;">${d.commit_message || 'Deploy'}</strong>
+              </div>
+              <span class="text-muted text-sm">${new Date(d.created_at).toLocaleString()}</span>
+            </div>
+            <div class="text-muted text-sm mt-1" style="font-size: 12px;">
+              Commit: <code>${d.commit_hash}</code> • Author: <strong>${d.author}</strong>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+    } catch (_) {}
   },
 
   openEditModal(id) {
