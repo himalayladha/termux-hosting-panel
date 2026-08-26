@@ -122,7 +122,7 @@ const tunnelManager = {
     if (!tbody) return;
 
     if (!routes || routes.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-muted text-center">No routes available</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="text-muted text-center" style="padding: 24px;">No routes mapped yet. Connect a domain in the Domains tab to map public hostnames to local services.</td></tr>`;
       return;
     }
 
@@ -130,14 +130,28 @@ const tunnelManager = {
       .map(
         (r) => `
         <tr>
-          <td><strong>${r.hostname}</strong></td>
-          <td><span class="badge badge-secondary">HTTP</span></td>
+          <td>
+            <div class="flex-align gap-2">
+              <i data-lucide="${r.isPanel ? 'layout-dashboard' : 'globe'}" style="width: 15px; height: 15px; color: #38bdf8;"></i>
+              <strong>${r.hostname}</strong>
+            </div>
+          </td>
+          <td><span class="badge ${r.type && r.type.includes('HTTPS') ? 'badge-success' : 'badge-secondary'}">${r.type || 'HTTP'}</span></td>
           <td><code>${r.service}</code></td>
-          <td class="text-muted">${r.description}</td>
+          <td>
+            <div class="flex-between">
+              <span>${r.description}</span>
+              <span class="badge ${r.status && r.status.includes('Connected') ? 'badge-success' : 'badge-secondary'}" style="font-size: 10px; margin-left: 8px;">
+                ${r.status}
+              </span>
+            </div>
+          </td>
         </tr>
       `
       )
       .join('');
+
+    if (window.lucide) lucide.createIcons();
   },
 
   async handleSaveToken(e) {

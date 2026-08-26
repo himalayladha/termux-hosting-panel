@@ -11,24 +11,84 @@ const config = require('../config/app.config');
 router.get('/status', requireAuth, async (req, res) => {
   try {
     const tunnelStatus = await cloudflareService.getTunnelStatus();
-    const websites = await db.all('SELECT id, name, domain, port, type, status FROM websites');
+    
+    // Fetch all connected domains with their mapped websites
+    const domains = await db.all(`
+      SELECT d.id, d.domain, d.website_id, d.ssl_enabled, d.cname_target,
+             w.name AS website_name, w.port AS website_port, w.type AS website_type, w.status AS website_status
+      FROM domains d
+      LEFT JOIN websites w ON d.website_id = w.id
+      ORDER BY d.id ASC
+    `);
 
-    const recommendedRoutes = [
-      {
-        hostname: 'panel.yourdomain.com',
+    // Fetch all websites
+    const websites = await db.all('SELECT id, name, domain, port, type, status FROM websites ORDER BY id ASC');
+
+    const mappedDomainSet = new Set();
+    const dynamicRoutes = [];
+
+    // 1. Add all active connected domains from database
+    for (const d of domains) {
+      mappedDomainSet.add(d.domain);
+      const isPanel = !d.website_id || parseInt(d.website_id, 10) === 0;
+      const targetPort = isPanel ? config.PORT : (d.website_port || 8100);
+      const targetDesc = isPanel
+        ? 'TermuxPanel Web Administration Dashboard'
+        : `Hosted Website: ${d.website_name || 'App'} (${(d.website_type || 'html').toUpperCase()})`;
+
+      dynamicRoutes.push({
+        hostname: d.domain,
+        type: d.ssl_enabled ? 'HTTPS (Auto SSL)' : 'HTTP',
+        service: `http://127.0.0.1:${targetPort}`,
+        description: targetDesc,
+        status: 'Connected & Routing',
+        isPanel
+      });
+    }
+
+    // 2. Add any hosted websites that do not have a custom domain mapped yet
+    for (const site of websites) {
+      if (site.domain && !mappedDomainSet.has(site.domain)) {
+        dynamicRoutes.push({
+          hostname: site.domain,
+          type: 'HTTP',
+          service: `http://127.0.0.1:${site.port}`,
+          description: `Hosted Website: ${site.name} (${site.type.toUpperCase()})`,
+          status: 'Local Domain',
+          isPanel: false
+        });
+        mappedDomainSet.add(site.domain);
+      } else if (!site.domain) {
+        const hasMapped = domains.some((d) => d.website_id === site.id);
+        if (!hasMapped) {
+          dynamicRoutes.push({
+            hostname: `${site.name} (Local Service)`,
+            type: 'Local Only',
+            service: `http://127.0.0.1:${site.port}`,
+            description: `Website: ${site.name} (${site.type.toUpperCase()} • Unmapped)`,
+            status: 'Pending Domain Mapping',
+            isPanel: false
+          });
+        }
+      }
+    }
+
+    // 3. If no panel domain is mapped yet, show local panel binding
+    const hasPanelDomain = domains.some((d) => !d.website_id || parseInt(d.website_id, 10) === 0);
+    if (!hasPanelDomain) {
+      dynamicRoutes.unshift({
+        hostname: `localhost:${config.PORT} (TermuxPanel)`,
+        type: 'Local Service',
         service: `http://127.0.0.1:${config.PORT}`,
-        description: 'TermuxPanel Web Administration Dashboard'
-      },
-      ...websites.map((site) => ({
-        hostname: site.domain || `${site.name}.yourdomain.com`,
-        service: `http://127.0.0.1:${site.port}`,
-        description: `Hosted Website (${site.type.toUpperCase()})`
-      }))
-    ];
+        description: 'TermuxPanel Control Plane (Local Host)',
+        status: 'Local Only',
+        isPanel: true
+      });
+    }
 
     return res.json({
       status: tunnelStatus,
-      recommendedRoutes
+      recommendedRoutes: dynamicRoutes
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
