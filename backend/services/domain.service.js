@@ -252,26 +252,63 @@ async function createSubdomain({
 }
 
 /**
- * Update domain target website
+ * Update domain configuration & target mapping
  */
-async function updateDomainTarget(domainId, websiteId) {
-  const domain = await db.get('SELECT * FROM domains WHERE id = ?', [domainId]);
-  if (!domain) {
+async function updateDomain(domainId, { domain, websiteId, sslEnabled, cnameTarget }) {
+  const existing = await db.get('SELECT * FROM domains WHERE id = ?', [domainId]);
+  if (!existing) {
     throw new Error('Domain record not found');
   }
 
+  let cleanDomain = existing.domain;
+  if (domain && domain.trim()) {
+    cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    if (!cleanDomain || !/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(cleanDomain)) {
+      throw new Error('Please enter a valid domain or subdomain name');
+    }
+
+    // Check conflict with other domains
+    const conflict = await db.get('SELECT id FROM domains WHERE domain = ? AND id != ?', [cleanDomain, domainId]);
+    if (conflict) {
+      throw new Error(`Domain "${cleanDomain}" is already connected to another site.`);
+    }
+  }
+
   let targetPort = config.PORT;
-  const numericWebId = (websiteId && parseInt(websiteId, 10) > 0) ? parseInt(websiteId, 10) : 0;
+  let targetName = 'TermuxPanel Control Plane';
+  const numericWebId = (websiteId !== undefined && websiteId !== null && parseInt(websiteId, 10) > 0) ? parseInt(websiteId, 10) : 0;
 
   if (numericWebId > 0) {
     const site = await db.get('SELECT * FROM websites WHERE id = ?', [numericWebId]);
     if (!site) throw new Error('Target website not found');
     targetPort = site.port;
+    targetName = site.name;
   }
 
-  await db.run('UPDATE domains SET website_id = ? WHERE id = ?', [numericWebId, domainId]);
+  const isSsl = sslEnabled !== undefined ? (sslEnabled ? 1 : 0) : existing.ssl_enabled;
+  const targetCname = cnameTarget !== undefined ? cnameTarget : existing.cname_target;
 
-  return { success: true, targetPort };
+  await db.run(
+    'UPDATE domains SET domain = ?, website_id = ?, ssl_enabled = ?, cname_target = ? WHERE id = ?',
+    [cleanDomain, numericWebId, isSsl, targetCname, domainId]
+  );
+
+  return {
+    success: true,
+    id: domainId,
+    domain: cleanDomain,
+    targetName,
+    targetPort,
+    sslEnabled: !!isSsl,
+    cnameTarget: targetCname
+  };
+}
+
+/**
+ * Update domain target website
+ */
+async function updateDomainTarget(domainId, websiteId) {
+  return await updateDomain(domainId, { websiteId });
 }
 
 /**
@@ -350,6 +387,7 @@ module.exports = {
   listDomains,
   connectDomain,
   createSubdomain,
+  updateDomain,
   updateDomainTarget,
   deleteDomain,
   verifyDomainDns

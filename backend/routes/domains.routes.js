@@ -104,6 +104,24 @@ router.post('/create-subdomain', requireAuth, async (req, res) => {
 });
 
 /**
+ * Update domain configuration, target website, and SSL settings
+ */
+router.put('/:id', requireAuth, async (req, res) => {
+  try {
+    const { domain, websiteId, sslEnabled, cnameTarget } = req.body;
+    const result = await domainService.updateDomain(req.params.id, {
+      domain,
+      websiteId,
+      sslEnabled,
+      cnameTarget
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * Update domain target website mapping
  */
 router.put('/:id/target', requireAuth, async (req, res) => {

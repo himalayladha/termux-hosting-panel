@@ -3,6 +3,7 @@ const domainsManager = {
   currentMode: 'auto',
   tunnelInfo: null,
   cfZones: [],
+  currentEditingDomainId: null,
 
   init() {
     this.bindEvents();
@@ -31,12 +32,28 @@ const domainsManager = {
       subForm.addEventListener('submit', (e) => this.handleCreateSubdomain(e));
     }
 
+    const editForm = document.getElementById('edit-domain-form');
+    if (editForm) {
+      editForm.addEventListener('submit', (e) => this.handleEditDomain(e));
+    }
+
+    const editDeleteBtn = document.getElementById('edit-domain-delete-btn');
+    if (editDeleteBtn) {
+      editDeleteBtn.addEventListener('click', () => {
+        if (this.currentEditingDomainId) {
+          const domain = this.domainsList.find((d) => d.id === this.currentEditingDomainId);
+          document.getElementById('modal-edit-domain').classList.add('hidden');
+          this.deleteDomain(this.currentEditingDomainId, domain ? domain.domain : 'domain');
+        }
+      });
+    }
+
     // Dynamic Subdomain Preview Listeners
     const prefixInput = document.getElementById('subdomain-prefix-input');
     const rootInput = document.getElementById('subdomain-root-input');
     const updatePreview = () => {
       const p = (prefixInput ? prefixInput.value.trim() : '') || 'subdomain';
-      const r = (rootInput ? rootInput.value.trim() : '') || 'yourdomain.com';
+      const r = (rootInput ? rootInput.value.trim() : '') || 'example.com';
       const previewEl = document.getElementById('subdomain-preview-text');
       if (previewEl) {
         previewEl.textContent = `https://${p.toLowerCase().replace(/[^a-z0-9-]/g, '')}.${r.toLowerCase().replace(/^https?:\/\//, '')}`;
@@ -260,6 +277,59 @@ const domainsManager = {
     if (window.lucide) lucide.createIcons();
   },
 
+  async openEditModal(domainId) {
+    const domain = this.domainsList.find((d) => d.id === domainId);
+    if (!domain) return;
+
+    this.currentEditingDomainId = domainId;
+
+    document.getElementById('edit-domain-id').value = domain.id;
+    document.getElementById('edit-domain-name').value = domain.domain;
+    document.getElementById('edit-domain-ssl').checked = !!domain.sslEnabled;
+    document.getElementById('edit-domain-cname').value = domain.cnameTarget || '';
+
+    const targetSelect = document.getElementById('edit-domain-target-select');
+    if (targetSelect) {
+      try {
+        const sites = await API.get('/api/websites');
+        targetSelect.innerHTML = `
+          <option value="" ${!domain.websiteId ? 'selected' : ''}>TermuxPanel Control Plane (:9000)</option>
+          ${sites.map((s) => `<option value="${s.id}" ${domain.websiteId === s.id ? 'selected' : ''}>Website: ${s.name} (Port :${s.port} • ${s.type.toUpperCase()})</option>`).join('')}
+        `;
+      } catch (e) {}
+    }
+
+    document.getElementById('modal-edit-domain').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  },
+
+  async handleEditDomain(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-domain-id').value;
+    const domain = document.getElementById('edit-domain-name').value.trim();
+    const websiteId = document.getElementById('edit-domain-target-select').value || null;
+    const sslEnabled = document.getElementById('edit-domain-ssl').checked;
+    const cnameTarget = document.getElementById('edit-domain-cname').value.trim();
+
+    if (!id || !domain) return;
+
+    try {
+      API.toast('Updating domain settings...', 'info');
+      await API.put(`/api/domains/${id}`, {
+        domain,
+        websiteId,
+        sslEnabled,
+        cnameTarget
+      });
+
+      API.toast(`Domain ${domain} updated successfully!`, 'success');
+      document.getElementById('modal-edit-domain').classList.add('hidden');
+      this.loadDomains();
+    } catch (err) {
+      // toast shown by API client
+    }
+  },
+
   async loadDomains() {
     try {
       this.domainsList = await API.get('/api/domains');
@@ -307,9 +377,9 @@ const domainsManager = {
             </div>
           </td>
           <td>
-            <span class="badge badge-success" style="display: inline-flex; align-items: center; gap: 4px;">
-              <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
-              HTTPS Auto-SSL
+            <span class="badge ${d.sslEnabled ? 'badge-success' : 'badge-secondary'}" style="display: inline-flex; align-items: center; gap: 4px;">
+              <i data-lucide="${d.sslEnabled ? 'shield-check' : 'shield-off'}" style="width: 12px; height: 12px;"></i>
+              ${d.sslEnabled ? 'HTTPS Auto-SSL' : 'HTTP Only'}
             </span>
           </td>
           <td>
@@ -323,8 +393,8 @@ const domainsManager = {
           </td>
           <td style="text-align: right;">
             <div class="flex-align gap-2" style="justify-content: flex-end;">
-              <button class="btn btn-secondary btn-sm" onclick="domainsManager.showDnsInstructions('${d.domain}')" title="View CNAME DNS details">
-                <i data-lucide="info" style="width: 13px; height: 13px;"></i>
+              <button class="btn btn-secondary btn-sm" onclick="domainsManager.openEditModal(${d.id})" title="Edit & Manage Domain Settings">
+                <i data-lucide="sliders" style="width: 13px; height: 13px; margin-right: 3px;"></i> Manage
               </button>
               <button class="btn btn-secondary btn-sm" onclick="domainsManager.verifyDomain('${d.domain}')" title="Verify DNS propagation & SSL reachability">
                 <i data-lucide="activity" style="width: 13px; height: 13px; margin-right: 3px;"></i> Verify

@@ -168,6 +168,13 @@ async function runTests() {
   assert(found, 'Connected domain not found in list');
   assert(found.targetName === 'TermuxPanel Control Plane', 'Default target incorrect');
 
+  const updateRes = await domainService.updateDomain(connectRes.id, {
+    domain: `updated-${testDomainName}`,
+    sslEnabled: true,
+    cnameTarget: 'custom-tunnel.cfargotunnel.com'
+  });
+  assert(updateRes.success && updateRes.domain === `updated-${testDomainName}`, 'Domain update failed');
+
   const delRes = await domainService.deleteDomain(connectRes.id);
   assert(delRes.success, 'Domain deletion failed');
 

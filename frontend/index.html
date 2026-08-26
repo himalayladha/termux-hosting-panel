@@ -1189,6 +1189,64 @@
     </div>
   </div>
 
+  <!-- Edit / Manage Domain Settings Modal -->
+  <div id="modal-edit-domain" class="modal-overlay hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>
+          <i data-lucide="sliders" style="width: 20px; height: 20px; margin-right: 6px; color: #38bdf8;"></i>
+          Manage Domain Settings
+        </h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="edit-domain-form">
+        <input type="hidden" id="edit-domain-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="edit-domain-name"><strong>Domain / Hostname</strong></label>
+            <input type="text" id="edit-domain-name" required placeholder="e.g. mysite.com or blog.mysite.com" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-domain-target-select"><strong>Target Hosted Website / Service</strong></label>
+            <select id="edit-domain-target-select" class="form-control">
+              <!-- Populated dynamically -->
+            </select>
+            <small class="text-muted">Re-assign this domain to any hosted website or the control panel anytime.</small>
+          </div>
+
+          <div class="card bg-darker p-3 mb-3">
+            <div class="flex-align gap-2 mb-2">
+              <input type="checkbox" id="edit-domain-ssl" checked style="width: 16px; height: 16px; accent-color: #38bdf8;">
+              <label for="edit-domain-ssl" style="margin: 0; font-weight: 600; cursor: pointer;">
+                HTTPS / SSL Edge Encryption
+              </label>
+            </div>
+            <p class="text-muted text-sm mb-0">Enforces automatic HTTPS SSL certificates via Cloudflare edge CDN.</p>
+          </div>
+
+          <div class="form-group mb-0">
+            <label for="edit-domain-cname"><strong>Cloudflare CNAME Target</strong></label>
+            <input type="text" id="edit-domain-cname" class="form-control" placeholder="<YOUR_TUNNEL_ID>.cfargotunnel.com">
+            <small class="text-muted">DNS CNAME destination where public DNS requests for this hostname should route.</small>
+          </div>
+        </div>
+        <div class="modal-footer flex-between">
+          <button type="button" class="btn btn-danger btn-sm" id="edit-domain-delete-btn">
+            <i data-lucide="trash-2" style="width: 13px; height: 13px; margin-right: 3px;"></i> Disconnect Domain
+          </button>
+          <div class="flex-align gap-2">
+            <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Cloudflare Tunnel Logs Modal -->
   <div id="modal-tunnel-logs" class="modal-overlay hidden">
     <div class="modal-card modal-lg" style="max-width: 750px;">
