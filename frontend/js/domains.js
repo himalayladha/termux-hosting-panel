@@ -429,7 +429,7 @@ const domainsManager = {
               <a href="https://${d.domain}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open live domain">
                 <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
               </a>
-              <button class="btn btn-danger btn-sm" onclick="domainsManager.deleteDomain(${d.id}, '${d.domain}')" title="Disconnect domain">
+              <button class="btn btn-danger btn-sm" onclick="domainsManager.deleteDomain(${d.id})" title="Disconnect domain">
                 <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
               </button>
             </div>
@@ -609,8 +609,10 @@ const domainsManager = {
   },
 
   async deleteDomain(id, name) {
+    const d = this.domainList.find((item) => item.id === id);
+    const domainName = name || (d ? d.domain : 'this domain');
     const confirmed = await UI.confirm(
-      `Are you sure you want to disconnect domain "${name}"?`,
+      `Are you sure you want to disconnect domain "${domainName}"?`,
       'Disconnect Domain',
       { confirmText: 'Disconnect', cancelText: 'Cancel', type: 'danger' }
     );
@@ -618,7 +620,7 @@ const domainsManager = {
 
     try {
       await API.delete(`/api/domains/${id}`);
-      API.toast(`Domain ${name} disconnected`, 'info');
+      API.toast(`Domain ${domainName} disconnected`, 'info');
       this.loadDomains();
     } catch (e) {}
   }

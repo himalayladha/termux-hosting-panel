@@ -243,7 +243,7 @@ const fileManager = {
                        </button>`
                     : ''
                 }
-                <button class="btn btn-secondary btn-sm" onclick="fileManager.renameItemPrompt('${item.relativePath}', '${item.name}')" title="Rename">
+                <button class="btn btn-secondary btn-sm" onclick="fileManager.renameItemPrompt('${item.relativePath.replace(/'/g, "\\'")}')" title="Rename">
                   <i data-lucide="edit" style="width: 13px; height: 13px;"></i>
                 </button>
                 <button class="btn btn-danger btn-sm" onclick="fileManager.deleteItem('${item.relativePath}')" title="Delete">
@@ -442,7 +442,8 @@ const fileManager = {
     } catch (e) {}
   },
 
-  async renameItemPrompt(oldRelPath, oldName) {
+  async renameItemPrompt(oldRelPath) {
+    const oldName = oldRelPath.split('/').pop() || oldRelPath;
     const newName = await UI.prompt('Enter new name:', `Rename "${oldName}"`, oldName, oldName);
     if (!newName || newName === oldName) return;
 

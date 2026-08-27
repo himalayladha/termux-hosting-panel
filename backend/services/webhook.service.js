@@ -103,11 +103,11 @@ const webhookService = {
       if (fs.existsSync(gitDir)) {
         logs.push('[Git] Fetching latest commits...');
         try {
-          const fetchRes = await execPromise(`git fetch origin ${branch}`, { cwd: siteRoot });
+          const fetchRes = await execPromise(`git -c safe.directory='*' fetch origin ${branch}`, { cwd: siteRoot });
           if (fetchRes.stdout) logs.push(fetchRes.stdout.trim());
 
           logs.push(`[Git] Pulling origin/${branch}...`);
-          const pullRes = await execPromise(`git pull origin ${branch}`, { cwd: siteRoot });
+          const pullRes = await execPromise(`git -c safe.directory='*' pull origin ${branch}`, { cwd: siteRoot });
           if (pullRes.stdout) logs.push(pullRes.stdout.trim());
 
           // Extract latest commit info if not provided in webhook payload

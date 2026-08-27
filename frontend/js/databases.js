@@ -258,22 +258,32 @@ const databases = {
 
     const columns = Object.keys(data.rows[0]);
 
+    const escapeHtml = (val) => {
+      if (val === null || val === undefined) return '<em class="text-muted">NULL</em>';
+      return String(val)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    };
+
     container.innerHTML = `
       <div class="flex-between mb-2 flex-wrap gap-2">
-        <h4 style="margin: 0;"><i data-lucide="table" style="width: 16px; height: 16px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> ${tableName} (${data.total} total rows)</h4>
+        <h4 style="margin: 0;"><i data-lucide="table" style="width: 16px; height: 16px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> ${escapeHtml(tableName)} (${data.total} total rows)</h4>
         <span class="text-muted text-sm">Page ${data.page} of ${data.totalPages}</span>
       </div>
       <div class="table-responsive">
         <table class="table">
           <thead>
-            <tr>${columns.map((c) => `<th>${c}</th>`).join('')}</tr>
+            <tr>${columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('')}</tr>
           </thead>
           <tbody>
             ${data.rows
               .map(
                 (row) => `
               <tr>
-                ${columns.map((c) => `<td>${row[c] !== null ? String(row[c]) : '<em class="text-muted">NULL</em>'}</td>`).join('')}
+                ${columns.map((c) => `<td>${escapeHtml(row[c])}</td>`).join('')}
               </tr>
             `
               )
@@ -312,19 +322,29 @@ const databases = {
         }
 
         const columns = Object.keys(result.rows[0]);
+        const escapeHtml = (val) => {
+          if (val === null || val === undefined) return '<em class="text-muted">NULL</em>';
+          return String(val)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        };
+
         container.innerHTML = `
           <h4 class="mb-2"><i data-lucide="list" style="width: 16px; height: 16px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Query Result (${result.rowCount} rows)</h4>
           <div class="table-responsive">
             <table class="table">
               <thead>
-                <tr>${columns.map((c) => `<th>${c}</th>`).join('')}</tr>
+                <tr>${columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('')}</tr>
               </thead>
               <tbody>
                 ${result.rows
                   .map(
                     (row) => `
                   <tr>
-                    ${columns.map((c) => `<td>${row[c] !== null ? String(row[c]) : '<em class="text-muted">NULL</em>'}</td>`).join('')}
+                    ${columns.map((c) => `<td>${escapeHtml(row[c])}</td>`).join('')}
                   </tr>
                 `
                   )

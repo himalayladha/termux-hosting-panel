@@ -155,8 +155,17 @@ router.post('/:websiteId/upload', requireAuth, getWebsiteRoot, upload.array('fil
       const isZip = originalName.toLowerCase().endsWith('.zip');
       const finalFilePath = path.join(safeDestination.target, originalName);
 
-      // Move uploaded file from temp to final destination
-      await fs.promises.rename(file.path, finalFilePath);
+      // Move uploaded file from temp to final destination with cross-device link fallback
+      try {
+        await fs.promises.rename(file.path, finalFilePath);
+      } catch (renameErr) {
+        if (renameErr.code === 'EXDEV') {
+          await fs.promises.copyFile(file.path, finalFilePath);
+          await fs.promises.unlink(file.path);
+        } else {
+          throw renameErr;
+        }
+      }
 
       let extracted = false;
       if (isZip && autoExtract) {

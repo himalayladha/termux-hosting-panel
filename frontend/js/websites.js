@@ -113,13 +113,13 @@ const websites = {
                   <button class="btn btn-secondary btn-sm" onclick="websites.openEditModal(${site.id})" title="Manage Website Settings">
                     <i data-lucide="sliders" style="width: 13px; height: 13px; margin-right: 3px;"></i> Manage
                   </button>
-                  <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id}, '${site.name}')">
+                  <button class="btn btn-secondary btn-sm" onclick="websites.viewLogs(${site.id})">
                     <i data-lucide="terminal" style="width: 13px; height: 13px; margin-right: 3px;"></i> Logs
                   </button>
                   <button class="btn btn-secondary btn-sm" onclick="websites.openFileManager(${site.id})">
                     <i data-lucide="folder" style="width: 13px; height: 13px; margin-right: 3px;"></i> Files
                   </button>
-                  <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id}, '${site.name}')" title="Delete Website">
+                  <button class="btn btn-danger btn-sm" onclick="websites.deleteSite(${site.id})" title="Delete Website">
                     <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
                   </button>
                 </div>
@@ -386,9 +386,11 @@ const websites = {
   },
 
   async viewLogs(id, name) {
+    const site = this.list.find((s) => s.id === id);
+    const siteName = name || (site ? site.name : 'Website');
     try {
       const data = await API.get(`/api/websites/${id}/logs`);
-      document.getElementById('site-logs-title').textContent = `${name} Logs`;
+      document.getElementById('site-logs-title').textContent = `${siteName} Logs`;
       document.getElementById('site-access-log').textContent =
         data.accessLogs.join('\n') || '(No access logs yet)';
       document.getElementById('site-error-log').textContent =
@@ -407,16 +409,18 @@ const websites = {
   },
 
   async deleteSite(id, name) {
+    const site = this.list.find((s) => s.id === id);
+    const siteName = name || (site ? site.name : 'this website');
     const confirmed = await UI.confirm(
-      `Are you sure you want to delete website "${name}"?\nAll files, databases, and records associated with this website will be permanently removed.`,
-      `Delete Website: ${name}`,
+      `Are you sure you want to delete website "${siteName}"?\nAll files, databases, and records associated with this website will be permanently removed.`,
+      `Delete Website: ${siteName}`,
       { confirmText: 'Delete Website', cancelText: 'Cancel', type: 'danger' }
     );
     if (!confirmed) return;
 
     try {
       await API.delete(`/api/websites/${id}`);
-      API.toast(`Deleted ${name}`, 'info');
+      API.toast(`Deleted ${siteName}`, 'info');
       this.loadWebsites();
     } catch (e) {}
   }

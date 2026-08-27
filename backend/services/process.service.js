@@ -291,6 +291,14 @@ async function stopWebsite(websiteId) {
     appendLog(accessLog, `Website stopped by user`);
   }
 
+  // Ensure orphan process on site port is cleaned up on Linux/Android
+  if (website.port && (process.platform === 'linux' || process.platform === 'android')) {
+    try {
+      const { exec } = require('child_process');
+      exec(`fuser -k ${website.port}/tcp 2>/dev/null || true`);
+    } catch (_) {}
+  }
+
   await db.run(
     'UPDATE websites SET status = "stopped", pid = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
     [website.id]
