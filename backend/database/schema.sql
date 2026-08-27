@@ -110,3 +110,29 @@ CREATE TABLE IF NOT EXISTS ip_bans (
     banned_until DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS website_metrics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    website_id INTEGER NOT NULL,
+    path TEXT NOT NULL,
+    status_code INTEGER DEFAULT 200,
+    response_time_ms INTEGER DEFAULT 0,
+    bytes_sent INTEGER DEFAULT 0,
+    user_agent TEXT,
+    ip_hash TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_metrics_site_date ON website_metrics(website_id, created_at);
+
+CREATE TABLE IF NOT EXISTS uptime_checks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    website_id INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    status_code INTEGER,
+    latency_ms INTEGER,
+    error_message TEXT,
+    checked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_uptime_site_date ON uptime_checks(website_id, checked_at);

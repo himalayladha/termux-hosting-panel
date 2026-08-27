@@ -8,6 +8,7 @@ const config = require('../config/app.config');
 const { findAvailablePort } = require('../config/ports.config');
 const processService = require('../services/process.service');
 const logService = require('../services/log.service');
+const cloudflareService = require('../services/cloudflare.service');
 
 // Helper to copy template directory contents recursively
 function copyDirRecursive(src, dest) {
@@ -377,6 +378,21 @@ router.get('/:id/logs', requireAuth, async (req, res) => {
       accessLogs: access.lines,
       errorLogs: error.lines
     });
+/**
+ * Purge Cloudflare Edge Cache for website
+ */
+router.post('/:id/purge-cache', requireAuth, async (req, res) => {
+  try {
+    const site = await db.get('SELECT * FROM websites WHERE id = ?', [req.params.id]);
+    if (!site) return res.status(404).json({ error: 'Website not found' });
+
+    const domain = site.domain || site.custom_domain;
+    if (!domain) {
+      return res.status(400).json({ error: 'Website does not have a linked public domain' });
+    }
+
+    const result = await cloudflareService.purgeZoneCache(domain);
+    return res.json(result);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

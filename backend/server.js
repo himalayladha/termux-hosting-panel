@@ -27,6 +27,10 @@ const webhooksRoutes = require('./routes/webhooks.routes');
 const hardwareRoutes = require('./routes/hardware.routes');
 const hardwareService = require('./services/hardware.service');
 const securityRoutes = require('./routes/security.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
+const uptimeRoutes = require('./routes/uptime.routes');
+const uptimeService = require('./services/uptime.service');
+const packagesRoutes = require('./routes/packages.routes');
 const { ipBanGuard } = require('./auth/ipban.middleware');
 
 const app = express();
@@ -88,6 +92,9 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/hardware', hardwareRoutes);
 app.use('/api/security', securityRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/uptime', uptimeRoutes);
+app.use('/api/packages', packagesRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');
@@ -119,6 +126,9 @@ async function startServer() {
 
     // Start Android Hardware & Battery Guard Watchdog
     hardwareService.startWatchdog(60);
+
+    // Start Synthetic Uptime Monitor & Auto-Healer Watchdog
+    uptimeService.startWatchdog(60000);
 
     server.listen(config.PORT, config.HOST || '0.0.0.0', async () => {
       const netUrls = systemService.getSystemMetrics ? (await systemService.getSystemMetrics()).network : null;

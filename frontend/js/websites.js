@@ -107,6 +107,20 @@ const websites = {
                            <i data-lucide="play" style="width: 13px; height: 13px; margin-right: 3px;"></i> Start
                          </button>`
                   }
+                  ${
+                    site.type === 'node' || site.type === 'python'
+                      ? `<button class="btn btn-secondary btn-sm" onclick="packagesManager.openModal(${site.id}, '${site.name.replace(/'/g, "\\'")}', '${site.type}')" title="Manage NPM/PIP Packages">
+                           <i data-lucide="package" style="width: 13px; height: 13px; margin-right: 3px; color: #38bdf8;"></i> Packages
+                         </button>`
+                      : ''
+                  }
+                  ${
+                    (site.custom_domain || (site.domain && site.domain.includes('.')))
+                      ? `<button class="btn btn-secondary btn-sm" onclick="websites.purgeCache(${site.id})" title="Purge Cloudflare CDN Edge Cache">
+                           <i data-lucide="zap" style="width: 13px; height: 13px; margin-right: 3px; color: #f59e0b;"></i> Purge Cache
+                         </button>`
+                      : ''
+                  }
                   <button class="btn btn-secondary btn-sm" onclick="websites.openWebhookModal(${site.id})" title="GitHub Auto-Deploy Webhook">
                     <i data-lucide="git-branch" style="width: 13px; height: 13px; margin-right: 3px; color: #a855f7;"></i> CI/CD
                   </button>
@@ -406,6 +420,16 @@ const websites = {
       select.value = id;
       fileManager.loadFiles();
     }
+  },
+
+  async purgeCache(id) {
+    const site = this.list.find((s) => s.id === id);
+    const siteName = site ? site.name : 'Website';
+    try {
+      API.toast(`Purging Cloudflare CDN edge cache for ${siteName}...`, 'info');
+      const res = await API.post(`/api/websites/${id}/purge-cache`);
+      API.toast(res.message || 'Cloudflare cache purged!', 'success');
+    } catch (e) {}
   },
 
   async deleteSite(id, name) {

@@ -587,6 +587,34 @@ async function getTunnelLogs(limit = 100) {
   }
 }
 
+/**
+ * Purge Cloudflare CDN Edge Cache
+ */
+async function purgeZoneCache(zoneIdOrDomain, files = null) {
+  const apiToken = getSavedApiToken();
+  if (!apiToken) {
+    throw new Error('Cloudflare API token not configured in Settings/Tunnel');
+  }
+
+  let zoneId = zoneIdOrDomain;
+  // If domain string provided instead of zone ID, look up zone ID
+  if (zoneId && zoneId.includes('.')) {
+    const domainName = zoneIdOrDomain;
+    const zones = await listZones();
+    const matchedZone = zones.find(
+      (z) => domainName === z.name || domainName.endsWith(`.${z.name}`)
+    );
+    if (!matchedZone) {
+      throw new Error(`Cloudflare Zone not found for domain "${domainName}"`);
+    }
+    zoneId = matchedZone.id;
+  }
+
+  const payload = files && files.length > 0 ? { files } : { purge_everything: true };
+  const res = await cfApiRequest(`/zones/${zoneId}/purge_cache`, apiToken, 'POST', payload);
+  return { success: true, message: 'Cloudflare Edge Cache purged successfully!', result: res };
+}
+
 module.exports = {
   checkCloudflaredInstalled,
   getTunnelConfig,
@@ -603,5 +631,6 @@ module.exports = {
   restartTunnel,
   deleteTunnelToken,
   getTunnelLogs,
-  syncAllCloudflareRoutes
+  syncAllCloudflareRoutes,
+  purgeZoneCache
 };

@@ -2,9 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const http = require('http');
+const zlib = require('zlib');
 const db = require('../database/db');
 const config = require('../config/app.config');
 const { isPortInUse } = require('../config/ports.config');
+const analyticsService = require('./analytics.service');
 
 // In-memory active process map: websiteId -> { childProcess, staticServer, startedAt, restartCount }
 const activeProcesses = new Map();
@@ -64,14 +66,31 @@ function startHtmlSite(website) {
     };
 
     const server = http.createServer((req, res) => {
+      const startTime = Date.now();
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      const userAgent = req.headers['user-agent'] || '';
       const urlPath = req.url.split('?')[0];
       let safePath = path.normalize(path.join(targetDir, urlPath));
+
+      const finishHit = (statusCode, bytesSent) => {
+        const latency = Date.now() - startTime;
+        analyticsService.recordHit({
+          websiteId: website.id,
+          path: urlPath,
+          statusCode,
+          responseTimeMs: latency,
+          bytesSent,
+          userAgent,
+          ip: clientIp
+        });
+      };
 
       // Path traversal security check
       if (!safePath.startsWith(targetDir)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('403 Forbidden');
         appendLog(errorLog, `Blocked traversal attempt: ${req.url}`);
+        finishHit(403, 13);
         return;
       }
 
@@ -83,6 +102,7 @@ function startHtmlSite(website) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('404 Not Found');
             appendLog(accessLog, `404 Not Found: ${req.url}`);
+            finishHit(404, 13);
             return;
           }
         } else if (stats.isDirectory()) {
@@ -90,22 +110,50 @@ function startHtmlSite(website) {
           if (!fs.existsSync(safePath)) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('404 Not Found - Missing index.html');
+            finishHit(404, 30);
             return;
           }
         }
 
         const ext = path.extname(safePath).toLowerCase();
         const contentType = mimeTypes[ext] || 'application/octet-stream';
+        const isCompressible = /^(text\/|application\/(javascript|json)|image\/svg\+xml)/i.test(contentType);
+        const acceptEncoding = req.headers['accept-encoding'] || '';
 
         fs.readFile(safePath, (readErr, content) => {
           if (readErr) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('500 Internal Server Error');
             appendLog(errorLog, `Error reading file ${safePath}: ${readErr.message}`);
+            finishHit(500, 25);
           } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content);
-            appendLog(accessLog, `${req.method} ${req.url} 200`);
+            // Apply In-Memory Gzip Compression if client supports it
+            if (isCompressible && content.length > 512 && acceptEncoding.includes('gzip')) {
+              zlib.gzip(content, (gzipErr, gzipped) => {
+                if (!gzipErr && gzipped) {
+                  res.writeHead(200, {
+                    'Content-Type': contentType,
+                    'Content-Encoding': 'gzip',
+                    'Vary': 'Accept-Encoding',
+                    'Content-Length': gzipped.length
+                  });
+                  res.end(gzipped);
+                  appendLog(accessLog, `${req.method} ${req.url} 200 (gzip ${content.length} -> ${gzipped.length} bytes)`);
+                  finishHit(200, gzipped.length);
+                  return;
+                }
+                // Fallback uncompressed
+                res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': content.length });
+                res.end(content);
+                appendLog(accessLog, `${req.method} ${req.url} 200`);
+                finishHit(200, content.length);
+              });
+            } else {
+              res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': content.length });
+              res.end(content);
+              appendLog(accessLog, `${req.method} ${req.url} 200`);
+              finishHit(200, content.length);
+            }
           }
         });
       });

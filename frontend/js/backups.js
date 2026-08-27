@@ -18,6 +18,16 @@ const backupsManager = {
     if (form) {
       form.addEventListener('submit', (e) => this.handleCreate(e));
     }
+
+    const pruneBtn = document.getElementById('btn-prune-backups');
+    if (pruneBtn) {
+      pruneBtn.addEventListener('click', () => this.pruneOldBackups());
+    }
+
+    const autoBackupBtn = document.getElementById('btn-auto-backup');
+    if (autoBackupBtn) {
+      autoBackupBtn.addEventListener('click', () => this.triggerAutoBackup());
+    }
   },
 
   async loadBackups() {
@@ -49,7 +59,10 @@ const backupsManager = {
           <td class="text-muted">${b.sizeFormatted}</td>
           <td class="text-muted text-sm">${new Date(b.createdAt).toLocaleString()}</td>
           <td>
-            <div class="flex-align gap-2">
+            <div class="flex-align gap-2 flex-wrap">
+              <button class="btn btn-secondary btn-sm" onclick="backupsManager.sendToTelegram('${b.filename}')" title="Send archive to Telegram Cloud Channel">
+                <i data-lucide="send" style="width: 13px; height: 13px; margin-right: 3px; color: #38bdf8;"></i> Telegram Cloud
+              </button>
               <a href="/api/backups/download/${encodeURIComponent(b.filename)}" class="btn btn-secondary btn-sm" download style="display: inline-flex; align-items: center;">
                 <i data-lucide="download" style="width: 13px; height: 13px; margin-right: 3px;"></i> Download
               </a>
@@ -75,6 +88,39 @@ const backupsManager = {
       await API.post('/api/backups/create', { type });
       API.toast('Backup archive created successfully!', 'success');
       document.getElementById('modal-create-backup').classList.add('hidden');
+      this.loadBackups();
+    } catch (e) {}
+  },
+
+  async sendToTelegram(filename) {
+    try {
+      API.toast(`Uploading ${filename} to Telegram Cloud...`, 'info');
+      const res = await API.post('/api/backups/send-telegram', { filename });
+      API.toast(res.message || 'Dispatched to Telegram!', 'success');
+    } catch (err) {}
+  },
+
+  async pruneOldBackups() {
+    const confirmed = await UI.confirm(
+      'Automatically prune backups older than 7 days to free storage?',
+      'Prune Old Backups',
+      { confirmText: 'Prune', cancelText: 'Cancel' }
+    );
+    if (!confirmed) return;
+
+    try {
+      API.toast('Pruning old archives...', 'info');
+      const res = await API.post('/api/backups/prune', { retentionDays: 7 });
+      API.toast(`Pruned ${res.pruned} old backup(s). ${res.remaining} remaining.`, 'success');
+      this.loadBackups();
+    } catch (e) {}
+  },
+
+  async triggerAutoBackup() {
+    try {
+      API.toast('Running automated full backup & cloud sync...', 'info');
+      const res = await API.post('/api/backups/auto-backup');
+      API.toast(`Auto-backup complete (${res.backup ? res.backup.filename : 'done'})!`, 'success');
       this.loadBackups();
     } catch (e) {}
   },

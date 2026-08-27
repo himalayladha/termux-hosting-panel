@@ -106,6 +106,10 @@
           <i data-lucide="layout-dashboard" class="nav-icon"></i>
           <span class="nav-label">Dashboard</span>
         </button>
+        <button class="nav-item" data-tab="analytics">
+          <i data-lucide="bar-chart-2" class="nav-icon"></i>
+          <span class="nav-label">Analytics</span>
+        </button>
         <button class="nav-item" data-tab="websites">
           <i data-lucide="globe" class="nav-icon"></i>
           <span class="nav-label">Websites</span>
@@ -327,6 +331,110 @@
             <div class="card-body">
               <div id="dashboard-apps-list" class="apps-list">
                 <p class="text-muted">Loading applications...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 1.5. ANALYTICS VIEW -->
+        <section id="view-analytics" class="tab-view">
+          <div class="view-header flex-between flex-wrap gap-2">
+            <div>
+              <h3>Web Traffic & Visitor Analytics</h3>
+              <p class="text-muted">Privacy-first SQLite request metrics & real-time traffic pulse (0 external trackers)</p>
+            </div>
+            <div class="flex-align gap-2 flex-wrap">
+              <select id="analytics-site-select" class="form-control-sm" style="min-width: 180px;"></select>
+              <div class="btn-group" style="display: inline-flex; background: rgba(255,255,255,0.05); padding: 2px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn btn-secondary btn-sm analytics-range-btn" data-range="1h" style="padding: 4px 8px; font-size: 11px;">1h</button>
+                <button type="button" class="btn btn-secondary btn-sm analytics-range-btn active" data-range="24h" style="padding: 4px 8px; font-size: 11px;">24h</button>
+                <button type="button" class="btn btn-secondary btn-sm analytics-range-btn" data-range="7d" style="padding: 4px 8px; font-size: 11px;">7d</button>
+                <button type="button" class="btn btn-secondary btn-sm analytics-range-btn" data-range="30d" style="padding: 4px 8px; font-size: 11px;">30d</button>
+              </div>
+              <button id="analytics-refresh-btn" class="btn btn-secondary btn-sm" title="Refresh Analytics">
+                <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Metrics Stat Grid -->
+          <div class="metrics-grid">
+            <div class="card metric-card">
+              <div class="flex-between">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Live Traffic RPS</span>
+                <span class="status-dot online" style="animation: pulse 1.5s infinite;"></span>
+              </div>
+              <div class="metric-value mt-2" id="stat-analytics-rps" style="color: #38bdf8; font-size: 24px; font-weight: 700;">0.00 req/s</div>
+              <span class="text-muted text-sm" id="stat-analytics-active-visitors">~1 active visitor</span>
+            </div>
+
+            <div class="card metric-card">
+              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Total Requests</span>
+              <div class="metric-value mt-2" id="stat-analytics-requests" style="font-size: 24px; font-weight: 700;">0</div>
+              <span class="text-muted text-sm">All HTTP endpoints</span>
+            </div>
+
+            <div class="card metric-card">
+              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Unique Visitors</span>
+              <div class="metric-value mt-2" id="stat-analytics-visitors" style="color: #a855f7; font-size: 24px; font-weight: 700;">0</div>
+              <span class="text-muted text-sm">Anonymized IP hashes</span>
+            </div>
+
+            <div class="card metric-card">
+              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Bandwidth Served</span>
+              <div class="metric-value mt-2" id="stat-analytics-bandwidth" style="color: #4ade80; font-size: 24px; font-weight: 700;">0 B</div>
+              <span class="text-muted text-sm">Gzip compressed data</span>
+            </div>
+
+            <div class="card metric-card">
+              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Avg Response Latency</span>
+              <div class="metric-value mt-2" id="stat-analytics-latency" style="color: #f59e0b; font-size: 24px; font-weight: 700;">0 ms</div>
+              <span class="text-muted text-sm">Local edge latency</span>
+            </div>
+          </div>
+
+          <!-- HTTP Status Breakdown -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h4 style="margin: 0; font-size: 14px;"><i data-lucide="pie-chart" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> HTTP Status Code Distribution</h4>
+            </div>
+            <div class="card-body" id="analytics-status-breakdown">
+              <p class="text-muted text-sm">Loading status distribution...</p>
+            </div>
+          </div>
+
+          <!-- Hourly Traffic Chart -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h4 style="margin: 0; font-size: 14px;"><i data-lucide="activity" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Hourly Traffic Activity</h4>
+            </div>
+            <div class="card-body">
+              <div id="analytics-hourly-chart">
+                <p class="text-muted text-sm">Loading chart...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Visited URLs Table -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h4 style="margin: 0; font-size: 14px;"><i data-lucide="list" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Top Visited Pages & Endpoints</h4>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Page Path</th>
+                      <th>Total Hits</th>
+                      <th>Unique Visitors</th>
+                      <th>Bandwidth</th>
+                    </tr>
+                  </thead>
+                  <tbody id="analytics-top-paths-list">
+                    <tr><td colspan="4" class="text-muted text-center p-3">Loading top paths...</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -652,15 +760,25 @@
 
         <!-- 7. BACKUPS VIEW -->
         <section id="view-backups" class="tab-view">
-          <div class="view-header flex-between">
+          <div class="view-header flex-between flex-wrap gap-2">
             <div>
               <h3>Server & Website Backups</h3>
-              <p class="text-muted">Generate full or partial archives of your sites and databases</p>
+              <p class="text-muted">Local .tar.gz archives & 1-click automated Telegram Cloud dispatch</p>
             </div>
-            <button id="open-create-backup-btn" class="btn btn-primary">
-              <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i>
-              Create Backup
-            </button>
+            <div class="flex-align gap-2 flex-wrap">
+              <button id="btn-auto-backup" class="btn btn-secondary btn-sm" title="Run full automated backup and cloud sync">
+                <i data-lucide="cloud-upload" style="width: 14px; height: 14px; margin-right: 4px; color: #a855f7;"></i>
+                Auto-Backup & Cloud Sync
+              </button>
+              <button id="btn-prune-backups" class="btn btn-secondary btn-sm" title="Prune backups older than 7 days">
+                <i data-lucide="scissors" style="width: 14px; height: 14px; margin-right: 4px; color: #f59e0b;"></i>
+                Prune Old (7d)
+              </button>
+              <button id="open-create-backup-btn" class="btn btn-primary btn-sm">
+                <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                Create Backup
+              </button>
+            </div>
           </div>
           <div class="card mt-4">
             <div class="table-responsive">
@@ -2203,6 +2321,61 @@
     </div>
   </div>
 
+  <!-- Modal: Visual Package Manager (NPM & PIP) -->
+  <div id="modal-packages" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="package" style="width: 18px; height: 18px; color: #38bdf8;"></i>
+          <h3>Package Manager: <span id="pkg-site-name" style="color: #38bdf8;">Website</span></h3>
+          <span id="pkg-type-badge" class="badge badge-primary">NODE</span>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Install Package Form -->
+        <form id="pkg-install-form" class="mb-4">
+          <label><strong>Install New Package / Library:</strong></label>
+          <div class="flex-align gap-2 mt-1">
+            <input type="text" id="pkg-name-input" class="form-control" placeholder="e.g. express, axios, cors" required>
+            <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap; cursor: pointer;">
+              <input type="checkbox" id="pkg-is-dev" style="accent-color: #38bdf8;"> DevDep
+            </label>
+            <button type="submit" id="pkg-install-submit-btn" class="btn btn-primary" style="white-space: nowrap;">
+              <i data-lucide="download" style="width: 14px; height: 14px; margin-right: 4px;"></i> Install
+            </button>
+          </div>
+        </form>
+
+        <div class="flex-between mb-2">
+          <h4 style="font-size: 14px; margin: 0;">Installed Dependencies</h4>
+          <button type="button" id="pkg-update-all-btn" class="btn btn-secondary btn-sm" title="Update all packages to latest versions">
+            <i data-lucide="refresh-cw" style="width: 13px; height: 13px; margin-right: 3px;"></i> Update All
+          </button>
+        </div>
+
+        <div class="table-responsive" style="max-height: 280px; overflow-y: auto; background: #070a14; border-radius: 8px; border: 1px solid var(--border-color);">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Target</th>
+                <th>Installed</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="pkg-list-body">
+              <tr><td colspan="4" class="text-center p-3 text-muted">Loading packages...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer flex-between">
+        <button type="button" class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Universal Fullscreen Modal Dialog (No browser alert/confirm) -->
   <div id="modal-app-dialog" class="modal-overlay hidden" style="z-index: 99999;">
     <div class="modal-card" style="max-width: 460px; text-align: center; padding: 28px 24px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);">
@@ -2227,7 +2400,9 @@
   <!-- Scripts -->
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/analytics.js"></script>
   <script src="js/websites.js"></script>
+  <script src="js/packages.js"></script>
   <script src="js/domains.js"></script>
   <script src="js/filemanager.js"></script>
   <script src="js/databases.js"></script>

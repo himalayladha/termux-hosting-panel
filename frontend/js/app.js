@@ -149,6 +149,8 @@ const app = {
 
     // Initialize all modules
     dashboard.init();
+    analyticsManager.init();
+    packagesManager.init();
     websites.init();
     domainsManager.init();
     fileManager.init();
@@ -239,6 +241,7 @@ const app = {
 
     const titles = {
       dashboard: 'Dashboard',
+      analytics: 'Web Traffic & Analytics',
       websites: 'Websites & Applications',
       domains: 'Custom Domain Management',
       filemanager: 'File Manager',
@@ -253,6 +256,13 @@ const app = {
 
     const titleEl = document.getElementById('page-title');
     if (titleEl) titleEl.textContent = titles[tabId] || 'TermuxPanel';
+
+    // Handle tab-specific active/inactive events
+    if (tabId === 'analytics') {
+      analyticsManager.onTabActive();
+    } else {
+      analyticsManager.onTabInactive();
+    }
 
     // Trigger tab-specific refresh
     if (tabId === 'dashboard') dashboard.loadSummary();

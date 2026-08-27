@@ -32,6 +32,45 @@ router.post('/create', requireAuth, async (req, res) => {
 });
 
 /**
+ * Send backup archive to Telegram Cloud
+ */
+router.post('/send-telegram', requireAuth, async (req, res) => {
+  try {
+    const { filename } = req.body;
+    if (!filename) return res.status(400).json({ error: 'Filename is required' });
+    const result = await backupService.sendBackupToTelegram(filename);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Prune old backups
+ */
+router.post('/prune', requireAuth, async (req, res) => {
+  try {
+    const retentionDays = req.body.retentionDays ? parseInt(req.body.retentionDays, 10) : 7;
+    const result = await backupService.pruneBackups(retentionDays);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Run full auto-backup & cloud sync cycle
+ */
+router.post('/auto-backup', requireAuth, async (req, res) => {
+  try {
+    const result = await backupService.runScheduledAutoBackup();
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
  * Download a backup archive
  */
 router.get('/download/:filename', requireAuth, (req, res) => {
