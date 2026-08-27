@@ -84,7 +84,7 @@ const webhookService = {
     if (!site) throw new Error('Website not found');
 
     const webhook = await this.getWebhookBySiteId(websiteId);
-    const branch = (webhook && webhook.branch) || 'main';
+    const branch = ((webhook && webhook.branch) || 'main').replace(/[^a-zA-Z0-9._\-/]/g, '');
     const logs = [];
     let isSuccess = true;
 

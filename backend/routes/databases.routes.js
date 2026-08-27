@@ -7,13 +7,20 @@ const dbService = require('../services/database.service');
 const db = require('../database/db');
 const config = require('../config/app.config');
 
-// Helper to decode dbId or return path
+// Helper to decode dbId or return path with strict sandbox validation
 function resolveDbPath(encodedId) {
   if (!encodedId) throw new Error('Database ID is required');
   if (encodedId === 'panel_db') {
     return config.DB_PATH;
   }
-  const decoded = Buffer.from(encodedId, 'base64url').toString('utf8');
+  const decoded = path.resolve(Buffer.from(encodedId, 'base64url').toString('utf8'));
+  const allowedRoots = [path.resolve(config.STORAGE_DIR), path.resolve(config.DATA_DIR)];
+  const isAllowed = allowedRoots.some((root) => decoded === root || decoded.startsWith(root + path.sep));
+
+  if (!isAllowed) {
+    throw new Error('Access Denied: Path outside allowed storage and data directories');
+  }
+
   if (!fs.existsSync(decoded)) {
     throw new Error('Database file not found');
   }
