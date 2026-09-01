@@ -378,6 +378,11 @@ router.get('/:id/logs', requireAuth, async (req, res) => {
       accessLogs: access.lines,
       errorLogs: error.lines
     });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 /**
  * Purge Cloudflare Edge Cache for website
  */
