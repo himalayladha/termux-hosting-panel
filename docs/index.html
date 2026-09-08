@@ -703,7 +703,7 @@
         <span class="hero-highlight">24/7 Production Web Hosting Server</span>
       </h1>
       <p class="hero-subtitle">
-        A lightweight, production-grade web hosting control panel & process engine for Termux. Host HTML, Node.js, Python, and PHP apps, manage SQLite databases, edit code in your browser, and access your sites securely over Cloudflare HTTPS — zero router port-forwarding required.
+        A lightweight, production-grade web hosting control panel & process engine for Termux. Host HTML, Node.js, Python, and PHP apps with <strong>Custom Domains, Free SSL (HTTPS)</strong>, <strong>Free Professional Email in Gmail</strong>, and <strong>Unlimited Telegram Cloud Object Storage</strong> — zero router port-forwarding required.
       </p>
 
       <div class="hero-actions">
@@ -846,15 +846,9 @@
         </div>
 
         <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
-          <h3 class="card-title">Zero-Trust Cloudflare Tunnel</h3>
-          <p class="card-text">Expose your sites via outbound-only encrypted tunnels. Bypass carrier CGNAT and dynamic IPs without opening a single router port.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="activity"></i></div>
-          <h3 class="card-title">Privacy-First Web Analytics</h3>
-          <p class="card-text">Embedded SQLite analytics engine with zero external dependencies. Live RPS gauge, unique visitors, bandwidth meters, status breakdown, and top URLs.</p>
+          <div class="card-icon-wrap"><i data-lucide="lock"></i></div>
+          <h3 class="card-title">Custom Domains & Free SSL</h3>
+          <p class="card-text">Bind apex domains and unlimited subdomains with 1-click Cloudflare DNS sync, automatic Universal SSL certificates (HTTPS 🔒), and strict HTTP-to-HTTPS redirect.</p>
         </div>
 
         <div class="card">
@@ -870,9 +864,15 @@
         </div>
 
         <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="cloud-upload"></i></div>
-          <h3 class="card-title">Cloud Backup & Pruning</h3>
-          <p class="card-text">Stream encrypted <code>.tar.gz</code> backup archives directly to your private Telegram channel or cloud storage with automatic 7-day retention pruning.</p>
+          <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
+          <h3 class="card-title">Zero-Trust Cloudflare Tunnel</h3>
+          <p class="card-text">Expose your sites via outbound-only encrypted tunnels. Bypass carrier CGNAT and dynamic IPs without opening a single router port.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon-wrap"><i data-lucide="activity"></i></div>
+          <h3 class="card-title">Privacy-First Web Analytics</h3>
+          <p class="card-text">Embedded SQLite analytics engine with zero external dependencies. Live RPS gauge, unique visitors, bandwidth meters, status breakdown, and top URLs.</p>
         </div>
 
         <div class="card">
@@ -903,12 +903,6 @@
           <div class="card-icon-wrap"><i data-lucide="battery-charging"></i></div>
           <h3 class="card-title">Hardware Battery Guard</h3>
           <p class="card-text">Real-time battery temperature and charging health telemetry with automated thermal-throttling alarms sent directly to your Telegram bot.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="package"></i></div>
-          <h3 class="card-title">NPM & PIP Package Manager</h3>
-          <p class="card-text">Visual dependency inspector with 1-click package installer for Node.js (npm) and Python (pip) directly from the dashboard.</p>
         </div>
 
         <div class="card">
@@ -1432,6 +1426,21 @@ echo json_encode([
       <div class="faq-item">
         <div class="faq-question" onclick="toggleFaq(this)">How much traffic can this server handle? <span><i data-lucide="chevron-down"></i></span></div>
         <div class="faq-answer">When paired with <strong>Cloudflare CDN (Orange Cloud ☁️)</strong>, your Android phone can easily handle <strong>5,000+ requests/sec (over 1,000,000+ daily page views)</strong> because 95% of static hits and images are cached at Cloudflare's global edge. Direct dynamic Node.js/SQLite APIs handle <strong>150–500 requests/sec</strong> with sub-millisecond query latencies.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">How do Custom Domains, DNS and Free SSL work? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">TermuxPanel lets you map any custom domain or subdomain (e.g. <code>panel.yourdomain.com</code>, <code>api.yourdomain.com</code>) to your local server ports. Cloudflare automatically issues free Universal SSL certificates (HTTPS 🔒) with TLS 1.3 encryption and automatic HTTP-to-HTTPS redirect — without router port forwarding.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">How does Free Professional Email Routing work? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">It uses two halves at $0 cost: <strong>Inbound</strong> is handled by Cloudflare Email Routing forwarding <code>support@yourdomain.com</code> to your personal Gmail. <strong>Outbound</strong> is handled by free Brevo SMTP (300 emails/day) connected to your Gmail account with DKIM/SPF/DMARC authentication so people see your domain name when you reply.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">How does Unlimited Telegram Cloud & TeleDrive work? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">TeleDrive connects to your private Telegram Bot API channel to provide unlimited, zero-cost cloud object storage. You can 1-click export running websites into <code>.zip</code> archives, 1-click deploy websites from Telegram Cloud, and push automated <code>.tar.gz</code> server/database backups with automated 7-day retention pruning.</div>
       </div>
 
       <div class="faq-item">
