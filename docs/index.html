@@ -68,11 +68,28 @@
     body.light-theme .mobile-menu { background: #ffffff; }
     body.light-theme .mobile-menu a:hover { color: #0f172a; }
     body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4 { color: #0f172a; }
+    body.light-theme .hero-title {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     body.light-theme .btn-secondary { background: #ffffff; border-color: #cbd5e1; color: #1e293b; }
     body.light-theme .btn-secondary:hover { background: #f1f5f9; }
-    body.light-theme .comparison-table th { background: #f1f5f9; color: #64748b; }
-    body.light-theme .comparison-table td { color: #1e293b; }
-    body.light-theme .comparison-table tr:hover td { background: #f8fafc; }
+    body.light-theme .card-title { color: #0f172a; }
+    body.light-theme .step-content h3 { color: #0f172a; }
+    body.light-theme .mock-topbar { background: #f1f5f9; border-bottom-color: var(--border); }
+    body.light-theme .mock-metric-val { color: #0f172a; }
+    body.light-theme .mock-bar { background: #e2e8f0; }
+    body.light-theme .arch-container { background: #f8fafc; box-shadow: inset 0 0 20px rgba(0,0,0,0.04); }
+    body.light-theme .code-box { background: #f1f5f9; border-color: var(--border); }
+    body.light-theme .code-box code { color: #0f172a; }
+    body.light-theme .copy-btn { background: #e2e8f0; color: #0f172a; border-color: #cbd5e1; }
+    body.light-theme .copy-btn:hover { background: #cbd5e1; }
+    body.light-theme th, body.light-theme .comparison-table th { background: #f1f5f9; color: #64748b; }
+    body.light-theme td, body.light-theme .comparison-table td { color: #1e293b; }
+    body.light-theme tr:hover td, body.light-theme .comparison-table tr:hover td { background: #f8fafc; }
+    body.light-theme .faq-item { background: #ffffff; }
+    body.light-theme .faq-question { color: #0f172a; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -797,7 +814,7 @@
         <div class="mock-topbar">
           <div style="display: flex; align-items: center; gap: 10px;">
             <span class="badge badge-primary"><i data-lucide="smartphone"></i> TermuxPanel</span>
-            <span style="font-size: 13px; font-weight: 600; color: #fff;">Server Overview (127.0.0.1:9000)</span>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text);">Server Overview (127.0.0.1:9000)</span>
           </div>
           <div>
             <span class="badge badge-success"><i data-lucide="shield-check"></i> SSL Active</span>
@@ -829,7 +846,7 @@
 
         <div class="mock-body">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-            <h4 style="font-size: 15px; color: #fff;">Supervised Applications</h4>
+            <h4 style="font-size: 15px; color: var(--text);">Supervised Applications</h4>
             <span class="badge badge-primary">4 Services Running</span>
           </div>
           <div class="table-wrapper">
@@ -1354,21 +1371,21 @@ echo json_encode([
         <div class="card" style="border-top: 3px solid #38bdf8;">
           <div class="badge badge-primary" style="margin-bottom: 8px;">GLOBAL CDN PROXIED</div>
           <div style="font-size: 32px; font-weight: 800; color: #38bdf8; margin: 4px 0;">5,000+ RPS</div>
-          <div style="color: #fff; font-weight: 600; font-size: 15px;">500K – 2M+ Daily Visits</div>
+          <div style="color: var(--text); font-weight: 600; font-size: 15px;">500K – 2M+ Daily Visits</div>
           <p class="card-text" style="margin-top: 8px;">Cloudflare absorbs 90%–98% of static assets and cache hits globally. The phone only handles dynamic API endpoints & cache misses.</p>
         </div>
 
         <div class="card" style="border-top: 3px solid #4ade80;">
           <div class="badge badge-success" style="margin-bottom: 8px;">DIRECT STATIC / GZIP</div>
           <div style="font-size: 32px; font-weight: 800; color: #4ade80; margin: 4px 0;">400 – 1,200 RPS</div>
-          <div style="color: #fff; font-weight: 600; font-size: 15px;">100K – 500K Daily Visits</div>
+          <div style="color: var(--text); font-weight: 600; font-size: 15px;">100K – 500K Daily Visits</div>
           <p class="card-text" style="margin-top: 8px;">In-memory static asset Gzip compression with non-blocking V8 event loop serving HTML, CSS, and JS directly from mobile RAM.</p>
         </div>
 
         <div class="card" style="border-top: 3px solid #a855f7;">
           <div class="badge badge-primary" style="margin-bottom: 8px; background: rgba(168, 85, 247, 0.15); color: #a855f7;">NODE.JS API + SQLITE</div>
           <div style="font-size: 32px; font-weight: 800; color: #a855f7; margin: 4px 0;">150 – 500 RPS</div>
-          <div style="color: #fff; font-weight: 600; font-size: 15px;">50K – 200K Daily Visits</div>
+          <div style="color: var(--text); font-weight: 600; font-size: 15px;">50K – 200K Daily Visits</div>
           <p class="card-text" style="margin-top: 8px;">Pure SQLite with WAL mode on fast UFS 3.1/4.0 mobile storage delivers sub-millisecond query execution (0.1–0.4ms).</p>
         </div>
       </div>

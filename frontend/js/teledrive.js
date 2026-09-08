@@ -161,7 +161,7 @@ const teledriveManager = {
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="cloud" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Cloud Files Stored Yet</h4>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: var(--text-main); text-align: center;">No Cloud Files Stored Yet</h4>
               <p class="text-muted text-sm mb-3" style="text-align: center;">Upload assets, push automated database/site backups, or export websites to your free unlimited Telegram Cloud drive.</p>
               <div class="empty-state-actions" style="margin-bottom: 0;">
                 <button class="btn btn-primary btn-sm" onclick="teledriveManager.openUploadModal()">
@@ -207,7 +207,7 @@ const teledriveManager = {
               <div class="flex-align gap-2">
                 <i data-lucide="${catIcon}" style="width: 16px; height: 16px; color: #38bdf8;"></i>
                 <div>
-                  <strong style="color: #f8fafc; font-size: 13.5px;">${f.fileName}</strong>
+                  <strong style="color: var(--text-main); font-size: 13.5px;">${f.fileName}</strong>
                   ${f.caption ? `<div class="text-muted text-sm" style="font-size: 11px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.caption}</div>` : ''}
                 </div>
               </div>

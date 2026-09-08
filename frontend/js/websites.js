@@ -99,7 +99,7 @@ const websites = {
               <div class="flex-between flex-wrap gap-2 mb-3">
                 <div class="flex-align gap-2">
                   <span class="status-beacon ${isRunning ? 'running' : 'stopped'}"></span>
-                  <h4 style="font-size: 16px; margin: 0; font-weight: 700; color: #f8fafc;">${site.name}</h4>
+                  <h4 style="font-size: 16px; margin: 0; font-weight: 700; color: var(--text-main);">${site.name}</h4>
                   <span class="badge badge-primary" style="font-size: 11px;">${typeBadge}</span>
                   <span class="badge ${isRunning ? 'badge-success' : 'badge-secondary'}" style="font-size: 11px;">
                     ${isRunning ? 'RUNNING' : 'STOPPED'}

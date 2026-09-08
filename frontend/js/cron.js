@@ -49,7 +49,7 @@ const cronManager = {
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="clock" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Scheduled Cron Jobs</h4>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: var(--text-main); text-align: center;">No Scheduled Cron Jobs</h4>
               <p class="text-muted text-sm mb-3" style="text-align: center;">Schedule automated scripts, periodic backups, health checks, or database vacuuming.</p>
               <div class="empty-state-actions" style="margin-bottom: 0;">
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-create-cron').classList.remove('hidden')">

@@ -79,7 +79,7 @@ const emailManager = {
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="mail" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Email Forwarders Configured</h4>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: var(--text-main); text-align: center;">No Email Forwarders Configured</h4>
               <p class="text-muted text-sm mb-3" style="text-align: center;">Forward custom domain emails (<code>support@yourdomain.com</code>) to your personal Gmail and reply with custom DKIM at $0 cost.</p>
               <div class="empty-state-actions" style="margin-bottom: 0;">
                 <button class="btn btn-primary btn-sm" onclick="emailManager.openSetupModal()">
@@ -101,7 +101,7 @@ const emailManager = {
           <td>
             <div class="flex-align gap-2">
               <i data-lucide="mail" style="width: 16px; height: 16px; color: #38bdf8;"></i>
-              <strong style="color: #f1f5f9; font-size: 14px;">${f.custom_email}</strong>
+              <strong style="color: var(--text-main); font-size: 14px;">${f.custom_email}</strong>
             </div>
           </td>
           <td>
@@ -303,13 +303,13 @@ const emailManager = {
               <span class="badge ${r.type === 'MX' ? 'badge-primary' : (r.type === 'CNAME' ? 'badge-success' : 'badge-secondary')}" style="font-size: 11px; font-weight: 700;">
                 ${r.type}
               </span>
-              <strong style="color: #f1f5f9; font-size: 13px;">${r.name}</strong>
+              <strong style="color: var(--text-main); font-size: 13px;">${r.name}</strong>
               ${r.priority ? `<span class="text-muted text-sm">(Priority: ${r.priority})</span>` : ''}
             </div>
             <span class="badge badge-secondary" style="font-size: 10px; color: #94a3b8;">DNS ONLY (Grey Cloud ☁️)</span>
           </div>
-          <div class="flex-between flex-wrap gap-2 mt-2" style="background: #070a14; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-            <code style="font-size: 12px; color: #38bdf8; word-break: break-all;">${r.value}</code>
+          <div class="flex-between flex-wrap gap-2 mt-2" style="background: var(--bg-card-darker); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <code style="font-size: 12px; color: var(--primary-light); word-break: break-all;">${r.value}</code>
             <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${r.value.replace(/'/g, "\\'")}').then(() => API.toast('Copied to clipboard!', 'success'))" title="Copy Record Value" style="padding: 2px 6px;">
               <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
             </button>
@@ -327,7 +327,7 @@ const emailManager = {
     const domain = (document.getElementById('manual-email-domain') && document.getElementById('manual-email-domain').value.trim()) || 'domain';
     if (!this.currentBindZoneText) return;
 
-    const blob = new Blob([this.currentBindZoneText], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([this.currentBindZoneText], { type: 'plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -395,7 +395,7 @@ const emailManager = {
     resultBox.innerHTML = `
       <div class="card p-3 mt-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);">
         <div class="flex-between flex-wrap gap-2 mb-3">
-          <h4 style="margin: 0; font-size: 15px;">DNS & Deliverability Report for <strong style="color: #38bdf8;">${data.domain}</strong></h4>
+          <h4 style="margin: 0; font-size: 15px;">DNS & Deliverability Report for <strong style="color: var(--primary-light);">${data.domain}</strong></h4>
           <span class="badge ${data.overallScore >= 80 ? 'badge-success' : 'badge-warning'}" style="font-size: 12px;">
             Deliverability Score: ${data.overallScore}%
           </span>
@@ -404,7 +404,7 @@ const emailManager = {
         ${data.spf.warning ? `<div class="alert alert-danger mb-3">${data.spf.warning}</div>` : ''}
 
         <div class="grid grid-2 gap-3 text-sm">
-          <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div style="background: var(--bg-card-darker); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
             <div class="flex-between mb-1">
               <strong>1. Inbound MX Records:</strong>
               ${mxBadge}
@@ -412,7 +412,7 @@ const emailManager = {
             <div class="text-muted text-sm" style="font-size: 11.5px;">${data.mx.details.length > 0 ? data.mx.details.map((r) => r.exchange).join(', ') : 'No MX records found'}</div>
           </div>
 
-          <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div style="background: var(--bg-card-darker); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
             <div class="flex-between mb-1">
               <strong>2. SPF Validation:</strong>
               ${spfBadge}
@@ -420,7 +420,7 @@ const emailManager = {
             <div class="text-muted text-sm" style="font-size: 11.5px;">${data.spf.details || 'No SPF TXT record'} (Count: ${data.spf.count})</div>
           </div>
 
-          <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div style="background: var(--bg-card-darker); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
             <div class="flex-between mb-1">
               <strong>3. Brevo DKIM (brevo1._domainkey):</strong>
               ${dkimBadge}
@@ -428,7 +428,7 @@ const emailManager = {
             <div class="text-muted text-sm" style="font-size: 11.5px;">${data.dkim.details || 'CNAME record not yet resolved'}</div>
           </div>
 
-          <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div style="background: var(--bg-card-darker); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
             <div class="flex-between mb-1">
               <strong>4. DMARC Policy (_dmarc):</strong>
               ${dmarcBadge}

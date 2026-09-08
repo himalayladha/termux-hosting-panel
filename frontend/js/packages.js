@@ -62,7 +62,7 @@ const packagesManager = {
           (pkg) => `
           <tr>
             <td>
-              <strong style="color: #f1f5f9;">${pkg.name}</strong>
+              <strong style="color: var(--text-main);">${pkg.name}</strong>
               ${pkg.isDev ? '<span class="badge badge-secondary" style="font-size: 10px; margin-left: 4px;">DEV</span>' : ''}
             </td>
             <td><code>${pkg.declaredVersion || '*'}</code></td>

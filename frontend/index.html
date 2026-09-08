@@ -213,18 +213,18 @@
                     <i data-lucide="network" style="width: 22px; height: 22px;"></i>
                   </div>
                   <div>
-                    <strong style="color: #fff; font-size: 15px;">Server Access Endpoints</strong>
+                    <strong style="color: var(--text-main); font-size: 15px;">Server Access Endpoints</strong>
                     <div class="text-muted" style="font-size: 13px;">Connect locally, from any PC on the same Wi-Fi, or globally.</div>
                   </div>
                 </div>
                 <div class="flex-align gap-2 flex-wrap" id="access-urls-container">
                   <span class="badge badge-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: normal; display: inline-flex; align-items: center; gap: 6px;">
-                    <i data-lucide="smartphone" style="width: 14px; height: 14px; color: #60a5fa;"></i>
-                    Phone: <code id="dash-local-url" style="color: #60a5fa;">http://127.0.0.1:9000</code>
+                    <i data-lucide="smartphone" style="width: 14px; height: 14px; color: var(--primary-light);"></i>
+                    Phone: <code id="dash-local-url" style="color: var(--primary-light);">http://127.0.0.1:9000</code>
                   </span>
                   <span class="badge badge-success" style="padding: 6px 12px; font-size: 12px; font-weight: normal; display: inline-flex; align-items: center; gap: 6px;">
-                    <i data-lucide="laptop" style="width: 14px; height: 14px; color: #4ade80;"></i>
-                    PC (Wi-Fi): <code id="dash-wifi-url" style="color: #4ade80;">Detecting...</code>
+                    <i data-lucide="laptop" style="width: 14px; height: 14px; color: var(--success);"></i>
+                    PC (Wi-Fi): <code id="dash-wifi-url" style="color: var(--success);">Detecting...</code>
                   </span>
                 </div>
               </div>
@@ -287,7 +287,7 @@
                   <i data-lucide="battery-charging" style="width: 18px; height: 18px;"></i>
                 </div>
                 <div>
-                  <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #fff;">Android Hardware & Battery Guard</h3>
+                  <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main);">Android Hardware & Battery Guard</h3>
                 </div>
                 <span id="metric-battery-status" class="badge badge-success" style="font-size: 10.5px;">CHARGING</span>
                 <span id="badge-wakelock-status" class="badge badge-secondary" style="font-size: 10.5px;">WAKELOCK</span>
@@ -300,33 +300,33 @@
             </div>
             <div class="card-body">
               <div class="grid grid-4 gap-3">
-                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                <div class="card bg-darker p-3" style="border: 1px solid var(--border-color); border-radius: 10px;">
                   <div class="text-muted text-sm flex-between">
                     <span style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Level</span>
-                    <strong id="metric-battery-percent" style="color: #fff; font-size: 16px; font-weight: 700;">--%</strong>
+                    <strong id="metric-battery-percent" style="color: var(--text-main); font-size: 16px; font-weight: 700;">--%</strong>
                   </div>
                   <div class="progress-bar-wrapper mt-2" style="height: 6px; background: rgba(255, 255, 255, 0.08);">
                     <div class="progress-bar" id="bar-battery" style="width: 0%; background: #10b981;"></div>
                   </div>
                   <div class="flex-between mt-2" style="font-size: 11.5px;">
                     <span class="text-muted">Power Source:</span>
-                    <span id="metric-battery-plugged" style="font-weight: 600; color: #4ade80;">Checking...</span>
+                    <span id="metric-battery-plugged" style="font-weight: 600; color: var(--success);">Checking...</span>
                   </div>
                 </div>
 
-                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                <div class="card bg-darker p-3" style="border: 1px solid var(--border-color); border-radius: 10px;">
                   <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Thermal</div>
                   <div style="font-size: 18px; font-weight: 700; margin: 4px 0 2px 0;" id="metric-battery-temp">--°C</div>
-                  <div class="text-muted text-sm" style="font-size: 11.5px;">Auto-Guard Threshold: <strong style="color: #f1f5f9;">42°C</strong></div>
+                  <div class="text-muted text-sm" style="font-size: 11.5px;">Auto-Guard Threshold: <strong style="color: var(--text-main);">42°C</strong></div>
                 </div>
 
-                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                <div class="card bg-darker p-3" style="border: 1px solid var(--border-color); border-radius: 10px;">
                   <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Battery Health</div>
-                  <div style="font-size: 18px; font-weight: 700; color: #38bdf8; margin: 4px 0 2px 0;" id="metric-battery-health">GOOD</div>
-                  <div class="text-muted text-sm" style="font-size: 11.5px;">Sensor: <span style="color: #cbd5e1;">Li-ion Battery</span></div>
+                  <div style="font-size: 18px; font-weight: 700; color: var(--primary-light); margin: 4px 0 2px 0;" id="metric-battery-health">GOOD</div>
+                  <div class="text-muted text-sm" style="font-size: 11.5px;">Sensor: <span class="text-muted">Li-ion Battery</span></div>
                 </div>
 
-                <div class="card bg-darker p-3" style="border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
+                <div class="card bg-darker p-3" style="border: 1px solid var(--border-color); border-radius: 10px;">
                   <div class="text-muted text-sm" style="font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">CPU Keepalive</div>
                   <div style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 4px 0 2px 0;">termux-wake-lock</div>
                   <div class="text-muted text-sm" style="font-size: 11.5px;">Prevents CPU lock sleep</div>
@@ -374,7 +374,7 @@
           </div>
 
           <!-- Live Realtime Traffic Bar -->
-          <div class="card mb-3" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.6)); border-color: rgba(56, 189, 248, 0.25);">
+          <div class="card mb-3" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), var(--bg-card)); border-color: rgba(56, 189, 248, 0.25);">
             <div class="card-body p-3 flex-between flex-wrap gap-2">
               <div class="flex-align gap-2">
                 <span class="status-dot online" style="animation: pulse 1.5s infinite;"></span>
@@ -382,7 +382,7 @@
               </div>
               <div class="flex-align gap-3">
                 <div class="text-sm text-muted" id="stat-analytics-active-visitors">~1 active visitor</div>
-                <div class="metric-value" id="stat-analytics-rps" style="color: #38bdf8; font-size: 20px; font-weight: 700; margin: 0;">0.00 req/s</div>
+                <div class="metric-value" id="stat-analytics-rps" style="color: var(--primary-light); font-size: 20px; font-weight: 700; margin: 0;">0.00 req/s</div>
               </div>
             </div>
           </div>
@@ -392,9 +392,9 @@
             <div class="card p-3">
               <div class="flex-between mb-2">
                 <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Total Requests</span>
-                <i data-lucide="bar-chart-2" style="width: 16px; height: 16px; color: #38bdf8;"></i>
+                <i data-lucide="bar-chart-2" style="width: 16px; height: 16px; color: var(--primary-light);"></i>
               </div>
-              <div class="metric-value" id="stat-analytics-requests" style="font-size: 26px; font-weight: 700; color: #fff;">0</div>
+              <div class="metric-value" id="stat-analytics-requests" style="font-size: 26px; font-weight: 700;">0</div>
               <span class="text-muted text-sm mt-1" style="display: block;">All HTTP endpoints</span>
             </div>
 
@@ -514,11 +514,11 @@
           <div class="card mt-3" style="background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
             <div class="card-body" style="padding: 14px 20px;">
               <div class="flex-align gap-3 flex-wrap">
-                <div class="icon-circle" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <div class="icon-circle" style="background: rgba(56, 189, 248, 0.15); color: var(--primary-light); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
                   <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
                 </div>
                 <div style="flex: 1;">
-                  <strong style="color: #fff; font-size: 14px;">Automatic HTTPS / SSL via Cloudflare Edge</strong>
+                  <strong style="color: var(--text-main); font-size: 14px;">Automatic HTTPS / SSL via Cloudflare Edge</strong>
                   <div class="text-muted text-sm">Every connected domain receives automatic free SSL certificates, DDoS mitigation, and global edge CDN proxying.</div>
                 </div>
               </div>
@@ -564,8 +564,8 @@
             <div class="card" style="background: rgba(56, 189, 248, 0.04); border-color: rgba(56, 189, 248, 0.2);">
               <div class="card-body p-3">
                 <div class="flex-align gap-2 mb-1">
-                  <i data-lucide="inbox" style="width: 18px; height: 18px; color: #38bdf8;"></i>
-                  <strong style="color: #38bdf8; font-size: 14px;">1. Receiving Mail (Cloudflare Email Routing)</strong>
+                  <i data-lucide="inbox" style="width: 18px; height: 18px; color: var(--primary-light);"></i>
+                  <strong style="color: var(--primary-light); font-size: 14px;">1. Receiving Mail (Cloudflare Email Routing)</strong>
                 </div>
                 <p class="text-muted text-sm mb-0">
                   Cloudflare captures mail sent to <code>support@yourdomain.com</code> and immediately forwards it to your personal Gmail inbox at $0 cost.
@@ -576,8 +576,8 @@
             <div class="card" style="background: rgba(34, 197, 94, 0.04); border-color: rgba(34, 197, 94, 0.2);">
               <div class="card-body p-3">
                 <div class="flex-align gap-2 mb-1">
-                  <i data-lucide="send" style="width: 18px; height: 18px; color: #4ade80;"></i>
-                  <strong style="color: #4ade80; font-size: 14px;">2. Sending Mail (Brevo SMTP in Gmail)</strong>
+                  <i data-lucide="send" style="width: 18px; height: 18px; color: var(--success);"></i>
+                  <strong style="color: var(--success); font-size: 14px;">2. Sending Mail (Brevo SMTP in Gmail)</strong>
                 </div>
                 <p class="text-muted text-sm mb-0">
                   Gmail connects to Brevo's free SMTP relay (300 emails/day) to send with your custom domain & full DKIM signing.
@@ -629,10 +629,10 @@
           </div>
 
           <!-- Gmail SMTP Quick Setup Guide -->
-          <div class="card mt-4" style="border-left: 4px solid #a855f7;">
+          <div class="card mt-4" style="border-left: 4px solid var(--purple);">
             <div class="card-header">
               <div class="flex-align gap-2">
-                <i data-lucide="mail-check" style="width: 18px; height: 18px; color: #a855f7;"></i>
+                <i data-lucide="mail-check" style="width: 18px; height: 18px; color: var(--purple);"></i>
                 <h3 style="font-size: 15px; margin: 0;">Gmail "Send Mail As" Configuration Reference</h3>
               </div>
             </div>
@@ -641,15 +641,15 @@
                 In Gmail (<strong>Settings ➔ Accounts & Import ➔ Send mail as ➔ Add another email address</strong>):
               </p>
               <div class="grid grid-3 gap-3">
-                <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <div class="bg-darker" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
                   <strong class="text-muted" style="font-size: 11px; display: block;">SMTP SERVER</strong>
-                  <code style="color: #38bdf8; font-size: 13px;">smtp-relay.brevo.com</code>
+                  <code style="color: var(--primary-light); font-size: 13px;">smtp-relay.brevo.com</code>
                 </div>
-                <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <div class="bg-darker" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
                   <strong class="text-muted" style="font-size: 11px; display: block;">PORT & ENCRYPTION</strong>
-                  <code style="color: #38bdf8; font-size: 13px;">587 (TLS)</code>
+                  <code style="color: var(--primary-light); font-size: 13px;">587 (TLS)</code>
                 </div>
-                <div style="background: #070a14; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <div class="bg-darker" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
                   <strong class="text-muted" style="font-size: 11px; display: block;">TREAT AS ALIAS</strong>
                   <span class="badge badge-success" style="font-size: 11px;">MUST BE CHECKED ✅</span>
                 </div>
@@ -997,7 +997,7 @@
                 <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Cloud Objects Stored</span>
                 <i data-lucide="cloud" style="width: 16px; height: 16px; color: #38bdf8;"></i>
               </div>
-              <div class="metric-value" id="teledrive-stat-files" style="font-size: 26px; font-weight: 700; color: #fff;">0</div>
+              <div class="metric-value" id="teledrive-stat-files" style="font-size: 26px; font-weight: 700; color: var(--text-main);">0</div>
               <div class="flex-between mt-2 flex-wrap gap-1">
                 <span class="text-muted text-sm">Stored on Telegram Datacenters</span>
                 <span id="teledrive-channel-badge"></span>
@@ -1106,7 +1106,7 @@
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">cloudflared Binary</div>
-                    <div style="font-size: 14px; font-weight: 500; color: #fff; margin-top: 4px;" id="tunnel-binary-info">Installed</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--text-main); margin-top: 4px;" id="tunnel-binary-info">Installed</div>
                   </div>
                 </div>
 
@@ -1309,7 +1309,7 @@
                 <div class="grid grid-3 gap-3 mb-3">
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Status</div>
-                    <div style="font-size: 15px; font-weight: 600; color: #fff; margin-top: 4px;" id="ngrok-status-text">STOPPED</div>
+                    <div style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 4px;" id="ngrok-status-text">STOPPED</div>
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">AuthToken</div>
@@ -1317,7 +1317,7 @@
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Binary Status</div>
-                    <div style="font-size: 14px; font-weight: 500; color: #fff; margin-top: 4px;" id="ngrok-binary-info">Checking...</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--text-main); margin-top: 4px;" id="ngrok-binary-info">Checking...</div>
                   </div>
                 </div>
 
@@ -1408,7 +1408,7 @@
                 <div class="grid grid-3 gap-3 mb-3">
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Status</div>
-                    <div style="font-size: 15px; font-weight: 600; color: #fff; margin-top: 4px;" id="loclx-status-text">STOPPED</div>
+                    <div style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 4px;" id="loclx-status-text">STOPPED</div>
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Access Token</div>
@@ -1416,7 +1416,7 @@
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">loclx Binary</div>
-                    <div style="font-size: 14px; font-weight: 500; color: #fff; margin-top: 4px;" id="loclx-binary-info">Checking...</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--text-main); margin-top: 4px;" id="loclx-binary-info">Checking...</div>
                   </div>
                 </div>
 
@@ -1512,11 +1512,11 @@
                 <div class="grid grid-2 gap-3 mb-3">
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Funnel Status</div>
-                    <div style="font-size: 15px; font-weight: 600; color: #fff; margin-top: 4px;" id="tailscale-status-text">STOPPED</div>
+                    <div style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 4px;" id="tailscale-status-text">STOPPED</div>
                   </div>
                   <div class="card bg-darker p-3">
                     <div class="text-muted text-sm">Tailscale Binary</div>
-                    <div style="font-size: 14px; font-weight: 500; color: #fff; margin-top: 4px;" id="tailscale-binary-info">Checking...</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--text-main); margin-top: 4px;" id="tailscale-binary-info">Checking...</div>
                   </div>
                 </div>
 
@@ -1634,7 +1634,7 @@
                 </div>
                 <div class="flex-between py-2 mb-2" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
                   <span class="text-muted">Storage Root Path:</span>
-                  <code id="settings-root" style="color: #f1f5f9;">~/termux-panel</code>
+                  <code id="settings-root" style="color: var(--text-main);">~/termux-panel</code>
                 </div>
                 <div class="flex-between py-2" style="padding-top: 4px;">
                   <span class="text-muted">Database Engine:</span>
@@ -2260,12 +2260,12 @@
 
             <!-- Manual Mode Fields -->
             <div id="subdomain-cf-mode-manual-fields" class="hidden">
-              <p class="text-muted text-sm mb-2">TermuxPanel will register the tunnel ingress route. Add this CNAME in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Cloudflare DNS</a>:</p>
-              <div style="background: #050811; padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 12.5px; border: 1px solid var(--border-color); line-height: 1.8;">
-                <div><strong>Type:</strong> <code style="color: #38bdf8;">CNAME</code></div>
-                <div><strong>Name / Host:</strong> <code id="subdomain-manual-cname-host" style="color: #f1f5f9;">prefix</code></div>
-                <div><strong>Target:</strong> <code id="subdomain-manual-cname-target" style="color: #22c55e;">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
-                <div><strong>Proxy Status:</strong> <span style="color: #f59e0b; font-weight: 600;">Proxied (Orange Cloud ☁️)</span></div>
+              <p class="text-muted text-sm mb-2">TermuxPanel will register the tunnel ingress route. Add this CNAME in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: var(--primary-light); text-decoration: underline;">Cloudflare DNS</a>:</p>
+              <div style="background: var(--bg-card-darker); padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 12.5px; border: 1px solid var(--border-color); line-height: 1.8;">
+                <div><strong>Type:</strong> <code style="color: var(--primary-light);">CNAME</code></div>
+                <div><strong>Name / Host:</strong> <code id="subdomain-manual-cname-host" style="color: var(--text-main);">prefix</code></div>
+                <div><strong>Target:</strong> <code id="subdomain-manual-cname-target" style="color: var(--success);">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
+                <div><strong>Proxy Status:</strong> <span style="color: var(--warning); font-weight: 600;">Proxied (Orange Cloud ☁️)</span></div>
               </div>
             </div>
 
@@ -2360,12 +2360,12 @@
           <!-- Option 2: Manual CNAME Instructions -->
           <div id="domain-cf-manual-fields" class="card mt-3 bg-darker p-3 hidden">
             <h4>Manual DNS Configuration in your Cloudflare Dashboard:</h4>
-            <p class="text-muted text-sm mt-1">Since your Cloudflare Tunnel is active, simply add this CNAME record in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Cloudflare DNS Dashboard</a>:</p>
-            <div style="background: #050811; padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-top: 10px; border: 1px solid var(--border-color); line-height: 1.8;">
-              <div><strong>Type:</strong> <code style="color: #38bdf8;">CNAME</code></div>
+            <p class="text-muted text-sm mt-1">Since your Cloudflare Tunnel is active, simply add this CNAME record in your <a href="https://dash.cloudflare.com/" target="_blank" style="color: var(--primary-light); text-decoration: underline;">Cloudflare DNS Dashboard</a>:</p>
+            <div style="background: var(--bg-card-darker); padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-top: 10px; border: 1px solid var(--border-color); line-height: 1.8;">
+              <div><strong>Type:</strong> <code style="color: var(--primary-light);">CNAME</code></div>
               <div><strong>Name / Host:</strong> <code id="manual-cname-host">@ (or subdomain prefix)</code></div>
-              <div><strong>Target / Destination:</strong> <code id="manual-cname-target" style="color: #22c55e;">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
-              <div><strong>Proxy Status:</strong> <span style="color: #f59e0b; font-weight: 600;">Proxied (Orange Cloud ☁️ Enabled)</span></div>
+              <div><strong>Target / Destination:</strong> <code id="manual-cname-target" style="color: var(--success);">&lt;YOUR_TUNNEL_ID&gt;.cfargotunnel.com</code></div>
+              <div><strong>Proxy Status:</strong> <span style="color: var(--warning); font-weight: 600;">Proxied (Orange Cloud ☁️ Enabled)</span></div>
             </div>
           </div>
 
@@ -2497,7 +2497,7 @@
           <div class="form-group">
             <label for="webhook-url-input"><strong>Payload URL (Webhook Destination)</strong></label>
             <div class="flex-align gap-2">
-              <input type="text" id="webhook-url-input" class="form-control" readonly style="font-family: monospace; font-size: 12px; color: #38bdf8; background: #0b1120;">
+              <input type="text" id="webhook-url-input" class="form-control" readonly style="font-family: monospace; font-size: 12px; color: var(--primary-light); background: var(--bg-card-darker);">
               <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('webhook-url-input').value).then(() => API.toast('Webhook URL copied!', 'success'))" title="Copy URL">
                 <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
               </button>
@@ -2533,7 +2533,7 @@
                 <i data-lucide="play" style="width: 12px; height: 12px; margin-right: 3px;"></i> Trigger Manual Deploy
               </button>
             </div>
-            <div id="webhook-deploy-history" style="max-height: 180px; overflow-y: auto; background: #070a14; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+            <div id="webhook-deploy-history" style="max-height: 180px; overflow-y: auto; background: var(--bg-card-darker); border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
               <p class="text-muted text-sm">Loading deployment history...</p>
             </div>
           </div>
@@ -2584,7 +2584,7 @@
             <p class="text-muted text-sm" style="font-size: 11.5px; margin-bottom: 8px;">
               If you lose your phone or authenticator app, each recovery code can be used once to log in.
             </p>
-            <div id="backup-codes-display" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-family: monospace; font-size: 12px; color: #a855f7; background: #070a14; padding: 10px; border-radius: 6px; text-align: center;">
+            <div id="backup-codes-display" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-family: monospace; font-size: 12px; color: var(--purple); background: var(--bg-card-darker); padding: 10px; border-radius: 6px; text-align: center;">
             </div>
           </div>
 
@@ -2637,7 +2637,7 @@
           </button>
         </div>
 
-        <div class="table-responsive" style="max-height: 280px; overflow-y: auto; background: #070a14; border-radius: 8px; border: 1px solid var(--border-color);">
+        <div class="table-responsive" style="max-height: 280px; overflow-y: auto; background: var(--bg-card-darker); border-radius: 8px; border: 1px solid var(--border-color);">
           <table class="table">
             <thead>
               <tr>
@@ -2718,14 +2718,14 @@
             </div>
           </form>
 
-          <div id="cf-email-setup-logs" class="mt-3 p-3 hidden" style="background: #070a14; border-radius: 8px; border: 1px solid var(--border-color); max-height: 140px; overflow-y: auto;"></div>
+          <div id="cf-email-setup-logs" class="mt-3 p-3 hidden" style="background: var(--bg-card-darker); border-radius: 8px; border: 1px solid var(--border-color); max-height: 140px; overflow-y: auto;"></div>
 
           <!-- Brevo DNS Push Card -->
           <div class="card mt-4" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);">
             <div class="card-header p-3 flex-between flex-wrap gap-2">
               <div class="flex-align gap-2">
-                <i data-lucide="send" style="width: 16px; height: 16px; color: #4ade80;"></i>
-                <strong style="font-size: 13.5px; color: #f1f5f9;">Outbound Sending: 1-Click Push Brevo DKIM/DMARC to Cloudflare DNS</strong>
+                <i data-lucide="send" style="width: 16px; height: 16px; color: var(--success);"></i>
+                <strong style="font-size: 13.5px; color: var(--text-main);">Outbound Sending: 1-Click Push Brevo DKIM/DMARC to Cloudflare DNS</strong>
               </div>
             </div>
             <div class="card-body p-3 text-sm">
@@ -2946,7 +2946,7 @@
       </div>
       <div class="modal-body">
         <div class="alert alert-info mb-3" style="font-size: 13px;">
-          Deploying: <strong id="teledrive-deploy-file-name-text" style="color: #fff;">file.zip</strong>
+          Deploying: <strong id="teledrive-deploy-file-name-text" style="color: var(--text-main);">file.zip</strong>
         </div>
         <form id="teledrive-deploy-form">
           <input type="hidden" id="teledrive-deploy-file-id">
@@ -2980,7 +2980,7 @@
       <div id="dialog-icon-container" style="margin: 0 auto 16px auto; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
         <i data-lucide="info" id="dialog-icon" style="width: 28px; height: 28px;"></i>
       </div>
-      <h3 id="dialog-title" style="margin-bottom: 10px; font-size: 18px; color: #fff;">Notice</h3>
+      <h3 id="dialog-title" style="margin-bottom: 10px; font-size: 18px; color: var(--text-main);">Notice</h3>
       <div id="dialog-message" style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px; white-space: pre-wrap; word-break: break-word;"></div>
       <div id="dialog-prompt-container" class="hidden" style="margin-bottom: 20px; text-align: left;">
         <input type="text" id="dialog-prompt-input" class="form-control" style="width: 100%;">
