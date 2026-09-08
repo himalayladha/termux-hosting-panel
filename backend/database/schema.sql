@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS domains (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT UNIQUE NOT NULL,
     website_id INTEGER,
+    is_primary INTEGER DEFAULT 1,
     ssl_enabled INTEGER DEFAULT 1,
     cname_target TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

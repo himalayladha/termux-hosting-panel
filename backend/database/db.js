@@ -162,6 +162,9 @@ async function initDb() {
     if (!colNames.includes('cname_target')) {
       await run('ALTER TABLE domains ADD COLUMN cname_target TEXT');
     }
+    if (!colNames.includes('is_primary')) {
+      await run('ALTER TABLE domains ADD COLUMN is_primary INTEGER DEFAULT 1');
+    }
   } catch (_) {}
 
   // Insert default settings if not set

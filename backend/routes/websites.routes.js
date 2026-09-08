@@ -39,9 +39,8 @@ router.get('/', requireAuth, async (req, res) => {
     const wifiIp = netMetrics && netMetrics.network ? netMetrics.network.wifiIp : null;
 
     const websites = await db.all(`
-      SELECT w.*, d.domain as custom_domain
+      SELECT w.*, COALESCE(w.domain, (SELECT domain FROM domains WHERE website_id = w.id LIMIT 1)) as custom_domain
       FROM websites w
-      LEFT JOIN domains d ON w.id = d.website_id AND d.is_primary = 1
       ORDER BY w.created_at DESC
     `);
 
