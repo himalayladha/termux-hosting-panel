@@ -1,4 +1,4 @@
-# 📱 24/7 Android Survival Guide for TermuxPanel
+# 24/7 Android Survival Guide for TermuxPanel
 
 To keep TermuxPanel and your hosted websites running **24/7/365** without interruptions even when the screen is turned off or the phone is idle, you need to configure a few critical Android settings.
 
@@ -34,7 +34,7 @@ Android's "Doze Mode" suspends background apps to save battery. You must exclude
 1. Open **Settings** > **Apps** > **Manage apps** > **Termux**.
 2. Enable **Autostart**.
 3. Under **Battery saver**, select **No restrictions**.
-4. In the app drawer / recents screen, long-press Termux and tap the **Lock 🔒 icon**.
+4. In the app drawer / recents screen, long-press Termux and tap the **Lock icon**.
 
 ### OnePlus / Oppo / Realme (OxygenOS / ColorOS):
 1. Open **Settings** > **Battery** > **More battery settings** > **Optimize battery use**.

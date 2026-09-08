@@ -238,9 +238,10 @@ const settingsManager = {
       if (!bans || bans.length === 0) {
         container.innerHTML = `
           <div class="p-3 text-center" style="background: rgba(34, 197, 94, 0.04); border-radius: 8px; border: 1px dashed rgba(34, 197, 94, 0.2);">
-            <span style="color: #4ade80; font-size: 13.5px;">✓ No blocked IP addresses. All client requests are within normal rate limits.</span>
+            <span style="color: #4ade80; font-size: 13.5px;"><i data-lucide="check-circle" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px; margin-right: 4px;"></i>No blocked IP addresses. All client requests are within normal rate limits.</span>
           </div>
         `;
+        if (window.lucide) lucide.createIcons();
         return;
       }
 

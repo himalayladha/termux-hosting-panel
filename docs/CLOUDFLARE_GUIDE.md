@@ -25,8 +25,8 @@ Configure it in TermuxPanel:
 
 ### Step 3: Configure Hostname Routes in Cloudflare Dashboard
 Under your tunnel's **Public Hostname** tab, add:
-- **Panel**: `panel.yourdomain.com` ➔ `HTTP 127.0.0.1:9000`
-- **Hosted Website**: `example.com` ➔ `HTTP 127.0.0.1:8100`
+- **Panel**: `panel.yourdomain.com` -> `HTTP 127.0.0.1:9000`
+- **Hosted Website**: `example.com` -> `HTTP 127.0.0.1:8100`
 
 ---
 
@@ -44,7 +44,7 @@ This method automates the entire process: creating the tunnel, retrieving the to
 4. Copy the generated API Token.
 
 ### Step 2: Run Auto-Setup
-- In the Web Panel: Go to **Cloudflare Tunnel** > **Option 2: Fully-Automatic** > Enter your API Token, domain (`example.com`), and subdomain (`panel`) > Click **⚡ Run Fully-Automatic Setup**.
+- In the Web Panel: Go to **Cloudflare Tunnel** > **Option 2: Fully-Automatic** > Enter your API Token, domain (`example.com`), and subdomain (`panel`) > Click **Run Fully-Automatic Setup**.
 - Or in Termux terminal: Run `tp cloudflare` and select Option 2.
 
 TermuxPanel will automatically:
@@ -56,7 +56,7 @@ TermuxPanel will automatically:
 
 ---
 
-## 🔒 Security Best Practice: Cloudflare Access (Zero Trust)
+## Security Best Practice: Cloudflare Access (Zero Trust)
 
 To add a second layer of defense in front of the TermuxPanel admin dashboard:
 1. In Cloudflare Zero Trust, go to **Access** > **Applications** > **Add an application**.

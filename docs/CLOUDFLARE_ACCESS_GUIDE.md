@@ -1,4 +1,4 @@
-# 🛡️ 2nd Layer Security Guide: Cloudflare Zero Trust Access for TermuxPanel
+# 2nd Layer Security Guide: Cloudflare Zero Trust Access for TermuxPanel
 
 Cloudflare Access (Zero Trust Application Security) puts an identity verification gateway in front of your control panel at Cloudflare's global edge network.
 
@@ -6,7 +6,7 @@ Before a visitor can even reach your phone or see the TermuxPanel login screen, 
 
 ---
 
-## 🔒 The Two-Layer Security Architecture
+## The Two-Layer Security Architecture
 
 ```
  [ Anyone visits https://panel.yourdomain.com ]
@@ -31,13 +31,13 @@ Before a visitor can even reach your phone or see the TermuxPanel login screen, 
 
 ---
 
-## 📋 Step-by-Step Setup Guide (Takes Under 2 Minutes)
+## Step-by-Step Setup Guide (Takes Under 2 Minutes)
 
 Follow these exact steps in your browser:
 
 ### Step 1: Open Cloudflare Zero Trust Applications
 1. Go to the [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/).
-2. In the left navigation menu, click **Access** ➔ **Applications**.
+2. In the left navigation menu, click **Access** > **Applications**.
 3. Click the blue **Add an application** button.
 4. Select the **Self-hosted** card.
 
@@ -77,7 +77,7 @@ On the **Add policies** page:
 
 ---
 
-## 🧪 Testing Your 2nd Security Layer
+## Testing Your 2nd Security Layer
 
 1. Open an Incognito / Private window in your browser.
 2. Go to `https://panel.yourdomain.com`.
@@ -97,7 +97,7 @@ On the **Add policies** page:
 
 ---
 
-## 🚫 What Happens If a Hacker Finds Your Link?
+## What Happens If an Unauthorized User Finds Your Link?
 - If an unauthorized person enters their email, Cloudflare will instantly show: **"Access Denied: You do not have permission to access this application."**
 - **Zero requests reach your phone.** 
 - Hackers cannot try password guessing tools, exploit scanners, or DDoS attacks because Cloudflare blocks them at the edge!

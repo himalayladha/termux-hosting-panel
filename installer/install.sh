@@ -16,8 +16,8 @@ NC='\033[0m'
 clear || true
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║                    TERMUXPANEL                           ║${NC}"
-echo -e "${CYAN}║           Android One-Tap Server Installer               ║${NC}"
+echo -e "${CYAN}║ TERMUXPANEL ║${NC}"
+echo -e "${CYAN}║ Android One-Tap Server Installer ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}\n"
 
 PANEL_DIR="$HOME/termux-panel"
@@ -25,11 +25,11 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # If running directly from git clone outside ~/termux-panel, copy or link
 if [ "$CURRENT_DIR" != "$PANEL_DIR" ]; then
-  echo -e "${BLUE}[1/8] Syncing TermuxPanel codebase to $PANEL_DIR...${NC}"
-  mkdir -p "$PANEL_DIR"
-  cp -ru "$CURRENT_DIR"/* "$PANEL_DIR/" || cp -r "$CURRENT_DIR"/* "$PANEL_DIR/"
+ echo -e "${BLUE}[1/8] Syncing TermuxPanel codebase to $PANEL_DIR...${NC}"
+ mkdir -p "$PANEL_DIR"
+ cp -ru "$CURRENT_DIR"/* "$PANEL_DIR/" || cp -r "$CURRENT_DIR"/* "$PANEL_DIR/"
 else
-  echo -e "${BLUE}[1/8] Verifying directory structure...${NC}"
+ echo -e "${BLUE}[1/8] Verifying directory structure...${NC}"
 fi
 
 cd "$PANEL_DIR"
@@ -46,7 +46,7 @@ bash "$PANEL_DIR/installer/security.sh"
 echo -e "\n${BLUE}[4/8] Installing backend dependencies...${NC}"
 cd "$PANEL_DIR/backend"
 npm install --omit=dev --no-audit --no-fund
-echo -e "  ${GREEN}✓ Backend dependencies installed successfully!${NC}"
+echo -e " ${GREEN} Backend dependencies installed successfully!${NC}"
 
 # Step 5: Boot & Services Integration
 echo -e "\n${BLUE}[5/8] Configuring Termux:Boot and termux-services...${NC}"
@@ -54,38 +54,38 @@ echo -e "\n${BLUE}[5/8] Configuring Termux:Boot and termux-services...${NC}"
 # Termux:Boot integration
 BOOT_DIR="$HOME/.termux/boot"
 if [ -d "$HOME/.termux" ] || [ -n "$TERMUX_VERSION" ]; then
-  mkdir -p "$BOOT_DIR"
-  cp "$PANEL_DIR/scripts/start-server.sh" "$BOOT_DIR/start-server"
-  chmod +x "$BOOT_DIR/start-server"
-  echo -e "  ${GREEN}✓ Termux:Boot startup script installed in $BOOT_DIR/start-server${NC}"
+ mkdir -p "$BOOT_DIR"
+ cp "$PANEL_DIR/scripts/start-server.sh" "$BOOT_DIR/start-server"
+ chmod +x "$BOOT_DIR/start-server"
+ echo -e " ${GREEN} Termux:Boot startup script installed in $BOOT_DIR/start-server${NC}"
 fi
 
 # Acquire wake lock immediately to prevent CPU sleep
 if command -v termux-wake-lock >/dev/null 2>&1; then
-  termux-wake-lock
-  echo -e "  ${GREEN}✓ Termux wake-lock acquired (24/7 background CPU active)${NC}"
+ termux-wake-lock
+ echo -e " ${GREEN} Termux wake-lock acquired (24/7 background CPU active)${NC}"
 fi
 
 # Configure 24/7 Auto-Healing Watchdog in crontab
 if command -v crontab >/dev/null 2>&1; then
-  chmod +x "$PANEL_DIR/scripts/watchdog.sh"
-  WATCHDOG_CMD="* * * * * bash $PANEL_DIR/scripts/watchdog.sh"
-  (crontab -l 2>/dev/null | grep -v "watchdog.sh"; echo "$WATCHDOG_CMD") | crontab -
-  echo -e "  ${GREEN}✓ 24/7 Watchdog monitor registered (auto-recovers dead processes every minute)${NC}"
+ chmod +x "$PANEL_DIR/scripts/watchdog.sh"
+ WATCHDOG_CMD="* * * * * bash $PANEL_DIR/scripts/watchdog.sh"
+ (crontab -l 2>/dev/null | grep -v "watchdog.sh"; echo "$WATCHDOG_CMD") | crontab -
+ echo -e " ${GREEN} 24/7 Watchdog monitor registered (auto-recovers dead processes every minute)${NC}"
 fi
 
 # Termux-services integration
 if [ -n "$PREFIX" ] && [ -d "$PREFIX/var/service" ]; then
-  # termux-panel service
-  mkdir -p "$PREFIX/var/service/termux-panel"
-  cp "$PANEL_DIR/scripts/service-panel.run" "$PREFIX/var/service/termux-panel/run"
-  chmod +x "$PREFIX/var/service/termux-panel/run"
+ # termux-panel service
+ mkdir -p "$PREFIX/var/service/termux-panel"
+ cp "$PANEL_DIR/scripts/service-panel.run" "$PREFIX/var/service/termux-panel/run"
+ chmod +x "$PREFIX/var/service/termux-panel/run"
 
-  # cloudflared service
-  mkdir -p "$PREFIX/var/service/cloudflared"
-  cp "$PANEL_DIR/scripts/service-cloudflared.run" "$PREFIX/var/service/cloudflared/run"
-  chmod +x "$PREFIX/var/service/cloudflared/run"
-  echo -e "  ${GREEN}✓ termux-services daemons configured for TermuxPanel and Cloudflare Tunnel${NC}"
+ # cloudflared service
+ mkdir -p "$PREFIX/var/service/cloudflared"
+ cp "$PANEL_DIR/scripts/service-cloudflared.run" "$PREFIX/var/service/cloudflared/run"
+ chmod +x "$PREFIX/var/service/cloudflared/run"
+ echo -e " ${GREEN} termux-services daemons configured for TermuxPanel and Cloudflare Tunnel${NC}"
 fi
 
 # Step 6: Install 'tp' CLI helper
@@ -94,17 +94,17 @@ BIN_DIR="$PREFIX/bin"
 [ -z "$PREFIX" ] && BIN_DIR="/usr/local/bin"
 
 if [ -d "$BIN_DIR" ]; then
-  cp "$PANEL_DIR/scripts/tp" "$BIN_DIR/tp"
-  chmod +x "$BIN_DIR/tp"
-  echo -e "  ${GREEN}✓ 'tp' command is now available system-wide (run 'tp' anytime!)${NC}"
+ cp "$PANEL_DIR/scripts/tp" "$BIN_DIR/tp"
+ chmod +x "$BIN_DIR/tp"
+ echo -e " ${GREEN} 'tp' command is now available system-wide (run 'tp' anytime!)${NC}"
 fi
 
 # Step 7: Cloudflare Wizard
 echo -e "\n${BLUE}[7/8] Cloudflare Zero Trust Setup...${NC}"
 if [ ! -f "$PANEL_DIR/config/cloudflare-token" ]; then
-  bash "$PANEL_DIR/installer/cloudflare.sh"
+ bash "$PANEL_DIR/installer/cloudflare.sh"
 else
-  echo -e "  ${GREEN}✓ Cloudflare Tunnel token already configured in config/cloudflare-token${NC}"
+ echo -e " ${GREEN} Cloudflare Tunnel token already configured in config/cloudflare-token${NC}"
 fi
 
 # Step 8: Start Server & Self-Test
@@ -120,9 +120,9 @@ sleep 2
 
 # Verify local listening
 if curl -s "http://127.0.0.1:9000/api/auth/status" > /dev/null 2>&1; then
-  echo -e "  ${GREEN}✓ Server successfully launched and responding on http://127.0.0.1:9000${NC}"
+ echo -e " ${GREEN} Server successfully launched and responding on http://127.0.0.1:9000${NC}"
 else
-  echo -e "  ${YELLOW}Notice: Server started with PID $SERVER_PID. Check $PANEL_DIR/logs/panel.log for details.${NC}"
+ echo -e " ${YELLOW}Notice: Server started with PID $SERVER_PID. Check $PANEL_DIR/logs/panel.log for details.${NC}"
 fi
 
 # Dynamically detect Wi-Fi IP on any user's device
@@ -130,12 +130,12 @@ WIFI_IP=$(ifconfig wlan0 2>/dev/null | grep 'inet ' | awk '{print $2}')
 [ -z "$WIFI_IP" ] && WIFI_IP=$(node -e "const n=require('os').networkInterfaces();for(const k in n){for(const i of n[k]){if(i.family==='IPv4'&&!i.internal){console.log(i.address);process.exit(0);}}}" 2>/dev/null || echo "")
 
 echo -e "\n${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║               TERMUXPANEL SETUP COMPLETE!                ║${NC}"
+echo -e "${GREEN}║ TERMUXPANEL SETUP COMPLETE! ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
 echo -e "\n${BOLD}Access your control panel:${NC}"
-echo -e "  On Phone:           ${CYAN}http://127.0.0.1:9000${NC}"
+echo -e " On Phone: ${CYAN}http://127.0.0.1:9000${NC}"
 if [ -n "$WIFI_IP" ]; then
-  echo -e "  On PC (Same Wi-Fi): ${GREEN}http://${WIFI_IP}:9000${NC}"
+ echo -e " On PC (Same Wi-Fi): ${GREEN}http://${WIFI_IP}:9000${NC}"
 fi
-echo -e "  Terminal Manager:   ${YELLOW}tp${NC} (Type ${YELLOW}tp${NC} anywhere in Termux)"
-echo -e "  Hosted Sites Dir:   ${CYAN}~/termux-panel/storage/websites/${NC}\n"
+echo -e " Terminal Manager: ${YELLOW}tp${NC} (Type ${YELLOW}tp${NC} anywhere in Termux)"
+echo -e " Hosted Sites Dir: ${CYAN}~/termux-panel/storage/websites/${NC}\n"

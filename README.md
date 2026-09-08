@@ -1,4 +1,4 @@
-# TermuxPanel 📱⚡
+# TermuxPanel 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
@@ -14,7 +14,7 @@
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 
 1. [What is TermuxPanel?](#1-what-is-termuxpanel)
 2. [The $0/Month Small Business Web Stack (You Only Pay for Your Domain)](#2-the-0month-small-business-web-stack-you-only-pay-for-your-domain)
@@ -23,28 +23,28 @@
 5. [Step-by-Step Installation Guide](#5-step-by-step-installation-guide)
 6. [First-Time Setup: Creating Your Admin Account](#6-first-time-setup-creating-your-admin-account)
 7. [Cloudflare Zero Trust Setup (Access from Anywhere)](#7-cloudflare-zero-trust-setup-access-from-anywhere)
-   - [Option A: Semi-Automatic Setup (Copy & Paste Token)](#option-a-semi-automatic-setup-copy--paste-token---easiest)
-   - [Option B: Fully-Automatic Setup (Using Cloudflare API)](#option-b-fully-automatic-setup-using-cloudflare-api)
-   - [Adding Extra Security: Password Protect Before Login (Cloudflare Access)](#adding-extra-security-password-protect-before-login-cloudflare-access)
+ - [Option A: Semi-Automatic Setup (Copy & Paste Token)](#option-a-semi-automatic-setup-copy--paste-token---easiest)
+ - [Option B: Fully-Automatic Setup (Using Cloudflare API)](#option-b-fully-automatic-setup-using-cloudflare-api)
+ - [Adding Extra Security: Password Protect Before Login (Cloudflare Access)](#adding-extra-security-password-protect-before-login-cloudflare-access)
 8. [How to Deploy Websites & Apps (Step-by-Step)](#8-how-to-deploy-websites--apps-step-by-step)
-   - [Deploying a Static HTML/CSS/JS Website](#deploying-a-static-htmlcssjs-website)
-   - [Deploying a Node.js Application](#deploying-a-nodejs-application)
-   - [Deploying a Python App (Flask / FastAPI)](#deploying-a-python-app-flask--fastapi)
-   - [Deploying a PHP Application](#deploying-a-php-application)
+ - [Deploying a Static HTML/CSS/JS Website](#deploying-a-static-htmlcssjs-website)
+ - [Deploying a Node.js Application](#deploying-a-nodejs-application)
+ - [Deploying a Python App (Flask / FastAPI)](#deploying-a-python-app-flask--fastapi)
+ - [Deploying a PHP Application](#deploying-a-php-application)
 9. [How to Use the Panel Features](#9-how-to-use-the-panel-features)
-   - [Custom Domain, DNS & Free Automatic SSL (HTTPS) Management](#custom-domain-dns--free-automatic-ssl-https-management)
-   - [Free Professional Custom Domain Email Routing Suite](#free-professional-custom-domain-email-routing-suite)
-   - [Unlimited Telegram Cloud & TeleDrive Object Storage Management](#unlimited-telegram-cloud--teledrive-object-storage-management)
-   - [Privacy-First Web Traffic Analytics & Real-Time RPS](#privacy-first-web-traffic-analytics--real-time-rps)
-   - [File Manager & In-Browser Code Editor](#file-manager--in-browser-code-editor)
-   - [SQLite Database Studio & SQL Runner](#sqlite-database-studio--sql-query-runner)
-   - [Visual NPM & PIP Package Manager](#visual-npm--pip-package-manager)
-   - [Automated Cron Jobs](#automated-cron-jobs)
-   - [Hardware Battery Guard & Thermal Monitor](#hardware-battery-guard--thermal-monitor)
-   - [Multi-Tunnel Fallback (Cloudflare, Ngrok, LocalXpose, Tailscale)](#multi-tunnel-fallback-cloudflare-ngrok-localxpose-tailscale)
-   - [In-Browser Web Terminal (`tp`)](#in-browser-web-terminal-tp)
-   - [Security & Zero-Trust Defense (2FA TOTP & IP Jail)](#security--zero-trust-defense-2fa-totp--ip-jail)
-   - [Viewing Live Server Logs](#viewing-live-server-logs)
+ - [Custom Domain, DNS & Free Automatic SSL (HTTPS) Management](#custom-domain-dns--free-automatic-ssl-https-management)
+ - [Free Professional Custom Domain Email Routing Suite](#free-professional-custom-domain-email-routing-suite)
+ - [Unlimited Telegram Cloud & TeleDrive Object Storage Management](#unlimited-telegram-cloud--teledrive-object-storage-management)
+ - [Privacy-First Web Traffic Analytics & Real-Time RPS](#privacy-first-web-traffic-analytics--real-time-rps)
+ - [File Manager & In-Browser Code Editor](#file-manager--in-browser-code-editor)
+ - [SQLite Database Studio & SQL Runner](#sqlite-database-studio--sql-query-runner)
+ - [Visual NPM & PIP Package Manager](#visual-npm--pip-package-manager)
+ - [Automated Cron Jobs](#automated-cron-jobs)
+ - [Hardware Battery Guard & Thermal Monitor](#hardware-battery-guard--thermal-monitor)
+ - [Multi-Tunnel Fallback (Cloudflare, Ngrok, LocalXpose, Tailscale)](#multi-tunnel-fallback-cloudflare-ngrok-localxpose-tailscale)
+ - [In-Browser Web Terminal (`tp`)](#in-browser-web-terminal-tp)
+ - [Security & Zero-Trust Defense (2FA TOTP & IP Jail)](#security--zero-trust-defense-2fa-totp--ip-jail)
+ - [Viewing Live Server Logs](#viewing-live-server-logs)
 10. [Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)](#10-traffic-capacity--performance-benchmarks)
 11. [Real-World Limitations & When to Upgrade (Honest Boundaries for Businesses)](#11-real-world-limitations--when-to-upgrade)
 12. [Terminal CLI (`tp`) - Control via Phone Terminal](#12-terminal-cli-tp---control-via-phone-terminal)
@@ -76,20 +76,20 @@ If you are a **Small to Medium Business (SMB)**, **Local Shop Owner**, **Freelan
 
 With **TermuxPanel**, your entire infrastructure stack runs at **$0 recurring cost**. **The only expense you will EVER pay is your annual domain registration fee (~$8–$12/year)** to a domain registrar of your choice (such as Cloudflare Registrar, Namecheap, or Porkbun). Everything else is 100% free forever.
 
-### 💰 Annual Cost Comparison: Traditional Cloud Hosting vs. TermuxPanel
+### Annual Cost Comparison: Traditional Cloud Hosting vs. TermuxPanel
 
 | Infrastructure Component | Traditional Cloud / SaaS Provider | Traditional Annual Cost | TermuxPanel Self-Hosted Stack | TermuxPanel Annual Cost |
 | :--- | :--- | :--- | :--- | :--- |
 | **Domain Name** | Namecheap / Cloudflare / GoDaddy | ~$10 / year | Any Standard Domain Registrar | **~$10 / year (Only Cost!)** |
 | **Web Hosting Server** | DigitalOcean / Linode / AWS EC2 | $120 – $360 / year | Repurposed Android Phone / Tablet | **$0.00 / month (FREE)** |
-| **SSL Security (HTTPS 🔒)** | Sectigo / DigiCert / Hostinger | $50 – $100 / year | Automatic Cloudflare Universal SSL | **$0.00 (FREE)** |
+| **SSL Security (HTTPS )** | Sectigo / DigiCert / Hostinger | $50 – $100 / year | Automatic Cloudflare Universal SSL | **$0.00 (FREE)** |
 | **Business Email (custom domain)**| Google Workspace / Microsoft 365 | $72 – $216 / user / yr | Cloudflare Routing + Brevo in Gmail | **$0.00 (FREE)** |
 | **Cloud Object Storage & Backups**| AWS S3 / Google Cloud Storage | $60 – $180 / year | Unlimited Telegram Cloud & TeleDrive | **$0.00 (FREE)** |
 | **Web Analytics & Traffic Stats** | Plausible / Fathom Analytics | $108 – $240 / year | Embedded Privacy-First SQLite Engine | **$0.00 (FREE)** |
 | **Database Engine** | Managed Supabase / PlanetScale | $180 – $300 / year | Built-in Pure SQLite3 (WAL Mode) | **$0.00 (FREE)** |
 | **TOTAL ESTIMATED ANNUAL SPEND** | — | **$600 – $1,400+ / year** | — | **~$10 / year total** |
 
-> 💡 **The Bottom Line**: You save **$500 to $1,400+ every single year** by turning a spare Android device into your dedicated 24/7 hosting server.
+> **The Bottom Line**: You save **$500 to $1,400+ every single year** by turning a spare Android device into your dedicated 24/7 hosting server.
 
 ---
 
@@ -106,31 +106,31 @@ TermuxPanel uses **Cloudflare Zero Trust Tunnel**:
 
 ```
  ┌─────────────────────────────────────────────────────────┐
- │               VISITOR ANYWHERE IN THE WORLD             │
+ │ VISITOR ANYWHERE IN THE WORLD │
  └────────────────────────────┬────────────────────────────┘
-                              │
-                              ▼ (Visits https://panel.yourdomain.com)
+ │
+ ▼ (Visits https://panel.yourdomain.com)
  ┌─────────────────────────────────────────────────────────┐
- │               CLOUDFLARE GLOBAL NETWORK                 │
- │     - Free SSL Certificate (Green Padlock 🔒)           │
- │     - DDoS Attack Protection                            │
+ │ CLOUDFLARE GLOBAL NETWORK │
+ │ - Free SSL Certificate (Green Padlock ) │
+ │ - DDoS Attack Protection │
  └────────────────────────────┬────────────────────────────┘
-                              │
-                              │ ◄── Outbound-Only Encrypted Tunnel
-                              │     (Initiated by your phone to Cloudflare)
-                              ▼
+ │
+ │ ◄── Outbound-Only Encrypted Tunnel
+ │ (Initiated by your phone to Cloudflare)
+ ▼
  ┌─────────────────────────────────────────────────────────┐
- │                     YOUR ANDROID PHONE                  │
- │                                                         │
- │  ┌───────────────────────────────────────────────────┐  │
- │  │              cloudflared background daemon        │  │
- │  └──────────┬─────────────────────────────┬──────────┘  │
- │             │                             │             │
- │             ▼                             ▼             │
- │  ┌───────────────────────┐   ┌───────────────────────┐  │
- │  │   TermuxPanel Admin   │   │   Hosted Websites     │  │
- │  │   (127.0.0.1:9000)    │   │   (:8100, :8101...)   │  │
- │  └───────────────────────┘   └───────────────────────┘  │
+ │ YOUR ANDROID PHONE │
+ │ │
+ │ ┌───────────────────────────────────────────────────┐ │
+ │ │ cloudflared background daemon │ │
+ │ └──────────┬─────────────────────────────┬──────────┘ │
+ │ │ │ │
+ │ ▼ ▼ │
+ │ ┌───────────────────────┐ ┌───────────────────────┐ │
+ │ │ TermuxPanel Admin │ │ Hosted Websites │ │
+ │ │ (127.0.0.1:9000) │ │ (:8100, :8101...) │ │
+ │ └───────────────────────┘ └───────────────────────┘ │
  └─────────────────────────────────────────────────────────┘
 ```
 
@@ -147,13 +147,13 @@ TermuxPanel uses **Cloudflare Zero Trust Tunnel**:
 You only need 3 things:
 
 1. **An Android Phone or Tablet**:
-   - Running **Android 7.0 or higher**.
-   - At least **2 GB RAM** and **1 GB free storage space**.
+ - Running **Android 7.0 or higher**.
+ - At least **2 GB RAM** and **1 GB free storage space**.
 2. **An Internet Connection**:
-   - Wi-Fi or mobile data (4G / 5G).
+ - Wi-Fi or mobile data (4G / 5G).
 3. **A Domain Name (For remote access)**:
-   - For example: `yourname.com` (from Namecheap, GoDaddy, Cloudflare, etc.).
-   - If you only want to test locally on your home Wi-Fi, you don't even need a domain!
+ - For example: `yourname.com` (from Namecheap, GoDaddy, Cloudflare, etc.).
+ - If you only want to test locally on your home Wi-Fi, you don't even need a domain!
 
 ---
 
@@ -176,50 +176,50 @@ TermuxPanel is fully compatible with all standard Termux installations on Androi
 ### Step 2: Open Termux and Run the Installer
 1. Open the **Termux** app on your phone.
 2. Grant storage permission by running:
-   ```bash
-   termux-setup-storage
-   ```
-   *(Tap "Allow" on the popup permission dialog).*
+ ```bash
+ termux-setup-storage
+ ```
+ *(Tap "Allow" on the popup permission dialog).*
 
 3. Update Termux packages and install Git (copy and paste this whole line):
-   ```bash
-   pkg update -y && pkg install -y git
-   ```
-   *(If prompted with a prompt like `[Y/n]`, press Enter).*
+ ```bash
+ pkg update -y && pkg install -y git
+ ```
+ *(If prompted with a prompt like `[Y/n]`, press Enter).*
 
 4. Clone the TermuxPanel repository:
-   ```bash
-   git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel
-   ```
+ ```bash
+ git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel
+ ```
 
 5. Enter the directory and run the one-tap installer:
-   ```bash
-   cd ~/termux-panel
-   bash installer/install.sh
-   ```
+ ```bash
+ cd ~/termux-panel
+ bash installer/install.sh
+ ```
 
 ---
 
 ### Step 3: What Happens During Installation
 The installer is fully automated and idempotent. It will:
-- ✅ Check your phone's processor architecture (`arm64`, `arm`, `x86_64`).
-- ✅ Install `Node.js`, `Python`, `PHP`, `SQLite`, `cronie`, `openssh`, and `cloudflared`.
-- ✅ Set up the SQLite database (`data/panel.db`).
-- ✅ Enable the **24/7 background CPU wake-lock** so Android does not sleep.
-- ✅ Register the **24/7 auto-healing watchdog monitor**.
-- ✅ Install the `tp` command in your terminal.
-- ✅ Start the TermuxPanel server on `http://127.0.0.1:9000`.
+- - Check your phone's processor architecture (`arm64`, `arm`, `x86_64`).
+- - Install `Node.js`, `Python`, `PHP`, `SQLite`, `cronie`, `openssh`, and `cloudflared`.
+- - Set up the SQLite database (`data/panel.db`).
+- - Enable the **24/7 background CPU wake-lock** so Android does not sleep.
+- - Register the **24/7 auto-healing watchdog monitor**.
+- - Install the `tp` command in your terminal.
+- - Start the TermuxPanel server on `http://127.0.0.1:9000`.
 
 When finished, you will see:
 ```
 ╔══════════════════════════════════════════════════════════╗
-║               TERMUXPANEL SETUP COMPLETE!                ║
+║ TERMUXPANEL SETUP COMPLETE! ║
 ╚══════════════════════════════════════════════════════════╝
 
 Access your control panel:
-  Local Dashboard:    http://127.0.0.1:9000
-  Terminal Manager:   tp (Type tp anywhere in Termux)
-  Hosted Sites Dir:   ~/termux-panel/storage/websites/
+ Local Dashboard: http://127.0.0.1:9000
+ Terminal Manager: tp (Type tp anywhere in Termux)
+ Hosted Sites Dir: ~/termux-panel/storage/websites/
 ```
 
 ---
@@ -228,15 +228,15 @@ Access your control panel:
 
 1. On your phone, open any web browser (Chrome, Firefox, Brave).
 2. Go to:
-   ```
-   http://127.0.0.1:9000
-   ```
+ ```
+ http://127.0.0.1:9000
+ ```
 3. You will see the **TermuxPanel Initial Setup Screen**:
-   - Enter your desired **Admin Username** (e.g. `admin`).
-   - Enter your **Email** (Optional).
-   - Enter a secure **Admin Password** (at least 6 characters).
+ - Enter your desired **Admin Username** (e.g. `admin`).
+ - Enter your **Email** (Optional).
+ - Enter a secure **Admin Password** (at least 6 characters).
 4. Click **Initialize TermuxPanel**.
-5. You are now logged in to your server dashboard! 🎉
+5. You are now logged in to your server dashboard! 
 
 ---
 
@@ -256,7 +256,7 @@ To access your panel and websites from your laptop, office computer, or anywhere
 
 #### Step 2: Create the Tunnel in Cloudflare Zero Trust
 1. Go to the Cloudflare Zero Trust Dashboard: **[https://one.dash.cloudflare.com/](https://one.dash.cloudflare.com/)**
-2. In the left navigation bar, click **Networks** ➔ **Tunnels**.
+2. In the left navigation bar, click **Networks** **Tunnels**.
 3. Click the blue **Add a tunnel** button.
 4. Select **Cloudflared** and click **Next**.
 5. Enter a tunnel name (e.g., `android-server`) and click **Save tunnel**.
@@ -265,19 +265,19 @@ To access your panel and websites from your laptop, office computer, or anywhere
 1. You will see a page titled *"Install and run a connector"*.
 2. Look under the **Linux / Docker** section.
 3. You will see a command like:
-   ```bash
-   cloudflared.exe service install eyJhIjoiYmNm... (very long token)
-   ```
+ ```bash
+ cloudflared.exe service install eyJhIjoiYmNm... (very long token)
+ ```
 4. Copy **ONLY the long token string** starting with `eyJh...` (do not copy the words before it).
 
 #### Step 4: Paste the Token into TermuxPanel
-- **In your browser**: Go to `http://127.0.0.1:9000` ➔ Click **Cloudflare Tunnel** in the left menu ➔ Under **Option 1: Semi-Automatic**, paste your token into the field ➔ Click **Save & Launch Tunnel**.
+- **In your browser**: Go to `http://127.0.0.1:9000` Click **Cloudflare Tunnel** in the left menu Under **Option 1: Semi-Automatic**, paste your token into the field Click **Save & Launch Tunnel**.
 - **OR in Termux Terminal**: Type `tp cloudflare`, select `1`, and paste the token.
 
 #### Step 5: Add Hostname Routes in Cloudflare Dashboard
 Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/):
-1. Under **Networks** ➔ **Tunnels**, click on your tunnel ➔ Click **Configure** (or **Edit**).
-2. Click the **Public Hostname** tab ➔ Click **Add a public hostname**.
+1. Under **Networks** **Tunnels**, click on your tunnel Click **Configure** (or **Edit**).
+2. Click the **Public Hostname** tab Click **Add a public hostname**.
 
 ##### Route 1: For the Control Panel Dashboard
 | Field | What to Type / Select |
@@ -298,7 +298,7 @@ Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)
 | **URL** | Type **`127.0.0.1:8100`** *(port shown in TermuxPanel)* |
 *Click **Save hostname**.*
 
-**You're done!** Now visit `https://panel.yourdomain.com` from any device in the world. It is live with full HTTPS encryption! 🔒
+**You're done!** Now visit `https://panel.yourdomain.com` from any device in the world. It is live with full HTTPS encryption! 
 
 ---
 
@@ -307,16 +307,16 @@ Back in your [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)
 If you prefer 1-click automatic setup where TermuxPanel creates the tunnel, ingress routing, and DNS records for you:
 
 1. Go to **[https://dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)**.
-2. Click **Create Token** ➔ Custom token ➔ **Get started**.
+2. Click **Create Token** Custom token **Get started**.
 3. Set Token Name: `TermuxPanel Token`.
 4. Add these 3 permissions:
-   - **Account** ➔ **Cloudflare Tunnel** ➔ **Edit**
-   - **Zone** ➔ **DNS** ➔ **Edit**
-   - **Zone** ➔ **Zone** ➔ **Read**
-5. Under **Account Resources**, choose **Include** ➔ **All accounts**.
-6. Under **Zone Resources**, choose **Include** ➔ **All zones**.
-7. Click **Continue to summary** ➔ **Create Token** ➔ Copy the token string.
-8. In TermuxPanel: Open `http://127.0.0.1:9000` ➔ **Cloudflare Tunnel** ➔ **Option 2: Fully-Automatic** ➔ Paste your API Token, enter your domain (`yourdomain.com`), and click **⚡ Run Fully-Automatic Setup**.
+ - **Account** **Cloudflare Tunnel** **Edit**
+ - **Zone** **DNS** **Edit**
+ - **Zone** **Zone** **Read**
+5. Under **Account Resources**, choose **Include** **All accounts**.
+6. Under **Zone Resources**, choose **Include** **All zones**.
+7. Click **Continue to summary** **Create Token** Copy the token string.
+8. In TermuxPanel: Open `http://127.0.0.1:9000` **Cloudflare Tunnel** **Option 2: Fully-Automatic** Paste your API Token, enter your domain (`yourdomain.com`), and click ** Run Fully-Automatic Setup**.
 
 TermuxPanel will communicate with Cloudflare and configure everything automatically in under 10 seconds!
 
@@ -324,7 +324,7 @@ TermuxPanel will communicate with Cloudflare and configure everything automatica
 
 ### Adding Extra Security: Password Protect Before Login (Cloudflare Access)
 To add a firewall policy that requires your personal Google or Email PIN before anyone can even see your login screen:
-1. In [Cloudflare Zero Trust](https://one.dash.cloudflare.com/), go to **Access** ➔ **Applications** ➔ **Add an application**.
+1. In [Cloudflare Zero Trust](https://one.dash.cloudflare.com/), go to **Access** **Applications** **Add an application**.
 2. Choose **Self-hosted**.
 3. Set Application domain: `panel.yourdomain.com`.
 4. Under **Policies**, create a rule that allows only your email address (`you@gmail.com`).
@@ -340,20 +340,20 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ### Deploying a Static HTML/CSS/JS Website
 1. In the Create Website modal:
-   - **Site Name**: `my-website`
-   - **Runtime**: `Static HTML / CSS / JS`
-   - **Domain**: `yourdomain.com` (or leave blank)
+ - **Site Name**: `my-website`
+ - **Runtime**: `Static HTML / CSS / JS`
+ - **Domain**: `yourdomain.com` (or leave blank)
 2. Click **Create & Launch**.
 3. TermuxPanel will create `~/termux-panel/storage/websites/my-website/public/` with starter `index.html` and `style.css` files, assign an automatic port (e.g. `8100`), and start serving it immediately.
-4. Click **📁 Files** to edit `index.html` or upload your custom HTML files!
+4. Click ** Files** to edit `index.html` or upload your custom HTML files!
 
 ---
 
 ### Deploying a Node.js Application
 1. In the Create Website modal:
-   - **Site Name**: `my-api`
-   - **Runtime**: `Node.js (Express / HTTP)`
-   - **Entry File**: `server.js`
+ - **Site Name**: `my-api`
+ - **Runtime**: `Node.js (Express / HTTP)`
+ - **Entry File**: `server.js`
 2. Click **Create & Launch**.
 3. TermuxPanel creates `server.js` and `package.json`, assigns a port (e.g. `8101`), and runs `node server.js` under background process supervision.
 4. If your app crashes, TermuxPanel logs the error to `logs/websites/my-api/error.log` and allows you to restart it with one click.
@@ -362,9 +362,9 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ### Deploying a Python App (Flask / FastAPI)
 1. In the Create Website modal:
-   - **Site Name**: `python-service`
-   - **Runtime**: `Python (Flask / FastAPI / WSGI)`
-   - **Entry File**: `app.py`
+ - **Site Name**: `python-service`
+ - **Runtime**: `Python (Flask / FastAPI / WSGI)`
+ - **Entry File**: `app.py`
 2. Click **Create & Launch**.
 3. TermuxPanel generates `app.py`, injects the assigned `PORT` environment variable, and runs the Python process supervised.
 
@@ -372,9 +372,9 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ### Deploying a PHP Application
 1. In the Create Website modal:
-   - **Site Name**: `my-php-site`
-   - **Runtime**: `PHP (Built-in Server)`
-   - **Entry File**: `public/index.php`
+ - **Site Name**: `my-php-site`
+ - **Runtime**: `PHP (Built-in Server)`
+ - **Entry File**: `public/index.php`
 2. Click **Create & Launch**.
 3. Serves your PHP files out of `public/` on an isolated local port.
 
@@ -386,7 +386,7 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - Click the **Domains** tab.
 - **Apex & Subdomain Provisioning**: Map any custom root domain (`yourdomain.com`) or unlimited subdomains (`api.yourdomain.com`, `shop.yourdomain.com`, `panel.yourdomain.com`) directly to internal local service ports (`:9000`, `:8100`, `:8101`...).
 - **Automated Cloudflare DNS Sync**: Sync ingress routes and DNS CNAME mappings into Cloudflare with 1 click via API token.
-- **Automatic Free SSL Certificates (HTTPS)**: Automatic Universal SSL certificates with green padlock 🔒, TLS 1.3 encryption, HTTP/2 & HTTP/3 multiplexing, and automatic HTTP-to-HTTPS redirection.
+- **Automatic Free SSL Certificates (HTTPS)**: Automatic Universal SSL certificates with green padlock , TLS 1.3 encryption, HTTP/2 & HTTP/3 multiplexing, and automatic HTTP-to-HTTPS redirection.
 - **Zero Port Forwarding & DDoS Shield**: All traffic routes through Cloudflare Anycast edge servers, hiding your mobile phone's true IP and providing enterprise-grade DDoS mitigation for $0.
 
 ### Free Professional Custom Domain Email Routing Suite
@@ -394,8 +394,8 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - **Inbound Receiving ($0 Free Forever)**: Receive emails sent to `support@yourdomain.com`, `admin@yourdomain.com`, or any custom address forwarded directly to your personal Gmail inbox via Cloudflare Email Routing.
 - **Outbound Sending & Reply from Gmail**: Send and reply to emails directly inside your regular Gmail interface showing your custom domain as the verified sender via free Brevo SMTP (300 free emails/day forever).
 - **Dual-Mode Provisioning Engine**:
-  - **Option A: 1-Click Cloudflare API Auto-Setup**: Automatically enables Email Routing on your zone, registers destination Gmail addresses, injects MX and SPF DNS records, and sets up routing rules.
-  - **Option B: Step-by-Step Guided Wizard**: Generates required `MX`, `SPF` (`v=spf1`), `DKIM` (`CNAME`), and `DMARC` (`TXT`) records with a 1-click **Download BIND Zone File** button for bulk DNS import into any registrar.
+ - **Option A: 1-Click Cloudflare API Auto-Setup**: Automatically enables Email Routing on your zone, registers destination Gmail addresses, injects MX and SPF DNS records, and sets up routing rules.
+ - **Option B: Step-by-Step Guided Wizard**: Generates required `MX`, `SPF` (`v=spf1`), `DKIM` (`CNAME`), and `DMARC` (`TXT`) records with a 1-click **Download BIND Zone File** button for bulk DNS import into any registrar.
 - **1-Click Brevo DNS Auto-Push**: Automatically writes Brevo DKIM public keys (`brevo1._domainkey`) and DMARC TXT records into Cloudflare DNS with 1 click.
 - **Live DNS Propagation Health Auditor**: Real-time cross-nameserver verification tool that audits MX, SPF, DKIM, and DMARC records with deliverability scoring and pass/fail diagnostics.
 
@@ -434,13 +434,13 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - 1-click search, install, and uninstall with live terminal progress output.
 
 ### Automated Cron Jobs
-- Click the **Cron Jobs** tab ➔ **+ Add Cron Job**.
+- Click the **Cron Jobs** tab **+ Add Cron Job**.
 - Choose a schedule preset:
-  - `* * * * *` (Every Minute)
-  - `0 * * * *` (Every Hour)
-  - `0 0 * * *` (Daily at Midnight)
-  - `0 0 * * 0` (Weekly on Sunday)
-  - Or type your custom cron expression.
+ - `* * * * *` (Every Minute)
+ - `0 * * * *` (Every Hour)
+ - `0 0 * * *` (Daily at Midnight)
+ - `0 0 * * 0` (Weekly on Sunday)
+ - Or type your custom cron expression.
 - Type the shell command to execute (e.g. `node /path/to/script.js` or `bash /path/to/backup.sh`).
 - Click **▶ Run Now** to test execution immediately.
 
@@ -450,7 +450,7 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - CPU clock speed & core load monitoring to prevent device degradation.
 
 ### Multi-Tunnel Fallback (Cloudflare, Ngrok, LocalXpose, Tailscale)
-- Click the **Cloudflare Tunnel** tab ➔ Switch provider tabs between **Cloudflare Zero Trust**, **Ngrok**, **LocalXpose**, and **Tailscale**.
+- Click the **Cloudflare Tunnel** tab Switch provider tabs between **Cloudflare Zero Trust**, **Ngrok**, **LocalXpose**, and **Tailscale**.
 - Keep your sites reachable even when one provider undergoes maintenance.
 
 ### In-Browser Web Terminal (`tp`)
@@ -464,38 +464,38 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 ### Viewing Live Server Logs
 - Click the **Logs** tab.
 - Choose from:
-  - **TermuxPanel System Log**: Server start, API requests, and authentication logs.
-  - **Cloudflare Tunnel Log**: Tunnel connection state and routing logs.
-  - **Website Access Log**: Live HTTP request traffic.
-  - **Website Error Log**: Application crashes and stack traces.
+ - **TermuxPanel System Log**: Server start, API requests, and authentication logs.
+ - **Cloudflare Tunnel Log**: Tunnel connection state and routing logs.
+ - **Website Access Log**: Live HTTP request traffic.
+ - **Website Error Log**: Application crashes and stack traces.
 - Use the search bar to filter logs in real time.
 
 ---
 
 ## 10. Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)
 
-### 📊 How Much Traffic Can This Server Handle?
+### How Much Traffic Can This Server Handle?
 
 Modern Android processors (Snapdragon 8-series / 7-series / Dimensity / Tensor) have 8-core ARM64 architectures that rival dedicated cloud VPS instances. 
 
 | Traffic Scenario | Requests / Sec (RPS) | Concurrent Active Users | Daily Page Views Capacity | Average Latency |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **With Cloudflare CDN (Orange Cloud ☁️🧡)** | **5,000+ RPS** | **500 – 2,000+ users** | **500,000 – 2,000,000+ / day** | **10 – 25 ms** (Edge) |
+| **With Cloudflare CDN (Orange Cloud )** | **5,000+ RPS** | **500 – 2,000+ users** | **500,000 – 2,000,000+ / day** | **10 – 25 ms** (Edge) |
 | **Direct Static Site (HTML/CSS/JS + Gzip)** | **400 – 1,200 RPS** | **100 – 300 users** | **100,000 – 500,000 / day** | **15 – 45 ms** |
 | **Node.js / Express API + SQLite** | **150 – 500 RPS** | **50 – 150 users** | **50,000 – 200,000 / day** | **20 – 60 ms** |
 | **Python (FastAPI / Flask) + SQLite** | **80 – 250 RPS** | **30 – 80 users** | **25,000 – 100,000 / day** | **35 – 90 ms** |
 | **PHP (Built-in Server) + SQLite** | **40 – 120 RPS** | **15 – 50 users** | **15,000 – 50,000 / day** | **50 – 120 ms** |
 
-### 🚀 Why Does It Perform So Well?
+### Why Does It Perform So Well?
 
 1. **Cloudflare Global Edge Offloading**:
-   When proxied via Cloudflare, **90% to 98% of requests (images, CSS, JS, and cached HTML) are served from Cloudflare's 300+ global datacenters**. Only dynamic database calls reach your phone.
+ When proxied via Cloudflare, **90% to 98% of requests (images, CSS, JS, and cached HTML) are served from Cloudflare's 300+ global datacenters**. Only dynamic database calls reach your phone.
 2. **High-Speed Mobile Storage (UFS 3.1 / 4.0)**:
-   Mobile flash memory reads at 1,000–3,000 MB/s. SQLite running in-process on local NVMe storage executes indexed `SELECT` queries in **0.1 ms to 0.4 ms**.
+ Mobile flash memory reads at 1,000–3,000 MB/s. SQLite running in-process on local NVMe storage executes indexed `SELECT` queries in **0.1 ms to 0.4 ms**.
 3. **In-Memory Gzip Compression**:
-   TermuxPanel automatically compresses HTML and JSON payloads in RAM before sending, reducing mobile bandwidth usage by up to 80%.
+ TermuxPanel automatically compresses HTML and JSON payloads in RAM before sending, reducing mobile bandwidth usage by up to 80%.
 
-### 💡 4 Pro Tips for High-Traffic Hosting
+### 4 Pro Tips for High-Traffic Hosting
 
 1. **Enable Cloudflare Proxy**: In the **Domains** tab, keep Cloudflare Proxied enabled so static assets are cached worldwide.
 2. **Use SQLite WAL Mode**: Execute `PRAGMA journal_mode = WAL;` to enable non-blocking concurrent reads while writes occur.
@@ -512,7 +512,7 @@ To ensure you make the right architectural choices for your business as you grow
 
 ---
 
-### 🟢 What TermuxPanel Excels At (The Business Sweet Spot)
+### What TermuxPanel Excels At (The Business Sweet Spot)
 
 For 95% of small-to-medium businesses, TermuxPanel running on an Android phone paired with Cloudflare CDN delivers speed, reliability, and security identical to a $20–$50/month cloud server:
 
@@ -525,7 +525,7 @@ For 95% of small-to-medium businesses, TermuxPanel running on an Android phone p
 
 ---
 
-### 🔴 Real-World Limitations & When to Upgrade
+### Real-World Limitations & When to Upgrade
 
 If your business scales into any of the following technical demands, you should transition those specific workloads to traditional datacenter cloud infrastructure:
 
@@ -559,31 +559,31 @@ This launches the interactive terminal manager:
 
 ```
 ╔══════════════════════════════════════════╗
-║             TERMUXPANEL                  ║
-║     Android Hosting Control Plane        ║
+║ TERMUXPANEL ║
+║ Android Hosting Control Plane ║
 ╚══════════════════════════════════════════╝
 
-  1. Open Panel URL (http://127.0.0.1:9000)
-  2. Server Status
-  3. Start Server
-  4. Stop Server
-  5. Restart Server
-  6. View Live Logs
-  7. Configure Cloudflare Tunnel
-  8. Create Backup
-  9. Run Self Health Check
-  0. Exit
+ 1. Open Panel URL (http://127.0.0.1:9000)
+ 2. Server Status
+ 3. Start Server
+ 4. Stop Server
+ 5. Restart Server
+ 6. View Live Logs
+ 7. Configure Cloudflare Tunnel
+ 8. Create Backup
+ 9. Run Self Health Check
+ 0. Exit
 ```
 
 ### Direct Terminal Shortcuts:
 ```bash
-tp status      # Check if panel, cloudflared, and crond are running
-tp start       # Start panel and tunnel daemons in the background
-tp stop        # Stop all running panel and tunnel processes
-tp restart     # Restart the panel server
-tp logs        # Live tail the last 30 lines of the server log
-tp cloudflare  # Launch the Cloudflare setup wizard
-tp backup      # Generate an immediate full server backup archive
+tp status # Check if panel, cloudflared, and crond are running
+tp start # Start panel and tunnel daemons in the background
+tp stop # Stop all running panel and tunnel processes
+tp restart # Restart the panel server
+tp logs # Live tail the last 30 lines of the server log
+tp cloudflare # Launch the Cloudflare setup wizard
+tp backup # Generate an immediate full server backup archive
 ```
 
 ---
@@ -596,13 +596,13 @@ Android has aggressive battery-saving features that put apps to sleep when your 
 TermuxPanel automatically runs `termux-wake-lock`. This keeps the phone's CPU running in low-power mode even when your screen is completely off.
 
 ### 2. Disable Android Battery Optimization (Required)
-- **Samsung**: Settings ➔ Apps ➔ Termux ➔ Battery ➔ Select **Unrestricted**. Also add Termux to **Never sleeping apps**.
-- **Xiaomi / Redmi / POCO**: Settings ➔ Apps ➔ Manage Apps ➔ Termux ➔ Enable **Autostart** & set Battery Saver to **No restrictions**. Lock Termux in your recent apps drawer (Tap the 🔒 lock icon).
-- **Google Pixel / Stock Android**: Settings ➔ Apps ➔ Termux ➔ App battery usage ➔ Set to **Unrestricted**.
-- **OnePlus / Realme / Oppo**: Settings ➔ Battery ➔ More settings ➔ Optimize battery use ➔ Set Termux to **Don't optimize**.
+- **Samsung**: Settings Apps Termux Battery Select **Unrestricted**. Also add Termux to **Never sleeping apps**.
+- **Xiaomi / Redmi / POCO**: Settings Apps Manage Apps Termux Enable **Autostart** & set Battery Saver to **No restrictions**. Lock Termux in your recent apps drawer (Tap the lock icon).
+- **Google Pixel / Stock Android**: Settings Apps Termux App battery usage Set to **Unrestricted**.
+- **OnePlus / Realme / Oppo**: Settings Battery More settings Optimize battery use Set Termux to **Don't optimize**.
 
 ### 3. Wi-Fi Sleep Policy
-- Go to Android **Settings ➔ Wi-Fi ➔ Advanced** (or Network preferences) and ensure **"Keep Wi-Fi on during sleep"** is set to **Always**.
+- Go to Android **Settings Wi-Fi Advanced** (or Network preferences) and ensure **"Keep Wi-Fi on during sleep"** is set to **Always**.
 
 ### 4. The Built-in 24/7 Auto-Healing Watchdog
 TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that checks every minute. If Android ever stops Node.js or Cloudflare Tunnel during high memory pressure, the watchdog **automatically restarts them within 60 seconds**.
@@ -614,58 +614,58 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 ```
 ~/termux-panel/
 │
-├── backend/                  # Server engine logic
-│   ├── auth/                 # Bcrypt password hashing & session management
-│   ├── config/               # Ports & application constants
-│   ├── database/             # SQLite connection (panel.db) & schema migrations
-│   ├── routes/               # REST API endpoints (Websites, Files, Databases, Cron...)
-│   ├── services/             # Process supervisor, file sandboxing, metrics
-│   └── server.js             # Express entry point (127.0.0.1:9000)
+├── backend/ # Server engine logic
+│ ├── auth/ # Bcrypt password hashing & session management
+│ ├── config/ # Ports & application constants
+│ ├── database/ # SQLite connection (panel.db) & schema migrations
+│ ├── routes/ # REST API endpoints (Websites, Files, Databases, Cron...)
+│ ├── services/ # Process supervisor, file sandboxing, metrics
+│ └── server.js # Express entry point (127.0.0.1:9000)
 │
-├── frontend/                 # Zero-dependency web UI (HTML5, CSS3, JavaScript)
-│   ├── css/                  # Responsive dark mode stylesheet
-│   ├── js/                   # Dashboard & tab controllers
-│   └── index.html            # Single page web interface
+├── frontend/ # Zero-dependency web UI (HTML5, CSS3, JavaScript)
+│ ├── css/ # Responsive dark mode stylesheet
+│ ├── js/ # Dashboard & tab controllers
+│ └── index.html # Single page web interface
 │
 ├── storage/
-│   └── websites/             # Document roots for all your hosted sites
-│       ├── mysite.com/       # Example website files (public/index.html...)
-│       └── api.domain.com/   # Example API service
+│ └── websites/ # Document roots for all your hosted sites
+│ ├── mysite.com/ # Example website files (public/index.html...)
+│ └── api.domain.com/ # Example API service
 │
 ├── data/
-│   ├── panel.db              # SQLite system database (tables, users, ports)
-│   └── backups/              # Stored .tar.gz backup archives
+│ ├── panel.db # SQLite system database (tables, users, ports)
+│ └── backups/ # Stored .tar.gz backup archives
 │
 ├── logs/
-│   ├── panel.log             # Panel system log
-│   ├── cloudflared.log       # Cloudflare Tunnel log
-│   ├── watchdog.log          # 24/7 auto-healing log
-│   └── websites/             # Per-website access.log & error.log
+│ ├── panel.log # Panel system log
+│ ├── cloudflared.log # Cloudflare Tunnel log
+│ ├── watchdog.log # 24/7 auto-healing log
+│ └── websites/ # Per-website access.log & error.log
 │
 ├── config/
-│   ├── cloudflare-token      # Secure token file (chmod 600)
-│   └── panel.env             # Local configuration secrets
+│ ├── cloudflare-token # Secure token file (chmod 600)
+│ └── panel.env # Local configuration secrets
 │
-├── templates/                # Starter boilerplate for new websites
-│   ├── html/                 # HTML/CSS template
-│   ├── node/                 # Node.js template
-│   ├── python/               # Python template
-│   └── php/                  # PHP template
+├── templates/ # Starter boilerplate for new websites
+│ ├── html/ # HTML/CSS template
+│ ├── node/ # Node.js template
+│ ├── python/ # Python template
+│ └── php/ # PHP template
 │
-├── installer/                # Automated installation scripts
-│   ├── install.sh            # One-tap master installer
-│   ├── dependencies.sh       # Package installer
-│   ├── security.sh           # File permission hardening
-│   └── cloudflare.sh         # Interactive Cloudflare wizard
+├── installer/ # Automated installation scripts
+│ ├── install.sh # One-tap master installer
+│ ├── dependencies.sh # Package installer
+│ ├── security.sh # File permission hardening
+│ └── cloudflare.sh # Interactive Cloudflare wizard
 │
-├── scripts/                  # CLI and background daemons
-│   ├── tp                    # Terminal management tool
-│   ├── watchdog.sh           # 24/7 self-healing monitor
-│   └── start-server.sh       # Boot autostart script
+├── scripts/ # CLI and background daemons
+│ ├── tp # Terminal management tool
+│ ├── watchdog.sh # 24/7 self-healing monitor
+│ └── start-server.sh # Boot autostart script
 │
-├── docs/                     # Detailed technical guides & GitHub Pages site
-├── LICENSE                   # MIT Open Source License
-└── README.md                 # This guide
+├── docs/ # Detailed technical guides & GitHub Pages site
+├── LICENSE # MIT Open Source License
+└── README.md # This guide
 ```
 
 ---
@@ -685,13 +685,13 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 - **Solution**: Run `termux-setup-storage` and tap **Allow**, then run the installer command again.
 
 ### Q4: How do I change my admin password?
-- **Solution**: Open TermuxPanel ➔ Go to the **Settings** tab ➔ Enter your current password and new password ➔ Click **Update Password**.
+- **Solution**: Open TermuxPanel Go to the **Settings** tab Enter your current password and new password Click **Update Password**.
 
 ### Q5: How do I completely stop or uninstall TermuxPanel?
 - **Solution**: Run:
-  ```bash
-  bash ~/termux-panel/installer/uninstall.sh
-  ```
+ ```bash
+ bash ~/termux-panel/installer/uninstall.sh
+ ```
 
 ---
 
@@ -699,4 +699,4 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 
 This project is licensed under the **[MIT License](LICENSE)**.
 
-Built with ❤️ for the global Termux, self-hosting, and maker community.
+Built with for the global Termux, self-hosting, and maker community.

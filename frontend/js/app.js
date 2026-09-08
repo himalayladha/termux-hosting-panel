@@ -1,399 +1,399 @@
 const themeManager = {
-  currentChoice: 'dark',
+ currentChoice: 'dark',
 
-  init() {
-    this.currentChoice = localStorage.getItem('tp_theme') || 'dark';
-    this.applyTheme(this.currentChoice, false);
-    this.bindEvents();
+ init() {
+ this.currentChoice = localStorage.getItem('tp_theme') || 'dark';
+ this.applyTheme(this.currentChoice, false);
+ this.bindEvents();
 
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (this.currentChoice === 'auto') {
-          this.applyTheme('auto', false);
-        }
-      });
-    }
-  },
+ if (window.matchMedia) {
+ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+ if (this.currentChoice === 'auto') {
+ this.applyTheme('auto', false);
+ }
+ });
+ }
+ },
 
-  bindEvents() {
-    const toggleBtn = document.getElementById('theme-toggle-btn');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => this.toggle());
-    }
+ bindEvents() {
+ const toggleBtn = document.getElementById('theme-toggle-btn');
+ if (toggleBtn) {
+ toggleBtn.addEventListener('click', () => this.toggle());
+ }
 
-    const authToggleBtn = document.getElementById('auth-theme-toggle-btn');
-    if (authToggleBtn) {
-      authToggleBtn.addEventListener('click', () => this.toggle());
-    }
+ const authToggleBtn = document.getElementById('auth-theme-toggle-btn');
+ if (authToggleBtn) {
+ authToggleBtn.addEventListener('click', () => this.toggle());
+ }
 
-    document.querySelectorAll('.theme-select-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const choice = btn.dataset.themeChoice;
-        this.applyTheme(choice, true);
-        if (window.API && API.toast) {
-          API.toast(`Theme set to ${choice.charAt(0).toUpperCase() + choice.slice(1)} Mode`, 'info');
-        }
-      });
-    });
-  },
+ document.querySelectorAll('.theme-select-btn').forEach((btn) => {
+ btn.addEventListener('click', () => {
+ const choice = btn.dataset.themeChoice;
+ this.applyTheme(choice, true);
+ if (window.API && API.toast) {
+ API.toast(`Theme set to ${choice.charAt(0).toUpperCase() + choice.slice(1)} Mode`, 'info');
+ }
+ });
+ });
+ },
 
-  getEffectiveTheme(choice) {
-    if (choice === 'auto') {
-      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-    }
-    return choice === 'light' ? 'light' : 'dark';
-  },
+ getEffectiveTheme(choice) {
+ if (choice === 'auto') {
+ return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+ }
+ return choice === 'light' ? 'light' : 'dark';
+ },
 
-  applyTheme(choice, save = true) {
-    this.currentChoice = choice;
-    if (save) {
-      localStorage.setItem('tp_theme', choice);
-    }
+ applyTheme(choice, save = true) {
+ this.currentChoice = choice;
+ if (save) {
+ localStorage.setItem('tp_theme', choice);
+ }
 
-    const effective = this.getEffectiveTheme(choice);
-    const root = document.documentElement;
-    const body = document.body;
+ const effective = this.getEffectiveTheme(choice);
+ const root = document.documentElement;
+ const body = document.body;
 
-    root.setAttribute('data-theme', effective);
-    if (effective === 'light') {
-      body.classList.remove('dark-theme');
-      body.classList.add('light-theme');
-    } else {
-      body.classList.remove('light-theme');
-      body.classList.add('dark-theme');
-    }
+ root.setAttribute('data-theme', effective);
+ if (effective === 'light') {
+ body.classList.remove('dark-theme');
+ body.classList.add('light-theme');
+ } else {
+ body.classList.remove('light-theme');
+ body.classList.add('dark-theme');
+ }
 
-    const updateBtn = (btnId, iconId) => {
-      const btn = document.getElementById(btnId);
-      const icon = document.getElementById(iconId);
-      if (icon) {
-        icon.setAttribute('data-lucide', effective === 'light' ? 'moon' : 'sun');
-      }
-      if (btn) {
-        btn.setAttribute('title', effective === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode');
-      }
-    };
+ const updateBtn = (btnId, iconId) => {
+ const btn = document.getElementById(btnId);
+ const icon = document.getElementById(iconId);
+ if (icon) {
+ icon.setAttribute('data-lucide', effective === 'light' ? 'moon' : 'sun');
+ }
+ if (btn) {
+ btn.setAttribute('title', effective === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode');
+ }
+ };
 
-    updateBtn('theme-toggle-btn', 'theme-icon');
-    updateBtn('auth-theme-toggle-btn', 'auth-theme-icon');
+ updateBtn('theme-toggle-btn', 'theme-icon');
+ updateBtn('auth-theme-toggle-btn', 'auth-theme-icon');
 
-    document.querySelectorAll('.theme-select-btn').forEach((btn) => {
-      if (btn.dataset.themeChoice === choice) {
-        btn.classList.remove('btn-secondary');
-        btn.classList.add('btn-primary');
-      } else {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-secondary');
-      }
-    });
+ document.querySelectorAll('.theme-select-btn').forEach((btn) => {
+ if (btn.dataset.themeChoice === choice) {
+ btn.classList.remove('btn-secondary');
+ btn.classList.add('btn-primary');
+ } else {
+ btn.classList.remove('btn-primary');
+ btn.classList.add('btn-secondary');
+ }
+ });
 
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  },
+ if (window.lucide) {
+ lucide.createIcons();
+ }
+ },
 
-  toggle() {
-    const effective = this.getEffectiveTheme(this.currentChoice);
-    const newChoice = effective === 'light' ? 'dark' : 'light';
-    this.applyTheme(newChoice, true);
-    if (window.API && API.toast) {
-      API.toast(`Switched to ${newChoice === 'light' ? 'Light' : 'Dark'} Mode`, 'info');
-    }
-  }
+ toggle() {
+ const effective = this.getEffectiveTheme(this.currentChoice);
+ const newChoice = effective === 'light' ? 'dark' : 'light';
+ this.applyTheme(newChoice, true);
+ if (window.API && API.toast) {
+ API.toast(`Switched to ${newChoice === 'light' ? 'Light' : 'Dark'} Mode`, 'info');
+ }
+ }
 };
 
 const app = {
-  currentUser: null,
+ currentUser: null,
 
-  init() {
-    themeManager.init();
-    this.bindGlobalEvents();
-    this.checkAuthStatus();
-  },
+ init() {
+ themeManager.init();
+ this.bindGlobalEvents();
+ this.checkAuthStatus();
+ },
 
-  bindGlobalEvents() {
-    // Navigation items
-    document.querySelectorAll('.nav-item').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        this.switchTab(tab);
-        // On mobile, close sidebar after clicking nav item
-        const sidebarEl = document.getElementById('sidebar');
-        const backdropEl = document.getElementById('sidebar-backdrop');
-        if (sidebarEl) sidebarEl.classList.remove('open');
-        if (backdropEl) backdropEl.classList.remove('active');
-      });
-    });
+ bindGlobalEvents() {
+ // Navigation items
+ document.querySelectorAll('.nav-item').forEach((btn) => {
+ btn.addEventListener('click', () => {
+ const tab = btn.dataset.tab;
+ this.switchTab(tab);
+ // On mobile, close sidebar after clicking nav item
+ const sidebarEl = document.getElementById('sidebar');
+ const backdropEl = document.getElementById('sidebar-backdrop');
+ if (sidebarEl) sidebarEl.classList.remove('open');
+ if (backdropEl) backdropEl.classList.remove('active');
+ });
+ });
 
-    // Mobile sidebar toggle
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
-    const closeBtn = document.getElementById('sidebar-close-btn');
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
+ // Mobile sidebar toggle
+ const toggleBtn = document.getElementById('sidebar-toggle-btn');
+ const closeBtn = document.getElementById('sidebar-close-btn');
+ const sidebar = document.getElementById('sidebar');
+ const backdrop = document.getElementById('sidebar-backdrop');
 
-    if (toggleBtn && sidebar && backdrop) {
-      toggleBtn.addEventListener('click', () => {
-        sidebar.classList.add('open');
-        backdrop.classList.add('active');
-      });
-    }
-    if (closeBtn && sidebar && backdrop) {
-      closeBtn.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('active');
-      });
-    }
-    if (backdrop && sidebar) {
-      backdrop.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('active');
-      });
-    }
+ if (toggleBtn && sidebar && backdrop) {
+ toggleBtn.addEventListener('click', () => {
+ sidebar.classList.add('open');
+ backdrop.classList.add('active');
+ });
+ }
+ if (closeBtn && sidebar && backdrop) {
+ closeBtn.addEventListener('click', () => {
+ sidebar.classList.remove('open');
+ backdrop.classList.remove('active');
+ });
+ }
+ if (backdrop && sidebar) {
+ backdrop.addEventListener('click', () => {
+ sidebar.classList.remove('open');
+ backdrop.classList.remove('active');
+ });
+ }
 
-    // Modal close buttons & backdrop clicking
-    document.querySelectorAll('.modal-close-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const modal = e.target.closest('.modal-overlay');
-        if (modal) modal.classList.add('hidden');
-      });
-    });
+ // Modal close buttons & backdrop clicking
+ document.querySelectorAll('.modal-close-btn').forEach((btn) => {
+ btn.addEventListener('click', (e) => {
+ const modal = e.target.closest('.modal-overlay');
+ if (modal) modal.classList.add('hidden');
+ });
+ });
 
-    document.querySelectorAll('.modal-overlay').forEach((overlay) => {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay && overlay.id !== 'modal-app-dialog') {
-          overlay.classList.add('hidden');
-        }
-      });
-    });
+ document.querySelectorAll('.modal-overlay').forEach((overlay) => {
+ overlay.addEventListener('click', (e) => {
+ if (e.target === overlay && overlay.id !== 'modal-app-dialog') {
+ overlay.classList.add('hidden');
+ }
+ });
+ });
 
-    // Setup form submit
-    const setupForm = document.getElementById('setup-form');
-    if (setupForm) {
-      setupForm.addEventListener('submit', (e) => this.handleSetup(e));
-    }
+ // Setup form submit
+ const setupForm = document.getElementById('setup-form');
+ if (setupForm) {
+ setupForm.addEventListener('submit', (e) => this.handleSetup(e));
+ }
 
-    // Login form submit
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', (e) => this.handleLogin(e));
-    }
+ // Login form submit
+ const loginForm = document.getElementById('login-form');
+ if (loginForm) {
+ loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+ }
 
-    // 2FA Login form submit
-    const login2faForm = document.getElementById('login-2fa-form');
-    if (login2faForm) {
-      login2faForm.addEventListener('submit', (e) => this.handleLogin2FA(e));
-    }
+ // 2FA Login form submit
+ const login2faForm = document.getElementById('login-2fa-form');
+ if (login2faForm) {
+ login2faForm.addEventListener('submit', (e) => this.handleLogin2FA(e));
+ }
 
-    // Back to password button
-    const backBtn = document.getElementById('btn-back-to-login');
-    if (backBtn) {
-      backBtn.addEventListener('click', () => {
-        document.getElementById('login-2fa-form').classList.add('hidden');
-        document.getElementById('login-form').classList.remove('hidden');
-      });
-    }
+ // Back to password button
+ const backBtn = document.getElementById('btn-back-to-login');
+ if (backBtn) {
+ backBtn.addEventListener('click', () => {
+ document.getElementById('login-2fa-form').classList.add('hidden');
+ document.getElementById('login-form').classList.remove('hidden');
+ });
+ }
 
-    // Logout button
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => this.handleLogout());
-    }
-  },
+ // Logout button
+ const logoutBtn = document.getElementById('logout-btn');
+ if (logoutBtn) {
+ logoutBtn.addEventListener('click', () => this.handleLogout());
+ }
+ },
 
-  async checkAuthStatus() {
-    try {
-      const status = await API.get('/api/auth/status');
-      if (!status.initialized) {
-        // Needs first-time setup
-        this.showSetupModal();
-      } else {
-        // Check if existing session is valid
-        try {
-          const me = await API.get('/api/auth/me');
-          this.currentUser = me.user;
-          this.showApp();
-        } catch (e) {
-          this.showAuthModal(true);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to check auth status:', err);
-    }
-  },
+ async checkAuthStatus() {
+ try {
+ const status = await API.get('/api/auth/status');
+ if (!status.initialized) {
+ // Needs first-time setup
+ this.showSetupModal();
+ } else {
+ // Check if existing session is valid
+ try {
+ const me = await API.get('/api/auth/me');
+ this.currentUser = me.user;
+ this.showApp();
+ } catch (e) {
+ this.showAuthModal(true);
+ }
+ }
+ } catch (err) {
+ console.error('Failed to check auth status:', err);
+ }
+ },
 
-  showSetupModal() {
-    document.getElementById('auth-container').classList.remove('hidden');
-    document.getElementById('app-container').classList.add('hidden');
-    document.getElementById('setup-form').classList.remove('hidden');
-    document.getElementById('login-form').classList.add('hidden');
-    document.getElementById('login-2fa-form').classList.add('hidden');
-    document.getElementById('auth-title').textContent = 'TermuxPanel Setup';
-    document.getElementById('auth-subtitle').textContent = 'Create Primary Admin Account';
-    if (window.lucide) lucide.createIcons();
-  },
+ showSetupModal() {
+ document.getElementById('auth-container').classList.remove('hidden');
+ document.getElementById('app-container').classList.add('hidden');
+ document.getElementById('setup-form').classList.remove('hidden');
+ document.getElementById('login-form').classList.add('hidden');
+ document.getElementById('login-2fa-form').classList.add('hidden');
+ document.getElementById('auth-title').textContent = 'TermuxPanel Setup';
+ document.getElementById('auth-subtitle').textContent = 'Create Primary Admin Account';
+ if (window.lucide) lucide.createIcons();
+ },
 
-  showAuthModal(isInitialized = true) {
-    document.getElementById('auth-container').classList.remove('hidden');
-    document.getElementById('app-container').classList.add('hidden');
-    document.getElementById('setup-form').classList.add('hidden');
-    document.getElementById('login-form').classList.remove('hidden');
-    document.getElementById('login-2fa-form').classList.add('hidden');
-    document.getElementById('auth-title').textContent = 'TermuxPanel';
-    document.getElementById('auth-subtitle').textContent = 'Sign in to your control panel';
-    if (window.lucide) lucide.createIcons();
-  },
+ showAuthModal(isInitialized = true) {
+ document.getElementById('auth-container').classList.remove('hidden');
+ document.getElementById('app-container').classList.add('hidden');
+ document.getElementById('setup-form').classList.add('hidden');
+ document.getElementById('login-form').classList.remove('hidden');
+ document.getElementById('login-2fa-form').classList.add('hidden');
+ document.getElementById('auth-title').textContent = 'TermuxPanel';
+ document.getElementById('auth-subtitle').textContent = 'Sign in to your control panel';
+ if (window.lucide) lucide.createIcons();
+ },
 
-  showApp() {
-    document.getElementById('auth-container').classList.add('hidden');
-    document.getElementById('app-container').classList.remove('hidden');
+ showApp() {
+ document.getElementById('auth-container').classList.add('hidden');
+ document.getElementById('app-container').classList.remove('hidden');
 
-    if (this.currentUser) {
-      const nameEl = document.getElementById('nav-username');
-      if (nameEl) nameEl.textContent = this.currentUser.username;
-    }
+ if (this.currentUser) {
+ const nameEl = document.getElementById('nav-username');
+ if (nameEl) nameEl.textContent = this.currentUser.username;
+ }
 
-    // Initialize all modules
-    dashboard.init();
-    analyticsManager.init();
-    packagesManager.init();
-    websites.init();
-    domainsManager.init();
-    emailManager.init();
-    fileManager.init();
-    databases.init();
-    cronManager.init();
-    logsViewer.init();
-    backupsManager.init();
-    tunnelManager.init();
-    teledriveManager.init();
-    terminalManager.init();
-    settingsManager.init();
+ // Initialize all modules
+ dashboard.init();
+ analyticsManager.init();
+ packagesManager.init();
+ websites.init();
+ domainsManager.init();
+ emailManager.init();
+ fileManager.init();
+ databases.init();
+ cronManager.init();
+ logsViewer.init();
+ backupsManager.init();
+ tunnelManager.init();
+ teledriveManager.init();
+ terminalManager.init();
+ settingsManager.init();
 
-    this.switchTab('dashboard');
-    if (window.lucide) lucide.createIcons();
-  },
+ this.switchTab('dashboard');
+ if (window.lucide) lucide.createIcons();
+ },
 
-  async handleSetup(e) {
-    e.preventDefault();
-    const username = document.getElementById('setup-username').value;
-    const email = document.getElementById('setup-email').value;
-    const password = document.getElementById('setup-password').value;
+ async handleSetup(e) {
+ e.preventDefault();
+ const username = document.getElementById('setup-username').value;
+ const email = document.getElementById('setup-email').value;
+ const password = document.getElementById('setup-password').value;
 
-    try {
-      const data = await API.post('/api/auth/setup', { username, email, password });
-      API.toast('Admin account created! Welcome to TermuxPanel.', 'success');
-      this.currentUser = data.user;
-      this.showApp();
-    } catch (e) {}
-  },
+ try {
+ const data = await API.post('/api/auth/setup', { username, email, password });
+ API.toast('Admin account created! Welcome to TermuxPanel.', 'success');
+ this.currentUser = data.user;
+ this.showApp();
+ } catch (e) {}
+ },
 
-  async handleLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
+ async handleLogin(e) {
+ e.preventDefault();
+ const username = document.getElementById('login-username').value;
+ const password = document.getElementById('login-password').value;
 
-    try {
-      const data = await API.post('/api/auth/login', { username, password });
-      if (data.requires2FA) {
-        this.temp2FAToken = data.tempToken;
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('login-2fa-form').classList.remove('hidden');
-        document.getElementById('login-2fa-code').value = '';
-        setTimeout(() => document.getElementById('login-2fa-code').focus(), 100);
-        API.toast('Enter your 6-digit Google Authenticator / 2FA code', 'info');
-        return;
-      }
+ try {
+ const data = await API.post('/api/auth/login', { username, password });
+ if (data.requires2FA) {
+ this.temp2FAToken = data.tempToken;
+ document.getElementById('login-form').classList.add('hidden');
+ document.getElementById('login-2fa-form').classList.remove('hidden');
+ document.getElementById('login-2fa-code').value = '';
+ setTimeout(() => document.getElementById('login-2fa-code').focus(), 100);
+ API.toast('Enter your 6-digit Google Authenticator / 2FA code', 'info');
+ return;
+ }
 
-      API.toast('Logged in successfully', 'success');
-      this.currentUser = data.user;
-      this.showApp();
-    } catch (e) {}
-  },
+ API.toast('Logged in successfully', 'success');
+ this.currentUser = data.user;
+ this.showApp();
+ } catch (e) {}
+ },
 
-  async handleLogin2FA(e) {
-    e.preventDefault();
-    const code = document.getElementById('login-2fa-code').value.trim();
-    if (!code) return;
+ async handleLogin2FA(e) {
+ e.preventDefault();
+ const code = document.getElementById('login-2fa-code').value.trim();
+ if (!code) return;
 
-    try {
-      const data = await API.post('/api/auth/login/2fa', {
-        tempToken: this.temp2FAToken,
-        code
-      });
-      API.toast('Two-Factor Authentication verified!', 'success');
-      this.currentUser = data.user;
-      this.showApp();
-    } catch (e) {}
-  },
+ try {
+ const data = await API.post('/api/auth/login/2fa', {
+ tempToken: this.temp2FAToken,
+ code
+ });
+ API.toast('Two-Factor Authentication verified!', 'success');
+ this.currentUser = data.user;
+ this.showApp();
+ } catch (e) {}
+ },
 
-  async handleLogout() {
-    try {
-      await API.post('/api/auth/logout');
-      API.toast('Logged out', 'info');
-      this.currentUser = null;
-      this.showAuthModal(true);
-    } catch (e) {}
-  },
+ async handleLogout() {
+ try {
+ await API.post('/api/auth/logout');
+ API.toast('Logged out', 'info');
+ this.currentUser = null;
+ this.showAuthModal(true);
+ } catch (e) {}
+ },
 
-  switchTab(tabId) {
-    // Hide all views
-    document.querySelectorAll('.tab-view').forEach((v) => v.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
+ switchTab(tabId) {
+ // Hide all views
+ document.querySelectorAll('.tab-view').forEach((v) => v.classList.remove('active'));
+ document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
 
-    const targetView = document.getElementById(`view-${tabId}`);
-    const targetNav = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+ const targetView = document.getElementById(`view-${tabId}`);
+ const targetNav = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
 
-    if (targetView) targetView.classList.add('active');
-    if (targetNav) targetNav.classList.add('active');
+ if (targetView) targetView.classList.add('active');
+ if (targetNav) targetNav.classList.add('active');
 
-    const titles = {
-      dashboard: 'Dashboard',
-      analytics: 'Web Traffic & Analytics',
-      websites: 'Websites & Applications',
-      domains: 'Custom Domain Management',
-      email: 'Professional Email Routing',
-      filemanager: 'File Manager',
-      databases: 'SQLite Database Explorer',
-      cron: 'Scheduled Cron Jobs',
-      terminal: 'In-Browser Web Terminal',
-      logs: 'System & Application Logs',
-      backups: 'Backups & Archives',
-      tunnel: 'Cloudflare Zero Trust Tunnel',
-      teledrive: 'TeleDrive & Telegram Cloud Storage',
-      settings: 'Server Settings'
-    };
+ const titles = {
+ dashboard: 'Dashboard',
+ analytics: 'Web Traffic & Analytics',
+ websites: 'Websites & Applications',
+ domains: 'Custom Domain Management',
+ email: 'Professional Email Routing',
+ filemanager: 'File Manager',
+ databases: 'SQLite Database Explorer',
+ cron: 'Scheduled Cron Jobs',
+ terminal: 'In-Browser Web Terminal',
+ logs: 'System & Application Logs',
+ backups: 'Backups & Archives',
+ tunnel: 'Cloudflare Zero Trust Tunnel',
+ teledrive: 'TeleDrive & Telegram Cloud Storage',
+ settings: 'Server Settings'
+ };
 
-    const titleEl = document.getElementById('page-title');
-    if (titleEl) titleEl.textContent = titles[tabId] || 'TermuxPanel';
+ const titleEl = document.getElementById('page-title');
+ if (titleEl) titleEl.textContent = titles[tabId] || 'TermuxPanel';
 
-    // Handle tab-specific active/inactive events
-    if (tabId === 'analytics') {
-      analyticsManager.onTabActive();
-    } else {
-      analyticsManager.onTabInactive();
-    }
+ // Handle tab-specific active/inactive events
+ if (tabId === 'analytics') {
+ analyticsManager.onTabActive();
+ } else {
+ analyticsManager.onTabInactive();
+ }
 
-    // Trigger tab-specific refresh
-    if (tabId === 'dashboard') dashboard.loadSummary();
-    if (tabId === 'websites') websites.loadWebsites();
-    if (tabId === 'domains') domainsManager.loadDomains();
-    if (tabId === 'email') emailManager.loadForwarders();
-    if (tabId === 'filemanager') fileManager.populateSiteSelector();
-    if (tabId === 'databases') databases.loadDatabases();
-    if (tabId === 'cron') cronManager.loadJobs();
-    if (tabId === 'terminal') terminalManager.openTerminal();
-    if (tabId === 'logs') logsViewer.discoverLogs();
-    if (tabId === 'backups') backupsManager.loadBackups();
-    if (tabId === 'tunnel') tunnelManager.loadStatus();
-    if (tabId === 'teledrive') teledriveManager.loadDrive();
-    if (tabId === 'settings') settingsManager.loadSettings();
+ // Trigger tab-specific refresh
+ if (tabId === 'dashboard') dashboard.loadSummary();
+ if (tabId === 'websites') websites.loadWebsites();
+ if (tabId === 'domains') domainsManager.loadDomains();
+ if (tabId === 'email') emailManager.loadForwarders();
+ if (tabId === 'filemanager') fileManager.populateSiteSelector();
+ if (tabId === 'databases') databases.loadDatabases();
+ if (tabId === 'cron') cronManager.loadJobs();
+ if (tabId === 'terminal') terminalManager.openTerminal();
+ if (tabId === 'logs') logsViewer.discoverLogs();
+ if (tabId === 'backups') backupsManager.loadBackups();
+ if (tabId === 'tunnel') tunnelManager.loadStatus();
+ if (tabId === 'teledrive') teledriveManager.loadDrive();
+ if (tabId === 'settings') settingsManager.loadSettings();
 
-    if (window.lucide) {
-      setTimeout(() => lucide.createIcons(), 50);
-    }
-  }
+ if (window.lucide) {
+ setTimeout(() => lucide.createIcons(), 50);
+ }
+ }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  app.init();
+ app.init();
 });

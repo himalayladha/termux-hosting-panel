@@ -78,12 +78,12 @@ const uptimeService = {
 
     // Auto-Healer: If 3 consecutive failures occur, trigger automated restart
     if (current >= 3 && website.status === 'running') {
-      console.log(`[Auto-Healer] ⚡ Automatically restarting unresponsive website: "${website.name}"`);
+      console.log(`[Auto-Healer] Automatically restarting unresponsive website: "${website.name}"`);
       failureCounters.set(website.id, 0); // reset counter
 
       try {
         await processService.restartWebsite(website.id);
-        const msg = `🚨 [TermuxPanel Auto-Healer]\nWebsite "${website.name}" was unresponsive (${reason}).\n✓ Automatically restarted and recovered process!`;
+        const msg = `[TermuxPanel Auto-Healer]\nWebsite "${website.name}" was unresponsive (${reason}).\nAutomatically restarted and recovered process.`;
         await hardwareService.sendNotification(msg);
       } catch (restartErr) {
         console.error(`[Auto-Healer] Failed to restart "${website.name}":`, restartErr.message);

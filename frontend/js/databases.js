@@ -173,7 +173,7 @@ const databases = {
       if (!select) return;
 
       select.innerHTML = this.dbList
-        .map((db) => `<option value="${db.id}">${db.isSystem ? '🔒 ' + db.name : db.name}</option>`)
+        .map((db) => `<option value="${db.id}">${db.isSystem ? db.name + ' (System)' : db.name}</option>`)
         .join('');
 
       if (this.dbList.length > 0) {

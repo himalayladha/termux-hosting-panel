@@ -510,7 +510,7 @@ class TeleDriveService {
     }
 
     const stats = fs.statSync(backupPath);
-    const caption = `🗄️ Automated Backup Archive: ${backupFilename}\n📦 Size: ${formatBytes(stats.size)}\n📅 Timestamp: ${new Date().toLocaleString()}`;
+    const caption = `Automated Backup Archive: ${backupFilename}\nSize: ${formatBytes(stats.size)}\nTimestamp: ${new Date().toLocaleString()}`;
 
     const uploadRes = await this.uploadFile({
       filePath: backupPath,

@@ -11,10 +11,10 @@
 - **Target Audience**: Small to medium business owners, solo developers, freelancers, startups, and self-hosting enthusiasts.
 - **Design Persona**: Modern developer console & hosting supervisor (inspired by Supabase, Cloudflare, Linear, and Vercel).
 - **Core Visual Pillars**:
-  1. **High Information Density**: Clean tabular metrics and service telemetry without overwhelming clutter.
-  2. **High-Contrast Readability**: Dark and Light themes with strict WCAG AA contrast compliance.
-  3. **Hardware Transparency**: Visual indicators for battery temperature, charging status, CPU load, and RAM limits.
-  4. **Zero AI Slop**: Strict component consistency, standard design tokens, and no emoji iconography.
+ 1. **High Information Density**: Clean tabular metrics and service telemetry without overwhelming clutter.
+ 2. **High-Contrast Readability**: Dark and Light themes with strict WCAG AA contrast compliance.
+ 3. **Hardware Transparency**: Visual indicators for battery temperature, charging status, CPU load, and RAM limits.
+ 4. **Zero AI Slop**: Strict component consistency, standard design tokens, and no emoji iconography.
 
 ---
 
@@ -27,54 +27,54 @@ TermuxPanel uses CSS custom properties (`var(--...)`) for seamless theme switchi
 ```css
 /* Dark Theme (Default) */
 :root, [data-theme="dark"] {
-  --bg-main: #0b0f19;
-  --bg-card: #131b2e;
-  --bg-card-hover: #1a253f;
-  --bg-card-darker: #0d1322;
-  --bg-sidebar: #0f1626;
-  --border-color: #202d4a;
-  --border-light: #2e3e66;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-light: #38bdf8;
-  --primary-bg: rgba(2, 132, 199, 0.12);
-  --primary-glow: rgba(2, 132, 199, 0.35);
-  --success: #10b981;
-  --success-light: rgba(16, 185, 129, 0.15);
-  --warning: #f59e0b;
-  --warning-light: rgba(245, 158, 11, 0.15);
-  --danger: #ef4444;
-  --danger-light: rgba(239, 68, 68, 0.15);
-  --purple: #a855f7;
-  --purple-light: rgba(168, 85, 247, 0.15);
+ --bg-main: #0b0f19;
+ --bg-card: #131b2e;
+ --bg-card-hover: #1a253f;
+ --bg-card-darker: #0d1322;
+ --bg-sidebar: #0f1626;
+ --border-color: #202d4a;
+ --border-light: #2e3e66;
+ --text-main: #f8fafc;
+ --text-muted: #94a3b8;
+ --primary: #0284c7;
+ --primary-hover: #0369a1;
+ --primary-light: #38bdf8;
+ --primary-bg: rgba(2, 132, 199, 0.12);
+ --primary-glow: rgba(2, 132, 199, 0.35);
+ --success: #10b981;
+ --success-light: rgba(16, 185, 129, 0.15);
+ --warning: #f59e0b;
+ --warning-light: rgba(245, 158, 11, 0.15);
+ --danger: #ef4444;
+ --danger-light: rgba(239, 68, 68, 0.15);
+ --purple: #a855f7;
+ --purple-light: rgba(168, 85, 247, 0.15);
 }
 
 /* Light Theme */
 [data-theme="light"] {
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-card-darker: #f8fafc;
-  --bg-sidebar: #ffffff;
-  --border-color: #e2e8f0;
-  --border-light: #cbd5e1;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-light: #0284c7;
-  --primary-bg: rgba(2, 132, 199, 0.08);
-  --primary-glow: rgba(2, 132, 199, 0.2);
-  --success: #059669;
-  --success-light: rgba(16, 185, 129, 0.12);
-  --warning: #d97706;
-  --warning-light: rgba(245, 158, 11, 0.12);
-  --danger: #dc2626;
-  --danger-light: rgba(239, 68, 68, 0.12);
-  --purple: #9333ea;
-  --purple-light: rgba(168, 85, 247, 0.12);
+ --bg-main: #f8fafc;
+ --bg-card: #ffffff;
+ --bg-card-hover: #f1f5f9;
+ --bg-card-darker: #f8fafc;
+ --bg-sidebar: #ffffff;
+ --border-color: #e2e8f0;
+ --border-light: #cbd5e1;
+ --text-main: #0f172a;
+ --text-muted: #64748b;
+ --primary: #0284c7;
+ --primary-hover: #0369a1;
+ --primary-light: #0284c7;
+ --primary-bg: rgba(2, 132, 199, 0.08);
+ --primary-glow: rgba(2, 132, 199, 0.2);
+ --success: #059669;
+ --success-light: rgba(16, 185, 129, 0.12);
+ --warning: #d97706;
+ --warning-light: rgba(245, 158, 11, 0.12);
+ --danger: #dc2626;
+ --danger-light: rgba(239, 68, 68, 0.12);
+ --purple: #9333ea;
+ --purple-light: rgba(168, 85, 247, 0.12);
 }
 ```
 
@@ -143,13 +143,13 @@ TermuxPanel uses CSS custom properties (`var(--...)`) for seamless theme switchi
 
 ### 5.1 Dashboard App Layout (`frontend/index.html`)
 - **Desktop (`>900px`)**:
-  - Sidebar: Fixed width `240px`, pinned left.
-  - Main Wrapper: `margin-left: 240px`, fluid width.
-  - Topbar: Pinned top with Live System Stats, battery gauge, and light/dark theme switch.
+ - Sidebar: Fixed width `240px`, pinned left.
+ - Main Wrapper: `margin-left: 240px`, fluid width.
+ - Topbar: Pinned top with Live System Stats, battery gauge, and light/dark theme switch.
 - **Mobile (`<900px`)**:
-  - Sidebar: Drawer transformed `translateX(-100%)`, z-index `1000`. Slides open with `.sidebar.open`.
-  - Topbar: Hamburger button (`#sidebar-toggle`) toggles drawer and backdrop.
-  - Cards & Metrics: Grid switches to single column (`grid-template-columns: 1fr;`).
+ - Sidebar: Drawer transformed `translateX(-100%)`, z-index `1000`. Slides open with `.sidebar.open`.
+ - Topbar: Hamburger button (`#sidebar-toggle`) toggles drawer and backdrop.
+ - Cards & Metrics: Grid switches to single column (`grid-template-columns: 1fr;`).
 
 ### 5.2 Landing Page (`docs/index.html`)
 - **Desktop (`>1080px`)**: Full-width navbar, horizontal link bar, hero metrics mockup, multi-column comparison table.

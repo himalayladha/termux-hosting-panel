@@ -1,1875 +1,1875 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>TermuxPanel - Turn Any Android Phone into a 24/7 Production Web Server</title>
-  <meta name="description" content="A lightweight, production-grade web hosting control panel & application supervisor for Android/Termux with Cloudflare Zero Trust Tunnel HTTPS remote access.">
-  <meta property="og:title" content="TermuxPanel - Android Web Hosting Control Panel">
-  <meta property="og:description" content="Host HTML, Node.js, Python, & PHP apps directly on your Android phone with zero port forwarding.">
-  <meta property="og:url" content="https://himalayladha.github.io/termux-hosting-panel/">
-  <meta name="theme-color" content="#0b0f19">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+ <title>TermuxPanel - Turn Any Android Phone into a 24/7 Production Web Server</title>
+ <meta name="description" content="A lightweight, production-grade web hosting control panel & application supervisor for Android/Termux with Cloudflare Zero Trust Tunnel HTTPS remote access.">
+ <meta property="og:title" content="TermuxPanel - Android Web Hosting Control Panel">
+ <meta property="og:description" content="Host HTML, Node.js, Python, & PHP apps directly on your Android phone with zero port forwarding.">
+ <meta property="og:url" content="https://himalayladha.github.io/termux-hosting-panel/">
+ <meta name="theme-color" content="#0b0f19">
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+ <!-- Lucide Icons -->
+ <script src="https://unpkg.com/lucide@latest"></script>
 
-  <style>
-    :root,
-    body.dark-theme,
-    [data-theme="dark"] {
-      --bg: #0b0f19;
-      --bg-card: #131b2e;
-      --bg-card-hover: #1a253f;
-      --bg-darker: #070a14;
-      --border: #202d4a;
-      --border-light: #2e3e66;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #0284c7;
-      --primary-glow: rgba(2, 132, 199, 0.35);
-      --primary-light: #38bdf8;
-      --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.25);
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      --radius: 12px;
-    }
+ <style>
+ :root,
+ body.dark-theme,
+ [data-theme="dark"] {
+ --bg: #0b0f19;
+ --bg-card: #131b2e;
+ --bg-card-hover: #1a253f;
+ --bg-darker: #070a14;
+ --border: #202d4a;
+ --border-light: #2e3e66;
+ --text: #f8fafc;
+ --text-muted: #94a3b8;
+ --primary: #0284c7;
+ --primary-glow: rgba(2, 132, 199, 0.35);
+ --primary-light: #38bdf8;
+ --success: #10b981;
+ --success-glow: rgba(16, 185, 129, 0.25);
+ --warning: #f59e0b;
+ --danger: #ef4444;
+ --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+ --radius: 12px;
+ }
 
-    body.light-theme,
-    [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-card-hover: #f1f5f9;
-      --bg-darker: #f1f5f9;
-      --border: #e2e8f0;
-      --border-light: #cbd5e1;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --primary: #0284c7;
-      --primary-glow: rgba(2, 132, 199, 0.2);
-      --primary-light: #0284c7;
-      --success: #059669;
-      --success-glow: rgba(16, 185, 129, 0.15);
-      --warning: #d97706;
-      --danger: #dc2626;
-    }
+ body.light-theme,
+ [data-theme="light"] {
+ --bg: #f8fafc;
+ --bg-card: #ffffff;
+ --bg-card-hover: #f1f5f9;
+ --bg-darker: #f1f5f9;
+ --border: #e2e8f0;
+ --border-light: #cbd5e1;
+ --text: #0f172a;
+ --text-muted: #64748b;
+ --primary: #0284c7;
+ --primary-glow: rgba(2, 132, 199, 0.2);
+ --primary-light: #0284c7;
+ --success: #059669;
+ --success-glow: rgba(16, 185, 129, 0.15);
+ --warning: #d97706;
+ --danger: #dc2626;
+ }
 
-    body, .navbar, .card, .pricing-card, .faq-item, .arch-card, .btn {
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
+ body, .navbar, .card, .pricing-card, .faq-item, .arch-card, .btn {
+ transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+ }
 
-    body.light-theme .navbar {
-      background: rgba(255, 255, 255, 0.92);
-      border-bottom-color: var(--border);
-    }
-    body.light-theme .nav-brand { color: #0f172a; }
-    body.light-theme .nav-links a:hover { color: #0f172a; }
-    body.light-theme .mobile-menu {
-      background: rgba(255, 255, 255, 0.98);
-      border-bottom-color: var(--border);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    }
-    body.light-theme .mobile-menu a {
-      color: #0f172a;
-    }
-    body.light-theme .mobile-menu a:hover,
-    body.light-theme .mobile-menu a:active {
-      background: #f1f5f9;
-      color: var(--primary);
-    }
-    body.light-theme .menu-toggle {
-      background: #ffffff;
-      border-color: #cbd5e1;
-      color: #0f172a;
-    }
-    body.light-theme .menu-toggle:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-    }
-    body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4 { color: #0f172a; }
-    body.light-theme .hero-title {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    body.light-theme .btn-secondary { background: #ffffff; border-color: #cbd5e1; color: #1e293b; }
-    body.light-theme .btn-secondary:hover { background: #f1f5f9; }
-    body.light-theme .card-title { color: #0f172a; }
-    body.light-theme .step-content h3 { color: #0f172a; }
-    body.light-theme .mock-topbar { background: #f1f5f9; border-bottom-color: var(--border); }
-    body.light-theme .mock-metric-val { color: #0f172a; }
-    body.light-theme .mock-bar { background: #e2e8f0; }
-    body.light-theme .arch-container { background: #f8fafc; box-shadow: inset 0 0 20px rgba(0,0,0,0.04); }
-    body.light-theme .code-box { background: #f1f5f9; border-color: var(--border); }
-    body.light-theme .code-box code { color: #0f172a; }
-    body.light-theme .copy-btn { background: #e2e8f0; color: #0f172a; border-color: #cbd5e1; }
-    body.light-theme .copy-btn:hover { background: #cbd5e1; }
-    body.light-theme th, body.light-theme .comparison-table th { background: #f1f5f9; color: #64748b; }
-    body.light-theme td, body.light-theme .comparison-table td { color: #1e293b; }
-    body.light-theme tr:hover td, body.light-theme .comparison-table tr:hover td { background: #f8fafc; }
-    body.light-theme .faq-item { background: #ffffff; }
-    body.light-theme .faq-question { color: #0f172a; }
+ body.light-theme .navbar {
+ background: rgba(255, 255, 255, 0.92);
+ border-bottom-color: var(--border);
+ }
+ body.light-theme .nav-brand { color: #0f172a; }
+ body.light-theme .nav-links a:hover { color: #0f172a; }
+ body.light-theme .mobile-menu {
+ background: rgba(255, 255, 255, 0.98);
+ border-bottom-color: var(--border);
+ box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+ }
+ body.light-theme .mobile-menu a {
+ color: #0f172a;
+ }
+ body.light-theme .mobile-menu a:hover,
+ body.light-theme .mobile-menu a:active {
+ background: #f1f5f9;
+ color: var(--primary);
+ }
+ body.light-theme .menu-toggle {
+ background: #ffffff;
+ border-color: #cbd5e1;
+ color: #0f172a;
+ }
+ body.light-theme .menu-toggle:hover {
+ background: #f1f5f9;
+ border-color: #94a3b8;
+ }
+ body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4 { color: #0f172a; }
+ body.light-theme .hero-title {
+ background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ }
+ body.light-theme .btn-secondary { background: #ffffff; border-color: #cbd5e1; color: #1e293b; }
+ body.light-theme .btn-secondary:hover { background: #f1f5f9; }
+ body.light-theme .card-title { color: #0f172a; }
+ body.light-theme .step-content h3 { color: #0f172a; }
+ body.light-theme .mock-topbar { background: #f1f5f9; border-bottom-color: var(--border); }
+ body.light-theme .mock-metric-val { color: #0f172a; }
+ body.light-theme .mock-bar { background: #e2e8f0; }
+ body.light-theme .arch-container { background: #f8fafc; box-shadow: inset 0 0 20px rgba(0,0,0,0.04); }
+ body.light-theme .code-box { background: #f1f5f9; border-color: var(--border); }
+ body.light-theme .code-box code { color: #0f172a; }
+ body.light-theme .copy-btn { background: #e2e8f0; color: #0f172a; border-color: #cbd5e1; }
+ body.light-theme .copy-btn:hover { background: #cbd5e1; }
+ body.light-theme th, body.light-theme .comparison-table th { background: #f1f5f9; color: #64748b; }
+ body.light-theme td, body.light-theme .comparison-table td { color: #1e293b; }
+ body.light-theme tr:hover td, body.light-theme .comparison-table tr:hover td { background: #f8fafc; }
+ body.light-theme .faq-item { background: #ffffff; }
+ body.light-theme .faq-question { color: #0f172a; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      line-height: 1.6;
-      font-size: 16px;
-      overflow-x: hidden;
-      width: 100%;
-    }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+ body {
+ background-color: var(--bg);
+ color: var(--text);
+ font-family: var(--font);
+ line-height: 1.6;
+ font-size: 16px;
+ overflow-x: hidden;
+ width: 100%;
+ }
 
-    /* Lucide Icon Standard Styling */
-    .lucide {
-      width: 1.15em;
-      height: 1.15em;
-      vertical-align: -0.18em;
-      display: inline-block;
-      stroke-width: 2px;
-      flex-shrink: 0;
-    }
+ /* Lucide Icon Standard Styling */
+ .lucide {
+ width: 1.15em;
+ height: 1.15em;
+ vertical-align: -0.18em;
+ display: inline-block;
+ stroke-width: 2px;
+ flex-shrink: 0;
+ }
 
-    /* Container */
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+ /* Container */
+ .container {
+ width: 100%;
+ max-width: 1200px;
+ margin: 0 auto;
+ padding: 0 20px;
+ }
 
-    /* Top Navbar - Full Width */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      width: 100%;
-      background: rgba(11, 15, 25, 0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 0;
-    }
-    .nav-container {
-      width: 100%;
-      max-width: 100%;
-      padding: 0 clamp(16px, 3.5vw, 40px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: #fff;
-      font-weight: 800;
-      font-size: 19px;
-      letter-spacing: -0.5px;
-      flex-shrink: 0;
-    }
-    .brand-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--primary), #38bdf8);
-      border-radius: 10px;
-      color: #fff;
-      box-shadow: 0 0 14px var(--primary-glow);
-      flex-shrink: 0;
-    }
-    .brand-logo .lucide { width: 18px; height: 18px; }
-    
-    .nav-links {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 13.5px;
-      transition: color 0.2s;
-      white-space: nowrap;
-    }
-    .nav-links a:hover { color: #fff; }
+ /* Top Navbar - Full Width */
+ .navbar {
+ position: sticky;
+ top: 0;
+ z-index: 1000;
+ width: 100%;
+ background: rgba(11, 15, 25, 0.9);
+ backdrop-filter: blur(16px);
+ -webkit-backdrop-filter: blur(16px);
+ border-bottom: 1px solid var(--border);
+ padding: 12px 0;
+ }
+ .nav-container {
+ width: 100%;
+ max-width: 100%;
+ padding: 0 clamp(16px, 3.5vw, 40px);
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 16px;
+ }
+ .nav-brand {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ text-decoration: none;
+ color: #fff;
+ font-weight: 800;
+ font-size: 19px;
+ letter-spacing: -0.5px;
+ flex-shrink: 0;
+ }
+ .brand-logo {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ width: 36px;
+ height: 36px;
+ background: linear-gradient(135deg, var(--primary), #38bdf8);
+ border-radius: 10px;
+ color: #fff;
+ box-shadow: 0 0 14px var(--primary-glow);
+ flex-shrink: 0;
+ }
+ .brand-logo .lucide { width: 18px; height: 18px; }
+ 
+ .nav-links {
+ display: flex;
+ gap: 16px;
+ align-items: center;
+ flex-wrap: nowrap;
+ }
+ .nav-links a {
+ color: var(--text-muted);
+ text-decoration: none;
+ font-weight: 500;
+ font-size: 13.5px;
+ transition: color 0.2s;
+ white-space: nowrap;
+ }
+ .nav-links a:hover { color: #fff; }
 
-    /* Mobile Nav Actions & Hamburger Toggle */
-    .nav-mobile-actions {
-      display: none;
-      align-items: center;
-      gap: 10px;
-    }
+ /* Mobile Nav Actions & Hamburger Toggle */
+ .nav-mobile-actions {
+ display: none;
+ align-items: center;
+ gap: 10px;
+ }
 
-    .menu-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 0;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-    .menu-toggle:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-light);
-      color: var(--primary-light);
-    }
-    .menu-toggle:active {
-      transform: scale(0.94);
-    }
-    .menu-toggle .lucide {
-      width: 20px;
-      height: 20px;
-    }
+ .menu-toggle {
+ display: none;
+ align-items: center;
+ justify-content: center;
+ width: 40px;
+ height: 40px;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text);
+ padding: 0;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ flex-shrink: 0;
+ }
+ .menu-toggle:hover {
+ background: var(--bg-card-hover);
+ border-color: var(--border-light);
+ color: var(--primary-light);
+ }
+ .menu-toggle:active {
+ transform: scale(0.94);
+ }
+ .menu-toggle .lucide {
+ width: 20px;
+ height: 20px;
+ }
 
-    /* Mobile Navigation Drawer - Full Width Overlay */
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 61px;
-      left: 0;
-      right: 0;
-      width: 100%;
-      max-height: calc(100vh - 61px);
-      overflow-y: auto;
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 16px clamp(16px, 3.5vw, 32px) 24px;
-      flex-direction: column;
-      gap: 6px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      z-index: 999;
-    }
-    .mobile-menu.open {
-      display: flex;
-      animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .mobile-menu a {
-      color: var(--text);
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 10px 14px;
-      border-radius: 8px;
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-    }
-    .mobile-menu a:hover,
-    .mobile-menu a:active {
-      background: var(--bg-card-hover);
-      color: var(--primary-light);
-    }
+ /* Mobile Navigation Drawer - Full Width Overlay */
+ .mobile-menu {
+ display: none;
+ position: fixed;
+ top: 61px;
+ left: 0;
+ right: 0;
+ width: 100%;
+ max-height: calc(100vh - 61px);
+ overflow-y: auto;
+ background: var(--bg-card);
+ backdrop-filter: blur(20px);
+ -webkit-backdrop-filter: blur(20px);
+ border-bottom: 1px solid var(--border);
+ padding: 16px clamp(16px, 3.5vw, 32px) 24px;
+ flex-direction: column;
+ gap: 6px;
+ box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+ z-index: 999;
+ }
+ .mobile-menu.open {
+ display: flex;
+ animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+ }
+ .mobile-menu a {
+ color: var(--text);
+ text-decoration: none;
+ font-size: 15px;
+ font-weight: 500;
+ padding: 10px 14px;
+ border-radius: 8px;
+ transition: all 0.15s ease;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ border-bottom: 1px solid rgba(255,255,255,0.03);
+ }
+ .mobile-menu a:hover,
+ .mobile-menu a:active {
+ background: var(--bg-card-hover);
+ color: var(--primary-light);
+ }
 
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+ @keyframes slideDown {
+ from { opacity: 0; transform: translateY(-8px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), #0284c7);
-      color: #fff;
-      box-shadow: 0 4px 14px var(--primary-glow);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
-    }
-    .btn-secondary {
-      background: var(--bg-card);
-      border-color: var(--border);
-      color: var(--text);
-    }
-    .btn-secondary:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-light);
-    }
-    .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 6px; }
+ /* Buttons */
+ .btn {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ padding: 10px 20px;
+ border-radius: 8px;
+ font-weight: 600;
+ font-size: 14px;
+ text-decoration: none;
+ cursor: pointer;
+ border: 1px solid transparent;
+ transition: all 0.2s ease;
+ white-space: nowrap;
+ }
+ .btn-primary {
+ background: linear-gradient(135deg, var(--primary), #0284c7);
+ color: #fff;
+ box-shadow: 0 4px 14px var(--primary-glow);
+ }
+ .btn-primary:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+ }
+ .btn-secondary {
+ background: var(--bg-card);
+ border-color: var(--border);
+ color: var(--text);
+ }
+ .btn-secondary:hover {
+ background: var(--bg-card-hover);
+ border-color: var(--border-light);
+ }
+ .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 6px; }
 
-    /* Hero Section */
-    .hero {
-      padding: clamp(40px, 8vw, 80px) 0 clamp(30px, 6vw, 60px);
-      text-align: center;
-      position: relative;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      background: rgba(2, 132, 199, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 30px;
-      color: var(--primary-light);
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      max-width: 100%;
-      text-align: left;
-    }
-    .hero-title {
-      font-size: clamp(28px, 6vw, 54px);
-      font-weight: 900;
-      letter-spacing: -1px;
-      line-height: 1.15;
-      margin-bottom: 18px;
-      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-highlight {
-      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-subtitle {
-      font-size: clamp(15px, 2.5vw, 19px);
-      color: var(--text-muted);
-      max-width: 780px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
-    }
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 40px;
-    }
+ /* Hero Section */
+ .hero {
+ padding: clamp(40px, 8vw, 80px) 0 clamp(30px, 6vw, 60px);
+ text-align: center;
+ position: relative;
+ }
+ .hero-badge {
+ display: inline-flex;
+ align-items: center;
+ gap: 8px;
+ padding: 6px 16px;
+ background: rgba(2, 132, 199, 0.12);
+ border: 1px solid rgba(56, 189, 248, 0.3);
+ border-radius: 30px;
+ color: var(--primary-light);
+ font-size: 13px;
+ font-weight: 600;
+ margin-bottom: 20px;
+ max-width: 100%;
+ text-align: left;
+ }
+ .hero-title {
+ font-size: clamp(28px, 6vw, 54px);
+ font-weight: 900;
+ letter-spacing: -1px;
+ line-height: 1.15;
+ margin-bottom: 18px;
+ background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ }
+ .hero-highlight {
+ background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ }
+ .hero-subtitle {
+ font-size: clamp(15px, 2.5vw, 19px);
+ color: var(--text-muted);
+ max-width: 780px;
+ margin: 0 auto 32px;
+ line-height: 1.6;
+ }
+ .hero-actions {
+ display: flex;
+ justify-content: center;
+ gap: 12px;
+ flex-wrap: wrap;
+ margin-bottom: 40px;
+ }
 
-    /* Terminal Showcase Box */
-    .terminal-box {
-      max-width: 860px;
-      margin: 0 auto;
-      background: #050811;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(2, 132, 199, 0.15);
-      text-align: left;
-    }
-    .terminal-header {
-      background: #0d1322;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      gap: 8px;
-    }
-    .terminal-dots { display: flex; gap: 6px; flex-shrink: 0; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #f59e0b; }
-    .dot-green { background: #10b981; }
-    .terminal-title { font-size: 11px; color: var(--text-muted); font-family: monospace; display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .terminal-body {
-      padding: clamp(14px, 3vw, 24px);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: clamp(11px, 2vw, 13.5px);
-      line-height: 1.7;
-      color: #cbd5e1;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .terminal-prompt { color: #38bdf8; font-weight: 700; }
-    .terminal-output { color: #10b981; }
+ /* Terminal Showcase Box */
+ .terminal-box {
+ max-width: 860px;
+ margin: 0 auto;
+ background: #050811;
+ border: 1px solid var(--border);
+ border-radius: 14px;
+ overflow: hidden;
+ box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(2, 132, 199, 0.15);
+ text-align: left;
+ }
+ .terminal-header {
+ background: #0d1322;
+ padding: 10px 14px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ border-bottom: 1px solid var(--border);
+ gap: 8px;
+ }
+ .terminal-dots { display: flex; gap: 6px; flex-shrink: 0; }
+ .dot { width: 10px; height: 10px; border-radius: 50%; }
+ .dot-red { background: #ef4444; }
+ .dot-yellow { background: #f59e0b; }
+ .dot-green { background: #10b981; }
+ .terminal-title { font-size: 11px; color: var(--text-muted); font-family: monospace; display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ .terminal-body {
+ padding: clamp(14px, 3vw, 24px);
+ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+ font-size: clamp(11px, 2vw, 13.5px);
+ line-height: 1.7;
+ color: #cbd5e1;
+ overflow-x: auto;
+ -webkit-overflow-scrolling: touch;
+ }
+ .terminal-prompt { color: #38bdf8; font-weight: 700; }
+ .terminal-output { color: #10b981; }
 
-    /* Interactive Mock Dashboard */
-    .dashboard-mock {
-      max-width: 1000px;
-      margin: 40px auto 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
-      text-align: left;
-    }
-    .mock-topbar {
-      background: #0d1322;
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .mock-metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      padding: clamp(14px, 3vw, 24px);
-      background: var(--bg-darker);
-    }
-    .mock-metric-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .mock-metric-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .mock-metric-val { font-size: 18px; font-weight: 800; color: #fff; }
-    .mock-bar { height: 5px; background: #1e293b; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-    .mock-bar-fill { height: 100%; background: var(--primary-light); }
-    .mock-body { padding: clamp(14px, 3vw, 24px); }
+ /* Interactive Mock Dashboard */
+ .dashboard-mock {
+ max-width: 1000px;
+ margin: 40px auto 0;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ overflow: hidden;
+ box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+ text-align: left;
+ }
+ .mock-topbar {
+ background: #0d1322;
+ padding: 12px 18px;
+ border-bottom: 1px solid var(--border);
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 8px;
+ flex-wrap: wrap;
+ }
+ .mock-metrics {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+ gap: 12px;
+ padding: clamp(14px, 3vw, 24px);
+ background: var(--bg-darker);
+ }
+ .mock-metric-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 14px;
+ }
+ .mock-metric-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 6px; }
+ .mock-metric-val { font-size: 18px; font-weight: 800; color: #fff; }
+ .mock-bar { height: 5px; background: #1e293b; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+ .mock-bar-fill { height: 100%; background: var(--primary-light); }
+ .mock-body { padding: clamp(14px, 3vw, 24px); }
 
-    /* Section Styling */
-    section { padding: clamp(50px, 8vw, 80px) 0; border-top: 1px solid var(--border); }
-    .section-header {
-      text-align: center;
-      max-width: 760px;
-      margin: 0 auto clamp(36px, 6vw, 56px);
-    }
-    .section-tag {
-      color: var(--primary-light);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .section-title {
-      font-size: clamp(24px, 5vw, 36px);
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      margin-bottom: 14px;
-      line-height: 1.25;
-    }
-    .section-desc { color: var(--text-muted); font-size: clamp(14px, 2.5vw, 17px); }
+ /* Section Styling */
+ section { padding: clamp(50px, 8vw, 80px) 0; border-top: 1px solid var(--border); }
+ .section-header {
+ text-align: center;
+ max-width: 760px;
+ margin: 0 auto clamp(36px, 6vw, 56px);
+ }
+ .section-tag {
+ color: var(--primary-light);
+ font-size: 12px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 1px;
+ margin-bottom: 8px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 6px;
+ }
+ .section-title {
+ font-size: clamp(24px, 5vw, 36px);
+ font-weight: 800;
+ letter-spacing: -0.8px;
+ margin-bottom: 14px;
+ line-height: 1.25;
+ }
+ .section-desc { color: var(--text-muted); font-size: clamp(14px, 2.5vw, 17px); }
 
-    /* Grid Layouts */
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
+ /* Grid Layouts */
+ .grid-3 {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 20px;
+ }
+ .grid-2 {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+ gap: 24px;
+ }
 
-    /* Cards */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(20px, 4vw, 32px);
-      transition: all 0.3s ease;
-      position: relative;
-    }
-    .card:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-light);
-      transform: translateY(-3px);
-    }
-    .card-icon-wrap {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: rgba(2, 132, 199, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary-light);
-      margin-bottom: 16px;
-    }
-    .card-icon-wrap .lucide { width: 24px; height: 24px; }
-    .card-title { font-size: 19px; font-weight: 700; margin-bottom: 10px; color: #fff; }
-    .card-text { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; }
+ /* Cards */
+ .card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: var(--radius);
+ padding: clamp(20px, 4vw, 32px);
+ transition: all 0.3s ease;
+ position: relative;
+ }
+ .card:hover {
+ background: var(--bg-card-hover);
+ border-color: var(--border-light);
+ transform: translateY(-3px);
+ }
+ .card-icon-wrap {
+ width: 48px;
+ height: 48px;
+ border-radius: 12px;
+ background: rgba(2, 132, 199, 0.1);
+ border: 1px solid rgba(56, 189, 248, 0.2);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ color: var(--primary-light);
+ margin-bottom: 16px;
+ }
+ .card-icon-wrap .lucide { width: 24px; height: 24px; }
+ .card-title { font-size: 19px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+ .card-text { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; }
 
-    /* Runtime Showcase Tabs */
-    .tabs-nav {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 24px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .tab-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 13.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-      box-shadow: 0 4px 14px var(--primary-glow);
-    }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+ /* Runtime Showcase Tabs */
+ .tabs-nav {
+ display: flex;
+ justify-content: center;
+ gap: 8px;
+ margin-bottom: 24px;
+ overflow-x: auto;
+ padding-bottom: 6px;
+ -webkit-overflow-scrolling: touch;
+ }
+ .tab-btn {
+ padding: 8px 16px;
+ border-radius: 8px;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ color: var(--text-muted);
+ font-weight: 600;
+ font-size: 13.5px;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ transition: all 0.2s;
+ white-space: nowrap;
+ flex-shrink: 0;
+ }
+ .tab-btn.active {
+ background: var(--primary);
+ color: #fff;
+ border-color: var(--primary);
+ box-shadow: 0 4px 14px var(--primary-glow);
+ }
+ .tab-content { display: none; }
+ .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+ @keyframes fadeIn {
+ from { opacity: 0; transform: translateY(6px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
 
-    /* Architecture Visualizer */
-    .arch-container {
-      background: #070a14;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: clamp(20px, 4vw, 40px);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
-    }
-    .arch-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-    .arch-node {
-      flex: 1;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      position: relative;
-    }
-    .arch-node.highlight {
-      border-color: var(--primary);
-      box-shadow: 0 0 25px var(--primary-glow);
-    }
-    .arch-node.cloudflare {
-      border-color: #f59e0b;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
-    }
-    .arch-node.security {
-      border-color: var(--success);
-      box-shadow: 0 0 25px var(--success-glow);
-    }
-    .arch-node h4 { font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
-    .arch-node p { font-size: 13px; color: var(--text-muted); }
-    .arch-arrow {
-      color: var(--primary-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .arch-arrow .lucide { width: 24px; height: 24px; }
+ /* Architecture Visualizer */
+ .arch-container {
+ background: #070a14;
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: clamp(20px, 4vw, 40px);
+ display: flex;
+ flex-direction: column;
+ gap: 20px;
+ box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+ }
+ .arch-row {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 16px;
+ }
+ .arch-node {
+ flex: 1;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 20px;
+ text-align: center;
+ position: relative;
+ }
+ .arch-node.highlight {
+ border-color: var(--primary);
+ box-shadow: 0 0 25px var(--primary-glow);
+ }
+ .arch-node.cloudflare {
+ border-color: #f59e0b;
+ box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+ }
+ .arch-node.security {
+ border-color: var(--success);
+ box-shadow: 0 0 25px var(--success-glow);
+ }
+ .arch-node h4 { font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+ .arch-node p { font-size: 13px; color: var(--text-muted); }
+ .arch-arrow {
+ color: var(--primary-light);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ flex-shrink: 0;
+ }
+ .arch-arrow .lucide { width: 24px; height: 24px; }
 
-    /* Code Snippet Box */
-    .code-box {
-      background: #050811;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin: 14px 0;
-      font-family: monospace;
-      font-size: 13px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .code-box code {
-      word-break: break-all;
-      white-space: pre-wrap;
-      flex: 1;
-    }
-    .copy-btn {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font);
-      font-weight: 500;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .copy-btn:hover { background: rgba(255,255,255,0.15); }
+ /* Code Snippet Box */
+ .code-box {
+ background: #050811;
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ padding: 12px 16px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 12px;
+ margin: 14px 0;
+ font-family: monospace;
+ font-size: 13px;
+ overflow-x: auto;
+ -webkit-overflow-scrolling: touch;
+ }
+ .code-box code {
+ word-break: break-all;
+ white-space: pre-wrap;
+ flex: 1;
+ }
+ .copy-btn {
+ background: rgba(255,255,255,0.08);
+ border: 1px solid var(--border);
+ color: var(--text);
+ padding: 6px 12px;
+ border-radius: 6px;
+ font-size: 12px;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ font-family: var(--font);
+ font-weight: 500;
+ white-space: nowrap;
+ flex-shrink: 0;
+ }
+ .copy-btn:hover { background: rgba(255,255,255,0.15); }
 
-    /* Tables */
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-    table { width: 100%; min-width: 540px; border-collapse: collapse; text-align: left; }
-    th {
-      background: #0d1322;
-      color: var(--text-muted);
-      font-size: 12.5px;
-      text-transform: uppercase;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13.5px;
-    }
-    tr:last-child td { border-bottom: none; }
+ /* Tables */
+ .table-wrapper {
+ width: 100%;
+ overflow-x: auto;
+ -webkit-overflow-scrolling: touch;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: var(--radius);
+ }
+ table { width: 100%; min-width: 540px; border-collapse: collapse; text-align: left; }
+ th {
+ background: #0d1322;
+ color: var(--text-muted);
+ font-size: 12.5px;
+ text-transform: uppercase;
+ padding: 14px 16px;
+ border-bottom: 1px solid var(--border);
+ white-space: nowrap;
+ }
+ td {
+ padding: 14px 16px;
+ border-bottom: 1px solid var(--border);
+ font-size: 13.5px;
+ }
+ tr:last-child td { border-bottom: none; }
 
-    /* Badge Pills */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .badge-primary { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+ /* Badge Pills */
+ .badge {
+ display: inline-flex;
+ align-items: center;
+ gap: 5px;
+ padding: 3px 8px;
+ border-radius: 20px;
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ white-space: nowrap;
+ }
+ .badge-primary { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+ .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+ .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 
-    /* Step Cards */
-    .step-card {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(16px, 3vw, 24px);
-    }
-    .step-num {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--primary), #38bdf8);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 16px;
-      flex-shrink: 0;
-      box-shadow: 0 0 14px var(--primary-glow);
-    }
-    .step-content { flex: 1; min-width: 0; }
-    .step-content h3 { font-size: 18px; margin-bottom: 6px; color: #fff; }
+ /* Step Cards */
+ .step-card {
+ display: flex;
+ gap: 16px;
+ align-items: flex-start;
+ margin-bottom: 18px;
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: var(--radius);
+ padding: clamp(16px, 3vw, 24px);
+ }
+ .step-num {
+ width: 38px;
+ height: 38px;
+ background: linear-gradient(135deg, var(--primary), #38bdf8);
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-weight: 800;
+ font-size: 16px;
+ flex-shrink: 0;
+ box-shadow: 0 0 14px var(--primary-glow);
+ }
+ .step-content { flex: 1; min-width: 0; }
+ .step-content h3 { font-size: 18px; margin-bottom: 6px; color: #fff; }
 
-    /* FAQ Accordion */
-    .faq-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-    .faq-question {
-      padding: 16px 20px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-      gap: 10px;
-    }
-    .faq-question:hover { color: var(--primary-light); }
-    .faq-answer {
-      padding: 0 20px 16px;
-      color: var(--text-muted);
-      font-size: 14.5px;
-      line-height: 1.6;
-      display: none;
-    }
-    .faq-item.open .faq-answer { display: block; }
-    .faq-item.open .faq-question { color: var(--primary-light); }
-    .faq-item.open .faq-question .lucide { transform: rotate(180deg); }
+ /* FAQ Accordion */
+ .faq-item {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: var(--radius);
+ margin-bottom: 12px;
+ overflow: hidden;
+ }
+ .faq-question {
+ padding: 16px 20px;
+ font-size: 16px;
+ font-weight: 700;
+ cursor: pointer;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ user-select: none;
+ gap: 10px;
+ }
+ .faq-question:hover { color: var(--primary-light); }
+ .faq-answer {
+ padding: 0 20px 16px;
+ color: var(--text-muted);
+ font-size: 14.5px;
+ line-height: 1.6;
+ display: none;
+ }
+ .faq-item.open .faq-answer { display: block; }
+ .faq-item.open .faq-question { color: var(--primary-light); }
+ .faq-item.open .faq-question .lucide { transform: rotate(180deg); }
 
-    /* Footer */
-    footer {
-      padding: 50px 0 30px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13.5px;
-    }
+ /* Footer */
+ footer {
+ padding: 50px 0 30px;
+ border-top: 1px solid var(--border);
+ text-align: center;
+ color: var(--text-muted);
+ font-size: 13.5px;
+ }
 
-    /* Mobile Breakpoints */
-    @media (max-width: 1080px) {
-      .nav-links { display: none; }
-      .nav-mobile-actions,
-      .menu-toggle { display: inline-flex; }
-      .hero-actions .btn { width: 100%; }
-      .arch-row { flex-direction: column; }
-      .arch-arrow { transform: rotate(90deg); margin: 6px 0; }
-      .mock-metrics { grid-template-columns: 1fr 1fr; }
-    }
+ /* Mobile Breakpoints */
+ @media (max-width: 1080px) {
+ .nav-links { display: none; }
+ .nav-mobile-actions,
+ .menu-toggle { display: inline-flex; }
+ .hero-actions .btn { width: 100%; }
+ .arch-row { flex-direction: column; }
+ .arch-arrow { transform: rotate(90deg); margin: 6px 0; }
+ .mock-metrics { grid-template-columns: 1fr 1fr; }
+ }
 
-    @media (max-width: 480px) {
-      .container { padding: 0 16px; }
-      .mock-metrics { grid-template-columns: 1fr; }
-      .code-box { flex-direction: column; align-items: flex-start; gap: 8px; }
-      .code-box .copy-btn { align-self: flex-end; }
-      .step-card { flex-direction: column; gap: 12px; }
-    }
-  </style>
+ @media (max-width: 480px) {
+ .container { padding: 0 16px; }
+ .mock-metrics { grid-template-columns: 1fr; }
+ .code-box { flex-direction: column; align-items: flex-start; gap: 8px; }
+ .code-box .copy-btn { align-self: flex-end; }
+ .step-card { flex-direction: column; gap: 12px; }
+ }
+ </style>
 </head>
 <body>
 
-  <!-- Top Navigation (Full Width) -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="#" class="nav-brand">
-        <span class="brand-logo"><i data-lucide="smartphone"></i></span>
-        <span>TermuxPanel</span>
-      </a>
-      <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#smb-cost">$0 SMB Stack</a>
-        <a href="#dashboard-preview">Live Demo</a>
-        <a href="#traffic">Traffic & Benchmarks</a>
-        <a href="#limitations">Limitations</a>
-        <a href="#runtimes">Runtimes</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#install">Installation</a>
-        <a href="#cloudflare">Cloudflare Tunnel</a>
-        <a href="#security">Security</a>
-        <a href="#faq">FAQ</a>
-        <button id="theme-toggle" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 6px 10px;">
-          <i id="landing-theme-icon" data-lucide="sun" style="width: 15px; height: 15px;"></i>
-        </button>
-        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm">
-          <i data-lucide="star"></i> GitHub Repo
-        </a>
-      </div>
-      <div class="nav-mobile-actions">
-        <button id="theme-toggle-mobile" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 0; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
-          <i id="landing-theme-icon-mobile" data-lucide="sun" style="width: 18px; height: 18px;"></i>
-        </button>
-        <button class="menu-toggle" id="menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" onclick="toggleMobileMenu()">
-          <i data-lucide="menu"></i>
-        </button>
-      </div>
-    </div>
-  </nav>
+ <!-- Top Navigation (Full Width) -->
+ <nav class="navbar">
+ <div class="nav-container">
+ <a href="#" class="nav-brand">
+ <span class="brand-logo"><i data-lucide="smartphone"></i></span>
+ <span>TermuxPanel</span>
+ </a>
+ <div class="nav-links">
+ <a href="#features">Features</a>
+ <a href="#smb-cost">$0 SMB Stack</a>
+ <a href="#dashboard-preview">Live Demo</a>
+ <a href="#traffic">Traffic & Benchmarks</a>
+ <a href="#limitations">Limitations</a>
+ <a href="#runtimes">Runtimes</a>
+ <a href="#architecture">Architecture</a>
+ <a href="#install">Installation</a>
+ <a href="#cloudflare">Cloudflare Tunnel</a>
+ <a href="#security">Security</a>
+ <a href="#faq">FAQ</a>
+ <button id="theme-toggle" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 6px 10px;">
+ <i id="landing-theme-icon" data-lucide="sun" style="width: 15px; height: 15px;"></i>
+ </button>
+ <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm">
+ <i data-lucide="star"></i> GitHub Repo
+ </a>
+ </div>
+ <div class="nav-mobile-actions">
+ <button id="theme-toggle-mobile" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 0; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+ <i id="landing-theme-icon-mobile" data-lucide="sun" style="width: 18px; height: 18px;"></i>
+ </button>
+ <button class="menu-toggle" id="menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" onclick="toggleMobileMenu()">
+ <i data-lucide="menu"></i>
+ </button>
+ </div>
+ </div>
+ </nav>
 
-  <!-- Mobile Navigation Drawer -->
-  <div class="mobile-menu" id="mobile-menu">
-    <a href="#features" onclick="toggleMobileMenu()"><span>Features</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#smb-cost" onclick="toggleMobileMenu()"><span>$0 SMB Stack</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#dashboard-preview" onclick="toggleMobileMenu()"><span>Live Demo</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#traffic" onclick="toggleMobileMenu()"><span>Traffic & Benchmarks</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#limitations" onclick="toggleMobileMenu()"><span>Limitations</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#runtimes" onclick="toggleMobileMenu()"><span>Runtimes</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#architecture" onclick="toggleMobileMenu()"><span>Architecture</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#install" onclick="toggleMobileMenu()"><span>Installation</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#cloudflare" onclick="toggleMobileMenu()"><span>Cloudflare Tunnel</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#security" onclick="toggleMobileMenu()"><span>Security</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="#faq" onclick="toggleMobileMenu()"><span>FAQ</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
-    <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm" style="margin-top: 10px; width: 100%; justify-content: center; padding: 10px;">
-      <i data-lucide="star"></i> View on GitHub (Star ⭐)
-    </a>
-  </div>
+ <!-- Mobile Navigation Drawer -->
+ <div class="mobile-menu" id="mobile-menu">
+ <a href="#features" onclick="toggleMobileMenu()"><span>Features</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#smb-cost" onclick="toggleMobileMenu()"><span>$0 SMB Stack</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#dashboard-preview" onclick="toggleMobileMenu()"><span>Live Demo</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#traffic" onclick="toggleMobileMenu()"><span>Traffic & Benchmarks</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#limitations" onclick="toggleMobileMenu()"><span>Limitations</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#runtimes" onclick="toggleMobileMenu()"><span>Runtimes</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#architecture" onclick="toggleMobileMenu()"><span>Architecture</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#install" onclick="toggleMobileMenu()"><span>Installation</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#cloudflare" onclick="toggleMobileMenu()"><span>Cloudflare Tunnel</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#security" onclick="toggleMobileMenu()"><span>Security</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="#faq" onclick="toggleMobileMenu()"><span>FAQ</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+ <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm" style="margin-top: 10px; width: 100%; justify-content: center; padding: 10px;">
+ <i data-lucide="star"></i> View on GitHub (Star )
+ </a>
+ </div>
 
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="container">
-      <div class="hero-badge">
-        <i data-lucide="badge-dollar-sign"></i> The $0/Month Small Business Web Stack
-      </div>
-      <h1 class="hero-title">
-        Turn Any Android Phone Into a<br>
-        <span class="hero-highlight">24/7 Production Web Hosting Server</span>
-      </h1>
-      <p class="hero-subtitle">
-        Built for <strong>Small to Medium Businesses, Local Stores, Freelancers & Startups</strong>: Host your websites and apps with <strong>$0 recurring hosting overhead</strong>. You literally only pay for your domain name (~$10/year) — <strong>Web Hosting, Free SSL Certificates, Business Email in Gmail, and Unlimited Telegram Cloud Storage</strong> are 100% free forever.
-      </p>
+ <!-- Hero Section -->
+ <header class="hero">
+ <div class="container">
+ <div class="hero-badge">
+ <i data-lucide="badge-dollar-sign"></i> The $0/Month Small Business Web Stack
+ </div>
+ <h1 class="hero-title">
+ Turn Any Android Phone Into a<br>
+ <span class="hero-highlight">24/7 Production Web Hosting Server</span>
+ </h1>
+ <p class="hero-subtitle">
+ Built for <strong>Small to Medium Businesses, Local Stores, Freelancers & Startups</strong>: Host your websites and apps with <strong>$0 recurring hosting overhead</strong>. You literally only pay for your domain name (~$10/year) — <strong>Web Hosting, Free SSL Certificates, Business Email in Gmail, and Unlimited Telegram Cloud Storage</strong> are 100% free forever.
+ </p>
 
-      <div class="hero-actions">
-        <a href="#install" class="btn btn-primary">
-          <i data-lucide="rocket"></i> Install in 1-Click
-        </a>
-        <a href="#smb-cost" class="btn btn-secondary">
-          <i data-lucide="calculator"></i> See $0 Cost Breakdown
-        </a>
-      </div>
+ <div class="hero-actions">
+ <a href="#install" class="btn btn-primary">
+ <i data-lucide="rocket"></i> Install in 1-Click
+ </a>
+ <a href="#smb-cost" class="btn btn-secondary">
+ <i data-lucide="calculator"></i> See $0 Cost Breakdown
+ </a>
+ </div>
 
-      <!-- Terminal Preview Box -->
-      <div class="terminal-box">
-        <div class="terminal-header">
-          <div class="terminal-dots">
-            <span class="dot dot-red"></span>
-            <span class="dot dot-yellow"></span>
-            <span class="dot dot-green"></span>
-          </div>
-          <span class="terminal-title"><i data-lucide="terminal"></i> termux ~ termux-panel/installer</span>
-          <span class="badge badge-success"><i data-lucide="activity"></i> ONLINE</span>
-        </div>
-        <div class="terminal-body">
-          <div><span class="terminal-prompt">$</span> git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel</div>
-          <div><span class="terminal-prompt">$</span> cd ~/termux-panel && bash installer/install.sh</div>
-          <br>
-          <div class="terminal-output">✓ [1/8] Verified Android CPU architecture (arm64-v8a)</div>
-          <div class="terminal-output">✓ [2/8] Runtime dependencies verified (Node.js, Python, PHP, SQLite)</div>
-          <div class="terminal-output">✓ [3/8] SQLite database schema initialized (panel.db)</div>
-          <div class="terminal-output">✓ [4/8] CPU Wake-Lock active (24/7 background mode enabled)</div>
-          <div class="terminal-output">✓ [5/8] Self-healing watchdog monitor scheduled</div>
-          <div class="terminal-output">✓ [6/8] Cloudflare Zero Trust Tunnel connected (https://panel.yourdomain.com)</div>
-          <br>
-          <div><strong>TermuxPanel Control Dashboard is LIVE at:</strong> <a href="http://127.0.0.1:9000" style="color:#38bdf8;">http://127.0.0.1:9000</a></div>
-        </div>
-      </div>
+ <!-- Terminal Preview Box -->
+ <div class="terminal-box">
+ <div class="terminal-header">
+ <div class="terminal-dots">
+ <span class="dot dot-red"></span>
+ <span class="dot dot-yellow"></span>
+ <span class="dot dot-green"></span>
+ </div>
+ <span class="terminal-title"><i data-lucide="terminal"></i> termux ~ termux-panel/installer</span>
+ <span class="badge badge-success"><i data-lucide="activity"></i> ONLINE</span>
+ </div>
+ <div class="terminal-body">
+ <div><span class="terminal-prompt">$</span> git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel</div>
+ <div><span class="terminal-prompt">$</span> cd ~/termux-panel && bash installer/install.sh</div>
+ <br>
+ <div class="terminal-output"> [1/8] Verified Android CPU architecture (arm64-v8a)</div>
+ <div class="terminal-output"> [2/8] Runtime dependencies verified (Node.js, Python, PHP, SQLite)</div>
+ <div class="terminal-output"> [3/8] SQLite database schema initialized (panel.db)</div>
+ <div class="terminal-output"> [4/8] CPU Wake-Lock active (24/7 background mode enabled)</div>
+ <div class="terminal-output"> [5/8] Self-healing watchdog monitor scheduled</div>
+ <div class="terminal-output"> [6/8] Cloudflare Zero Trust Tunnel connected (https://panel.yourdomain.com)</div>
+ <br>
+ <div><strong>TermuxPanel Control Dashboard is LIVE at:</strong> <a href="http://127.0.0.1:9000" style="color:#38bdf8;">http://127.0.0.1:9000</a></div>
+ </div>
+ </div>
 
-      <!-- Live Dashboard Mockup Section -->
-      <div id="dashboard-preview" class="dashboard-mock">
-        <div class="mock-topbar">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span class="badge badge-primary"><i data-lucide="smartphone"></i> TermuxPanel</span>
-            <span style="font-size: 13px; font-weight: 600; color: var(--text);">Server Overview (127.0.0.1:9000)</span>
-          </div>
-          <div>
-            <span class="badge badge-success"><i data-lucide="shield-check"></i> SSL Active</span>
-          </div>
-        </div>
+ <!-- Live Dashboard Mockup Section -->
+ <div id="dashboard-preview" class="dashboard-mock">
+ <div class="mock-topbar">
+ <div style="display: flex; align-items: center; gap: 10px;">
+ <span class="badge badge-primary"><i data-lucide="smartphone"></i> TermuxPanel</span>
+ <span style="font-size: 13px; font-weight: 600; color: var(--text);">Server Overview (127.0.0.1:9000)</span>
+ </div>
+ <div>
+ <span class="badge badge-success"><i data-lucide="shield-check"></i> SSL Active</span>
+ </div>
+ </div>
 
-        <div class="mock-metrics">
-          <div class="mock-metric-card">
-            <div class="mock-metric-title"><span>CPU Load</span> <i data-lucide="cpu"></i></div>
-            <div class="mock-metric-val">12%</div>
-            <div class="mock-bar"><div class="mock-bar-fill" style="width: 12%;"></div></div>
-          </div>
-          <div class="mock-metric-card">
-            <div class="mock-metric-title"><span>RAM Usage</span> <i data-lucide="activity"></i></div>
-            <div class="mock-metric-val">1.8 / 6 GB</div>
-            <div class="mock-bar"><div class="mock-bar-fill" style="width: 30%;"></div></div>
-          </div>
-          <div class="mock-metric-card">
-            <div class="mock-metric-title"><span>Storage</span> <i data-lucide="hard-drive"></i></div>
-            <div class="mock-metric-val">42 / 128 GB</div>
-            <div class="mock-bar"><div class="mock-bar-fill" style="width: 32%;"></div></div>
-          </div>
-          <div class="mock-metric-card">
-            <div class="mock-metric-title"><span>Uptime</span> <i data-lucide="clock"></i></div>
-            <div class="mock-metric-val" style="color: #10b981;">18d 07h</div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Android 24/7 Mode</div>
-          </div>
-        </div>
+ <div class="mock-metrics">
+ <div class="mock-metric-card">
+ <div class="mock-metric-title"><span>CPU Load</span> <i data-lucide="cpu"></i></div>
+ <div class="mock-metric-val">12%</div>
+ <div class="mock-bar"><div class="mock-bar-fill" style="width: 12%;"></div></div>
+ </div>
+ <div class="mock-metric-card">
+ <div class="mock-metric-title"><span>RAM Usage</span> <i data-lucide="activity"></i></div>
+ <div class="mock-metric-val">1.8 / 6 GB</div>
+ <div class="mock-bar"><div class="mock-bar-fill" style="width: 30%;"></div></div>
+ </div>
+ <div class="mock-metric-card">
+ <div class="mock-metric-title"><span>Storage</span> <i data-lucide="hard-drive"></i></div>
+ <div class="mock-metric-val">42 / 128 GB</div>
+ <div class="mock-bar"><div class="mock-bar-fill" style="width: 32%;"></div></div>
+ </div>
+ <div class="mock-metric-card">
+ <div class="mock-metric-title"><span>Uptime</span> <i data-lucide="clock"></i></div>
+ <div class="mock-metric-val" style="color: #10b981;">18d 07h</div>
+ <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Android 24/7 Mode</div>
+ </div>
+ </div>
 
-        <div class="mock-body">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-            <h4 style="font-size: 15px; color: var(--text);">Supervised Applications</h4>
-            <span class="badge badge-primary">4 Services Running</span>
-          </div>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Application</th>
-                  <th>Runtime</th>
-                  <th>Internal Port</th>
-                  <th>Public Hostname</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>company-portal</strong></td>
-                  <td><span class="badge badge-primary">HTML / STATIC</span></td>
-                  <td><code>127.0.0.1:8100</code></td>
-                  <td><code>portal.yourdomain.com</code></td>
-                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
-                </tr>
-                <tr>
-                  <td><strong>rest-api-v1</strong></td>
-                  <td><span class="badge badge-primary">NODE.JS (EXPRESS)</span></td>
-                  <td><code>127.0.0.1:8101</code></td>
-                  <td><code>api.yourdomain.com</code></td>
-                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
-                </tr>
-                <tr>
-                  <td><strong>ai-model-service</strong></td>
-                  <td><span class="badge badge-primary">PYTHON (FASTAPI)</span></td>
-                  <td><code>127.0.0.1:8102</code></td>
-                  <td><code>ai.yourdomain.com</code></td>
-                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
-                </tr>
-                <tr>
-                  <td><strong>personal-blog</strong></td>
-                  <td><span class="badge badge-primary">PHP RUNTIME</span></td>
-                  <td><code>127.0.0.1:8103</code></td>
-                  <td><code>blog.yourdomain.com</code></td>
-                  <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+ <div class="mock-body">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+ <h4 style="font-size: 15px; color: var(--text);">Supervised Applications</h4>
+ <span class="badge badge-primary">4 Services Running</span>
+ </div>
+ <div class="table-wrapper">
+ <table>
+ <thead>
+ <tr>
+ <th>Application</th>
+ <th>Runtime</th>
+ <th>Internal Port</th>
+ <th>Public Hostname</th>
+ <th>Status</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>company-portal</strong></td>
+ <td><span class="badge badge-primary">HTML / STATIC</span></td>
+ <td><code>127.0.0.1:8100</code></td>
+ <td><code>portal.yourdomain.com</code></td>
+ <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+ </tr>
+ <tr>
+ <td><strong>rest-api-v1</strong></td>
+ <td><span class="badge badge-primary">NODE.JS (EXPRESS)</span></td>
+ <td><code>127.0.0.1:8101</code></td>
+ <td><code>api.yourdomain.com</code></td>
+ <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+ </tr>
+ <tr>
+ <td><strong>ai-model-service</strong></td>
+ <td><span class="badge badge-primary">PYTHON (FASTAPI)</span></td>
+ <td><code>127.0.0.1:8102</code></td>
+ <td><code>ai.yourdomain.com</code></td>
+ <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+ </tr>
+ <tr>
+ <td><strong>personal-blog</strong></td>
+ <td><span class="badge badge-primary">PHP RUNTIME</span></td>
+ <td><code>127.0.0.1:8103</code></td>
+ <td><code>blog.yourdomain.com</code></td>
+ <td><span class="badge badge-success"><i data-lucide="check"></i> RUNNING</span></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+ </div>
+ </div>
+ </header>
 
-  <!-- Key Features Grid -->
-  <section id="features">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="layers"></i> CAPABILITIES</div>
-        <h2 class="section-title">Everything You Need to Host on Android</h2>
-        <p class="section-desc">Engineered around mobile hardware constraints without compromising on enterprise features.</p>
-      </div>
+ <!-- Key Features Grid -->
+ <section id="features">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="layers"></i> CAPABILITIES</div>
+ <h2 class="section-title">Everything You Need to Host on Android</h2>
+ <p class="section-desc">Engineered around mobile hardware constraints without compromising on enterprise features.</p>
+ </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="globe"></i></div>
-          <h3 class="card-title">Multi-Runtime Engine</h3>
-          <p class="card-text">Supervise static HTML websites, Node.js applications, Python services (Flask/FastAPI), and PHP scripts with automatic port allocation (8100–8999).</p>
-        </div>
+ <div class="grid-3">
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="globe"></i></div>
+ <h3 class="card-title">Multi-Runtime Engine</h3>
+ <p class="card-text">Supervise static HTML websites, Node.js applications, Python services (Flask/FastAPI), and PHP scripts with automatic port allocation (8100–8999).</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="lock"></i></div>
-          <h3 class="card-title">Custom Domains & Free SSL</h3>
-          <p class="card-text">Bind apex domains and unlimited subdomains with 1-click Cloudflare DNS sync, automatic Universal SSL certificates (HTTPS 🔒), and strict HTTP-to-HTTPS redirect.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="lock"></i></div>
+ <h3 class="card-title">Custom Domains & Free SSL</h3>
+ <p class="card-text">Bind apex domains and unlimited subdomains with 1-click Cloudflare DNS sync, automatic Universal SSL certificates (HTTPS ), and strict HTTP-to-HTTPS redirect.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="mail"></i></div>
-          <h3 class="card-title">Free Professional Email</h3>
-          <p class="card-text">Receive <code>support@yourdomain.com</code> forwarded directly to Gmail ($0 cost). Reply from Gmail with custom domain DKIM via Brevo SMTP & live DNS health auditor.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="mail"></i></div>
+ <h3 class="card-title">Free Professional Email</h3>
+ <p class="card-text">Receive <code>support@yourdomain.com</code> forwarded directly to Gmail ($0 cost). Reply from Gmail with custom domain DKIM via Brevo SMTP & live DNS health auditor.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="send"></i></div>
-          <h3 class="card-title">Telegram Cloud & TeleDrive</h3>
-          <p class="card-text">Unlimited free cloud object storage powered by Telegram Bot API. 1-click static site exports (.zip), instant web deployments, and automated 7-day backup pruning.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="send"></i></div>
+ <h3 class="card-title">Telegram Cloud & TeleDrive</h3>
+ <p class="card-text">Unlimited free cloud object storage powered by Telegram Bot API. 1-click static site exports (.zip), instant web deployments, and automated 7-day backup pruning.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
-          <h3 class="card-title">Zero-Trust Cloudflare Tunnel</h3>
-          <p class="card-text">Expose your sites via outbound-only encrypted tunnels. Bypass carrier CGNAT and dynamic IPs without opening a single router port.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
+ <h3 class="card-title">Zero-Trust Cloudflare Tunnel</h3>
+ <p class="card-text">Expose your sites via outbound-only encrypted tunnels. Bypass carrier CGNAT and dynamic IPs without opening a single router port.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="activity"></i></div>
-          <h3 class="card-title">Privacy-First Web Analytics</h3>
-          <p class="card-text">Embedded SQLite analytics engine with zero external dependencies. Live RPS gauge, unique visitors, bandwidth meters, status breakdown, and top URLs.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="activity"></i></div>
+ <h3 class="card-title">Privacy-First Web Analytics</h3>
+ <p class="card-text">Embedded SQLite analytics engine with zero external dependencies. Live RPS gauge, unique visitors, bandwidth meters, status breakdown, and top URLs.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="network"></i></div>
-          <h3 class="card-title">Multi-Tunnel Failover</h3>
-          <p class="card-text">Unified multi-tunnel abstraction supporting Cloudflare Zero Trust, Ngrok, LocalXpose, and Tailscale with automatic credential encryption.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="network"></i></div>
+ <h3 class="card-title">Multi-Tunnel Failover</h3>
+ <p class="card-text">Unified multi-tunnel abstraction supporting Cloudflare Zero Trust, Ngrok, LocalXpose, and Tailscale with automatic credential encryption.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="folder"></i></div>
-          <h3 class="card-title">Sandboxed File Manager</h3>
-          <p class="card-text">Path-traversal safe file browser with a built-in code editor, file uploader, and downloader. Edit HTML, JS, and Python directly in your browser.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="folder"></i></div>
+ <h3 class="card-title">Sandboxed File Manager</h3>
+ <p class="card-text">Path-traversal safe file browser with a built-in code editor, file uploader, and downloader. Edit HTML, JS, and Python directly in your browser.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="database"></i></div>
-          <h3 class="card-title">SQLite Database Studio</h3>
-          <p class="card-text">Inspect SQLite database files, view schemas, browse table rows with pagination, execute custom SQL statements, and export raw database files.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="database"></i></div>
+ <h3 class="card-title">SQLite Database Studio</h3>
+ <p class="card-text">Inspect SQLite database files, view schemas, browse table rows with pagination, execute custom SQL statements, and export raw database files.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="clock"></i></div>
-          <h3 class="card-title">Visual Cron Scheduler</h3>
-          <p class="card-text">Automate scheduled background tasks with preset schedules (every minute, hourly, daily) synchronized directly with the Android <code>crond</code> daemon.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="clock"></i></div>
+ <h3 class="card-title">Visual Cron Scheduler</h3>
+ <p class="card-text">Automate scheduled background tasks with preset schedules (every minute, hourly, daily) synchronized directly with the Android <code>crond</code> daemon.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="battery-charging"></i></div>
-          <h3 class="card-title">Hardware Battery Guard</h3>
-          <p class="card-text">Real-time battery temperature and charging health telemetry with automated thermal-throttling alarms sent directly to your Telegram bot.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="battery-charging"></i></div>
+ <h3 class="card-title">Hardware Battery Guard</h3>
+ <p class="card-text">Real-time battery temperature and charging health telemetry with automated thermal-throttling alarms sent directly to your Telegram bot.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="heart-pulse"></i></div>
-          <h3 class="card-title">24/7 Self-Healing Watchdog</h3>
-          <p class="card-text">Continuous monitor resurrects Node.js and Cloudflare processes within 60 seconds if Android's memory manager ever kills them.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="heart-pulse"></i></div>
+ <h3 class="card-title">24/7 Self-Healing Watchdog</h3>
+ <p class="card-text">Continuous monitor resurrects Node.js and Cloudflare processes within 60 seconds if Android's memory manager ever kills them.</p>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Small Business $0 Hosting Stack & Cost Comparison -->
-  <section id="smb-cost" style="background: rgba(2, 132, 199, 0.03);">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="badge-dollar-sign"></i> ZERO RECURRING OVERHEAD</div>
-        <h2 class="section-title">The $0/Month Small Business Web Stack</h2>
-        <p class="section-desc">You literally only pay for your domain name (~$8–$12/year). Every other layer of your web presence is 100% free forever.</p>
-      </div>
+ <!-- Small Business $0 Hosting Stack & Cost Comparison -->
+ <section id="smb-cost" style="background: rgba(2, 132, 199, 0.03);">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="badge-dollar-sign"></i> ZERO RECURRING OVERHEAD</div>
+ <h2 class="section-title">The $0/Month Small Business Web Stack</h2>
+ <p class="section-desc">You literally only pay for your domain name (~$8–$12/year). Every other layer of your web presence is 100% free forever.</p>
+ </div>
 
-      <!-- Cost Breakdown 4 Cards -->
-      <div class="grid-2" style="margin-bottom: 36px;">
-        <div class="card" style="border-left: 4px solid var(--primary-light);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="server" style="color: var(--primary-light);"></i> Web Hosting Server</h3>
-            <span class="badge badge-success">$0 / Month</span>
-          </div>
-          <p class="card-text">Run Node.js APIs, Python Flask/FastAPI, PHP, and static HTML websites on a repurposed Android phone or tablet. Zero server rental fees, zero VPS contracts.</p>
-        </div>
+ <!-- Cost Breakdown 4 Cards -->
+ <div class="grid-2" style="margin-bottom: 36px;">
+ <div class="card" style="border-left: 4px solid var(--primary-light);">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+ <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="server" style="color: var(--primary-light);"></i> Web Hosting Server</h3>
+ <span class="badge badge-success">$0 / Month</span>
+ </div>
+ <p class="card-text">Run Node.js APIs, Python Flask/FastAPI, PHP, and static HTML websites on a repurposed Android phone or tablet. Zero server rental fees, zero VPS contracts.</p>
+ </div>
 
-        <div class="card" style="border-left: 4px solid #10b981;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="lock" style="color: #10b981;"></i> Automatic SSL (HTTPS 🔒)</h3>
-            <span class="badge badge-success">$0 / Month</span>
-          </div>
-          <p class="card-text">Automatic Cloudflare Universal SSL with auto-renewing TLS 1.3 certificates, green security padlock, and strict HTTP-to-HTTPS redirect without paid SSL add-ons.</p>
-        </div>
+ <div class="card" style="border-left: 4px solid #10b981;">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+ <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="lock" style="color: #10b981;"></i> Automatic SSL (HTTPS )</h3>
+ <span class="badge badge-success">$0 / Month</span>
+ </div>
+ <p class="card-text">Automatic Cloudflare Universal SSL with auto-renewing TLS 1.3 certificates, green security padlock, and strict HTTP-to-HTTPS redirect without paid SSL add-ons.</p>
+ </div>
 
-        <div class="card" style="border-left: 4px solid #f59e0b;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="mail" style="color: #f59e0b;"></i> Custom Domain Email in Gmail</h3>
-            <span class="badge badge-success">$0 / Month</span>
-          </div>
-          <p class="card-text">Receive <code>support@yourdomain.com</code> in your personal Gmail via Cloudflare Inbound Routing, and reply from Gmail with custom domain branding via free Brevo SMTP.</p>
-        </div>
+ <div class="card" style="border-left: 4px solid #f59e0b;">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+ <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="mail" style="color: #f59e0b;"></i> Custom Domain Email in Gmail</h3>
+ <span class="badge badge-success">$0 / Month</span>
+ </div>
+ <p class="card-text">Receive <code>support@yourdomain.com</code> in your personal Gmail via Cloudflare Inbound Routing, and reply from Gmail with custom domain branding via free Brevo SMTP.</p>
+ </div>
 
-        <div class="card" style="border-left: 4px solid #a855f7;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="hard-drive" style="color: #a855f7;"></i> Telegram Cloud Storage</h3>
-            <span class="badge badge-success">$0 / Month</span>
-          </div>
-          <p class="card-text">TeleDrive utilizes Telegram Bot API as unlimited offsite object storage. Store media, export static .zip websites, and schedule automated 7-day backup archives at $0 cost.</p>
-        </div>
-      </div>
+ <div class="card" style="border-left: 4px solid #a855f7;">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+ <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="hard-drive" style="color: #a855f7;"></i> Telegram Cloud Storage</h3>
+ <span class="badge badge-success">$0 / Month</span>
+ </div>
+ <p class="card-text">TeleDrive utilizes Telegram Bot API as unlimited offsite object storage. Store media, export static .zip websites, and schedule automated 7-day backup archives at $0 cost.</p>
+ </div>
+ </div>
 
-      <!-- Comparison Table -->
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Infrastructure Component</th>
-              <th>Traditional Cloud / SaaS Providers</th>
-              <th>Traditional Cost</th>
-              <th>TermuxPanel Self-Hosted Stack</th>
-              <th>TermuxPanel Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Domain Name (yourdomain.com)</strong></td>
-              <td>Namecheap / GoDaddy / Cloudflare</td>
-              <td>~$10 / year</td>
-              <td>Standard Domain Registrar of your choice</td>
-              <td><span class="badge badge-primary">~$10 / yr (Only Cost!)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Web Hosting Server (VPS / Cloud)</strong></td>
-              <td>DigitalOcean / AWS / Linode</td>
-              <td>$120 – $360 / year</td>
-              <td>Repurposed Android Phone / Tablet</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr>
-              <td><strong>SSL Security Certificates (HTTPS 🔒)</strong></td>
-              <td>Sectigo / DigiCert / Comodo</td>
-              <td>$50 – $100 / year</td>
-              <td>Automatic Cloudflare Universal SSL</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Custom Domain Business Email</strong></td>
-              <td>Google Workspace / Microsoft 365</td>
-              <td>$72 – $216 / user / yr</td>
-              <td>Cloudflare Inbound + Brevo SMTP in Gmail</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Cloud Object Storage & Backups</strong></td>
-              <td>AWS S3 / Google Cloud Storage</td>
-              <td>$60 – $180 / year</td>
-              <td>Unlimited Telegram Cloud & TeleDrive</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Web Traffic Analytics Engine</strong></td>
-              <td>Plausible / Fathom Analytics</td>
-              <td>$108 – $240 / year</td>
-              <td>Embedded Privacy-First SQLite Engine</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Database Engine</strong></td>
-              <td>Managed Supabase / PlanetScale</td>
-              <td>$180 – $300 / year</td>
-              <td>Built-in Pure SQLite3 (WAL Mode)</td>
-              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
-            </tr>
-            <tr style="background: rgba(2, 132, 199, 0.1); font-weight: 700;">
-              <td><strong>TOTAL ESTIMATED ANNUAL SPEND</strong></td>
-              <td colspan="2"><span style="color: #ef4444; font-size: 16px;">$600 – $1,400+ / year</span></td>
-              <td colspan="2"><span style="color: #10b981; font-size: 18px;">~$10 / year total</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+ <!-- Comparison Table -->
+ <div class="table-wrapper">
+ <table>
+ <thead>
+ <tr>
+ <th>Infrastructure Component</th>
+ <th>Traditional Cloud / SaaS Providers</th>
+ <th>Traditional Cost</th>
+ <th>TermuxPanel Self-Hosted Stack</th>
+ <th>TermuxPanel Cost</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Domain Name (yourdomain.com)</strong></td>
+ <td>Namecheap / GoDaddy / Cloudflare</td>
+ <td>~$10 / year</td>
+ <td>Standard Domain Registrar of your choice</td>
+ <td><span class="badge badge-primary">~$10 / yr (Only Cost!)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Web Hosting Server (VPS / Cloud)</strong></td>
+ <td>DigitalOcean / AWS / Linode</td>
+ <td>$120 – $360 / year</td>
+ <td>Repurposed Android Phone / Tablet</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr>
+ <td><strong>SSL Security Certificates (HTTPS )</strong></td>
+ <td>Sectigo / DigiCert / Comodo</td>
+ <td>$50 – $100 / year</td>
+ <td>Automatic Cloudflare Universal SSL</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Custom Domain Business Email</strong></td>
+ <td>Google Workspace / Microsoft 365</td>
+ <td>$72 – $216 / user / yr</td>
+ <td>Cloudflare Inbound + Brevo SMTP in Gmail</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Cloud Object Storage & Backups</strong></td>
+ <td>AWS S3 / Google Cloud Storage</td>
+ <td>$60 – $180 / year</td>
+ <td>Unlimited Telegram Cloud & TeleDrive</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Web Traffic Analytics Engine</strong></td>
+ <td>Plausible / Fathom Analytics</td>
+ <td>$108 – $240 / year</td>
+ <td>Embedded Privacy-First SQLite Engine</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Database Engine</strong></td>
+ <td>Managed Supabase / PlanetScale</td>
+ <td>$180 – $300 / year</td>
+ <td>Built-in Pure SQLite3 (WAL Mode)</td>
+ <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+ </tr>
+ <tr style="background: rgba(2, 132, 199, 0.1); font-weight: 700;">
+ <td><strong>TOTAL ESTIMATED ANNUAL SPEND</strong></td>
+ <td colspan="2"><span style="color: #ef4444; font-size: 16px;">$600 – $1,400+ / year</span></td>
+ <td colspan="2"><span style="color: #10b981; font-size: 18px;">~$10 / year total</span></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+ </section>
 
-  <!-- Interactive Runtime Showcase -->
-  <section id="runtimes">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="code-2"></i> APPLICATION RUNTIMES</div>
-        <h2 class="section-title">Support for Every Modern Web Stack</h2>
-        <p class="section-desc">Each application runs in an isolated process with its own dedicated port and access/error logs.</p>
-      </div>
+ <!-- Interactive Runtime Showcase -->
+ <section id="runtimes">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="code-2"></i> APPLICATION RUNTIMES</div>
+ <h2 class="section-title">Support for Every Modern Web Stack</h2>
+ <p class="section-desc">Each application runs in an isolated process with its own dedicated port and access/error logs.</p>
+ </div>
 
-      <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchRuntimeTab('node')"><i data-lucide="server"></i> Node.js</button>
-        <button class="tab-btn" onclick="switchRuntimeTab('python')"><i data-lucide="terminal"></i> Python</button>
-        <button class="tab-btn" onclick="switchRuntimeTab('php')"><i data-lucide="file-code"></i> PHP</button>
-        <button class="tab-btn" onclick="switchRuntimeTab('html')"><i data-lucide="layout"></i> Static HTML</button>
-      </div>
+ <div class="tabs-nav">
+ <button class="tab-btn active" onclick="switchRuntimeTab('node')"><i data-lucide="server"></i> Node.js</button>
+ <button class="tab-btn" onclick="switchRuntimeTab('python')"><i data-lucide="terminal"></i> Python</button>
+ <button class="tab-btn" onclick="switchRuntimeTab('php')"><i data-lucide="file-code"></i> PHP</button>
+ <button class="tab-btn" onclick="switchRuntimeTab('html')"><i data-lucide="layout"></i> Static HTML</button>
+ </div>
 
-      <div id="tab-node" class="tab-content active">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h4>Node.js Express Application (Supervised Child Process)</h4>
-            <span class="badge badge-primary">Port: 127.0.0.1:8101</span>
-          </div>
-          <p class="text-muted text-sm mb-3">Runs <code>node server.js</code> with PID tracking, automatic restarts on crash, and segregated stdout/stderr logging.</p>
-          <div class="code-box">
-            <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">const http = require('http');
+ <div id="tab-node" class="tab-content active">
+ <div class="card">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+ <h4>Node.js Express Application (Supervised Child Process)</h4>
+ <span class="badge badge-primary">Port: 127.0.0.1:8101</span>
+ </div>
+ <p class="text-muted text-sm mb-3">Runs <code>node server.js</code> with PID tracking, automatic restarts on crash, and segregated stdout/stderr logging.</p>
+ <div class="code-box">
+ <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">const http = require('http');
 const PORT = process.env.PORT || 8101;
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ status: 'online', runtime: process.version, time: new Date() }));
+ res.writeHead(200, { 'Content-Type': 'application/json' });
+ res.end(JSON.stringify({ status: 'online', runtime: process.version, time: new Date() }));
 });
 
 server.listen(PORT, '127.0.0.1', () => console.log(`API live on :${PORT}`));</pre>
-          </div>
-        </div>
-      </div>
+ </div>
+ </div>
+ </div>
 
-      <div id="tab-python" class="tab-content">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h4>Python WSGI / ASGI App (FastAPI / Flask / Django)</h4>
-            <span class="badge badge-primary">Port: 127.0.0.1:8102</span>
-          </div>
-          <p class="text-muted text-sm mb-3">Supervised Python interpreter injecting environment variables (<code>PORT</code>, <code>HOST</code>) with virtualenv support.</p>
-          <div class="code-box">
-            <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">import os
+ <div id="tab-python" class="tab-content">
+ <div class="card">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+ <h4>Python WSGI / ASGI App (FastAPI / Flask / Django)</h4>
+ <span class="badge badge-primary">Port: 127.0.0.1:8102</span>
+ </div>
+ <p class="text-muted text-sm mb-3">Supervised Python interpreter injecting environment variables (<code>PORT</code>, <code>HOST</code>) with virtualenv support.</p>
+ <div class="code-box">
+ <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 
 PORT = int(os.environ.get('PORT', 8102))
 
 class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps({'message': 'Hello from Python on Termux!'}).encode())
+ def do_GET(self):
+ self.send_response(200)
+ self.send_header('Content-Type', 'application/json')
+ self.end_headers()
+ self.wfile.write(json.dumps({'message': 'Hello from Python on Termux!'}).encode())
 
 HTTPServer(('127.0.0.1', PORT), Handler).serve_forever()</pre>
-          </div>
-        </div>
-      </div>
+ </div>
+ </div>
+ </div>
 
-      <div id="tab-php" class="tab-content">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h4>PHP Application (Built-in Web Server)</h4>
-            <span class="badge badge-primary">Port: 127.0.0.1:8103</span>
-          </div>
-          <p class="text-muted text-sm mb-3">Supervises <code>php -S 127.0.0.1:<port> -t public/</code> to host dynamic PHP sites and SQLite CMSs.</p>
-          <div class="code-box">
-            <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">&lt;?php
+ <div id="tab-php" class="tab-content">
+ <div class="card">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+ <h4>PHP Application (Built-in Web Server)</h4>
+ <span class="badge badge-primary">Port: 127.0.0.1:8103</span>
+ </div>
+ <p class="text-muted text-sm mb-3">Supervises <code>php -S 127.0.0.1:<port> -t public/</code> to host dynamic PHP sites and SQLite CMSs.</p>
+ <div class="code-box">
+ <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">&lt;?php
 header('Content-Type: application/json');
 echo json_encode([
-    'status' => 'online',
-    'runtime' => 'PHP ' . phpversion(),
-    'timestamp' => date('c')
+ 'status' => 'online',
+ 'runtime' => 'PHP ' . phpversion(),
+ 'timestamp' => date('c')
 ], JSON_PRETTY_PRINT);
 ?&gt;</pre>
-          </div>
-        </div>
-      </div>
+ </div>
+ </div>
+ </div>
 
-      <div id="tab-html" class="tab-content">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h4>Static HTML5 / CSS3 / JavaScript Site</h4>
-            <span class="badge badge-primary">Port: 127.0.0.1:8100</span>
-          </div>
-          <p class="text-muted text-sm mb-3">High-speed embedded static server with path-traversal protection and instant MIME-type resolution.</p>
-          <div class="code-box">
-            <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">&lt;!DOCTYPE html&gt;
+ <div id="tab-html" class="tab-content">
+ <div class="card">
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+ <h4>Static HTML5 / CSS3 / JavaScript Site</h4>
+ <span class="badge badge-primary">Port: 127.0.0.1:8100</span>
+ </div>
+ <p class="text-muted text-sm mb-3">High-speed embedded static server with path-traversal protection and instant MIME-type resolution.</p>
+ <div class="code-box">
+ <pre style="color: #cbd5e1; font-family: monospace; overflow-x: auto; width: 100%;">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
-  &lt;head&gt;&lt;title&gt;My Hosted Site&lt;/title&gt;&lt;/head&gt;
-  &lt;body&gt;
-    &lt;h1&gt;Hosted on Android with TermuxPanel!&lt;/h1&gt;
-  &lt;/body&gt;
+ &lt;head&gt;&lt;title&gt;My Hosted Site&lt;/title&gt;&lt;/head&gt;
+ &lt;body&gt;
+ &lt;h1&gt;Hosted on Android with TermuxPanel!&lt;/h1&gt;
+ &lt;/body&gt;
 &lt;/html&gt;</pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Architecture Visualizer -->
-  <section id="architecture">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="network"></i> NETWORKING CONCEPT</div>
-        <h2 class="section-title">How Does It Connect Without Port Forwarding?</h2>
-        <p class="section-desc">Bypass CGNAT and mobile firewalls through an outbound-only encrypted tunnel to Cloudflare.</p>
-      </div>
+ <!-- Architecture Visualizer -->
+ <section id="architecture">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="network"></i> NETWORKING CONCEPT</div>
+ <h2 class="section-title">How Does It Connect Without Port Forwarding?</h2>
+ <p class="section-desc">Bypass CGNAT and mobile firewalls through an outbound-only encrypted tunnel to Cloudflare.</p>
+ </div>
 
-      <div class="arch-container">
-        <div class="arch-row">
-          <div class="arch-node">
-            <h4><i data-lucide="user"></i> 1. Global Visitor</h4>
-            <p>Opens <code>https://panel.yourdomain.com</code> in any browser worldwide.</p>
-          </div>
-          <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
-          <div class="arch-node cloudflare">
-            <h4><i data-lucide="cloud"></i> 2. Cloudflare Edge Network</h4>
-            <p>Provides free SSL certificate (HTTPS), WAF protection, and DDoS mitigation.</p>
-          </div>
-        </div>
+ <div class="arch-container">
+ <div class="arch-row">
+ <div class="arch-node">
+ <h4><i data-lucide="user"></i> 1. Global Visitor</h4>
+ <p>Opens <code>https://panel.yourdomain.com</code> in any browser worldwide.</p>
+ </div>
+ <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
+ <div class="arch-node cloudflare">
+ <h4><i data-lucide="cloud"></i> 2. Cloudflare Edge Network</h4>
+ <p>Provides free SSL certificate (HTTPS), WAF protection, and DDoS mitigation.</p>
+ </div>
+ </div>
 
-        <div style="text-align: center; color: var(--primary-light); font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <i data-lucide="lock"></i> Outbound-Only Encrypted QUIC/TLS Tunnel (No open router ports)
-        </div>
+ <div style="text-align: center; color: var(--primary-light); font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+ <i data-lucide="lock"></i> Outbound-Only Encrypted QUIC/TLS Tunnel (No open router ports)
+ </div>
 
-        <div class="arch-row">
-          <div class="arch-node highlight">
-            <h4><i data-lucide="smartphone"></i> 3. Android Phone (cloudflared)</h4>
-            <p>Receives request via outbound tunnel and forwards locally to localhost.</p>
-          </div>
-          <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
-          <div class="arch-node security">
-            <h4><i data-lucide="server"></i> 4. TermuxPanel & Apps</h4>
-            <p>Control Plane (<code>:9000</code>) and Hosted Sites (<code>:8100..:8999</code>) respond instantly.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="arch-row">
+ <div class="arch-node highlight">
+ <h4><i data-lucide="smartphone"></i> 3. Android Phone (cloudflared)</h4>
+ <p>Receives request via outbound tunnel and forwards locally to localhost.</p>
+ </div>
+ <div class="arch-arrow"><i data-lucide="arrow-right"></i></div>
+ <div class="arch-node security">
+ <h4><i data-lucide="server"></i> 4. TermuxPanel & Apps</h4>
+ <p>Control Plane (<code>:9000</code>) and Hosted Sites (<code>:8100..:8999</code>) respond instantly.</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Installation Steps -->
-  <section id="install">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="download"></i> QUICK INSTALLATION</div>
-        <h2 class="section-title">Get Up and Running in 3 Easy Steps</h2>
-        <p class="section-desc">Follow these instructions directly on your Android phone.</p>
-      </div>
+ <!-- Installation Steps -->
+ <section id="install">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="download"></i> QUICK INSTALLATION</div>
+ <h2 class="section-title">Get Up and Running in 3 Easy Steps</h2>
+ <p class="section-desc">Follow these instructions directly on your Android phone.</p>
+ </div>
 
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>Install Termux (Google Play Store, F-Droid, or GitHub)</h3>
-          <p class="text-muted">Install Termux on your Android phone from Google Play Store, F-Droid, or GitHub Releases.</p>
-          <div class="code-box">
-            <span>Google Play Store / F-Droid / GitHub Releases</span>
-            <a href="https://play.google.com/store/apps/details?id=com.termux" target="_blank" class="copy-btn">
-              <i data-lucide="external-link"></i> Play Store
-            </a>
-          </div>
-        </div>
-      </div>
+ <div class="step-card">
+ <div class="step-num">1</div>
+ <div class="step-content">
+ <h3>Install Termux (Google Play Store, F-Droid, or GitHub)</h3>
+ <p class="text-muted">Install Termux on your Android phone from Google Play Store, F-Droid, or GitHub Releases.</p>
+ <div class="code-box">
+ <span>Google Play Store / F-Droid / GitHub Releases</span>
+ <a href="https://play.google.com/store/apps/details?id=com.termux" target="_blank" class="copy-btn">
+ <i data-lucide="external-link"></i> Play Store
+ </a>
+ </div>
+ </div>
+ </div>
 
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Run the One-Tap Installer</h3>
-          <p class="text-muted">Open Termux and paste this single command block:</p>
-          <div class="code-box">
-            <code>pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh</code>
-            <button class="copy-btn" onclick="navigator.clipboard.writeText('pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh'); alert('Command copied to clipboard!');">
-              <i data-lucide="copy"></i> Copy
-            </button>
-          </div>
-        </div>
-      </div>
+ <div class="step-card">
+ <div class="step-num">2</div>
+ <div class="step-content">
+ <h3>Run the One-Tap Installer</h3>
+ <p class="text-muted">Open Termux and paste this single command block:</p>
+ <div class="code-box">
+ <code>pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh</code>
+ <button class="copy-btn" onclick="navigator.clipboard.writeText('pkg update -y && pkg install -y git && git clone https://github.com/himalayladha/termux-hosting-panel.git ~/termux-panel && cd ~/termux-panel && bash installer/install.sh'); alert('Command copied to clipboard!');">
+ <i data-lucide="copy"></i> Copy
+ </button>
+ </div>
+ </div>
+ </div>
 
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Open Dashboard & Create Admin Account</h3>
-          <p class="text-muted">Open Chrome or your phone's browser and go to <code>http://127.0.0.1:9000</code> to create your administrator password.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="step-card">
+ <div class="step-num">3</div>
+ <div class="step-content">
+ <h3>Open Dashboard & Create Admin Account</h3>
+ <p class="text-muted">Open Chrome or your phone's browser and go to <code>http://127.0.0.1:9000</code> to create your administrator password.</p>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Cloudflare Setup Options -->
-  <section id="cloudflare">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="shield"></i> REMOTE ACCESS</div>
-        <h2 class="section-title">Cloudflare Zero Trust Setup (2 Methods)</h2>
-        <p class="section-desc">Access your panel securely from anywhere in the world.</p>
-      </div>
+ <!-- Cloudflare Setup Options -->
+ <section id="cloudflare">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="shield"></i> REMOTE ACCESS</div>
+ <h2 class="section-title">Cloudflare Zero Trust Setup (2 Methods)</h2>
+ <p class="section-desc">Access your panel securely from anywhere in the world.</p>
+ </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <div class="badge badge-primary" style="margin-bottom: 12px;"><i data-lucide="key"></i> OPTION 1: SEMI-AUTOMATIC</div>
-          <h3 class="card-title">Paste Tunnel Token (Easiest)</h3>
-          <p class="card-text">
-            1. Go to <a href="https://one.dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare Zero Trust</a> ➔ Networks ➔ Tunnels.<br>
-            2. Create a tunnel named <code>android-host</code> and copy the token (starts with <code>eyJh...</code>).<br>
-            3. Paste it in TermuxPanel under <strong>Cloudflare Tunnel</strong> tab.<br>
-            4. Add Public Hostname: <code>panel.yourdomain.com</code> ➔ <code>HTTP 127.0.0.1:9000</code>.
-          </p>
-        </div>
+ <div class="grid-2">
+ <div class="card">
+ <div class="badge badge-primary" style="margin-bottom: 12px;"><i data-lucide="key"></i> OPTION 1: SEMI-AUTOMATIC</div>
+ <h3 class="card-title">Paste Tunnel Token (Easiest)</h3>
+ <p class="card-text">
+ 1. Go to <a href="https://one.dash.cloudflare.com/" target="_blank" style="color: #38bdf8;">Cloudflare Zero Trust</a> Networks Tunnels.<br>
+ 2. Create a tunnel named <code>android-host</code> and copy the token (starts with <code>eyJh...</code>).<br>
+ 3. Paste it in TermuxPanel under <strong>Cloudflare Tunnel</strong> tab.<br>
+ 4. Add Public Hostname: <code>panel.yourdomain.com</code> <code>HTTP 127.0.0.1:9000</code>.
+ </p>
+ </div>
 
-        <div class="card">
-          <div class="badge badge-success" style="margin-bottom: 12px;"><i data-lucide="cpu"></i> OPTION 2: FULLY-AUTOMATIC</div>
-          <h3 class="card-title">Cloudflare API Token (1-Click)</h3>
-          <p class="card-text">
-            1. Generate a Cloudflare API token with DNS & Tunnel edit permissions.<br>
-            2. Enter your API Token and Domain in TermuxPanel.<br>
-            3. Click <strong>⚡ Run Fully-Automatic Setup</strong>.<br>
-            4. TermuxPanel will auto-create the tunnel, upload ingress routes, and generate DNS CNAMEs automatically!
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="card">
+ <div class="badge badge-success" style="margin-bottom: 12px;"><i data-lucide="cpu"></i> OPTION 2: FULLY-AUTOMATIC</div>
+ <h3 class="card-title">Cloudflare API Token (1-Click)</h3>
+ <p class="card-text">
+ 1. Generate a Cloudflare API token with DNS & Tunnel edit permissions.<br>
+ 2. Enter your API Token and Domain in TermuxPanel.<br>
+ 3. Click <strong> Run Fully-Automatic Setup</strong>.<br>
+ 4. TermuxPanel will auto-create the tunnel, upload ingress routes, and generate DNS CNAMEs automatically!
+ </p>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Security Section -->
-  <section id="security">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="lock"></i> ENTERPRISE DEFENSE</div>
-        <h2 class="section-title">Two-Layer Security Architecture</h2>
-        <p class="section-desc">Zero open ports. Bcrypt password encryption. Optional Cloudflare Access protection.</p>
-      </div>
+ <!-- Security Section -->
+ <section id="security">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="lock"></i> ENTERPRISE DEFENSE</div>
+ <h2 class="section-title">Two-Layer Security Architecture</h2>
+ <p class="section-desc">Zero open ports. Bcrypt password encryption. Optional Cloudflare Access protection.</p>
+ </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="shield-alert"></i></div>
-          <h3 class="card-title">Layer 1: Cloudflare Access</h3>
-          <p class="card-text">Put an identity gateway in front of your panel. Require a One-Time Email PIN code or Google login before anyone even sees your login page.</p>
-        </div>
+ <div class="grid-3">
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="shield-alert"></i></div>
+ <h3 class="card-title">Layer 1: Cloudflare Access</h3>
+ <p class="card-text">Put an identity gateway in front of your panel. Require a One-Time Email PIN code or Google login before anyone even sees your login page.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="key-round"></i></div>
-          <h3 class="card-title">Layer 2: Admin Authentication</h3>
-          <p class="card-text">Strictly guarded with Bcrypt password hashing (10 salt rounds), secure HTTP-only cookies, and brute-force rate limiters.</p>
-        </div>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="key-round"></i></div>
+ <h3 class="card-title">Layer 2: Admin Authentication</h3>
+ <p class="card-text">Strictly guarded with Bcrypt password hashing (10 salt rounds), secure HTTP-only cookies, and brute-force rate limiters.</p>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="folder-lock"></i></div>
-          <h3 class="card-title">Layer 3: Path Sandboxing</h3>
-          <p class="card-text">Path-traversal proof security ensures file operations cannot escape the assigned website root directory (blocks <code>../../etc/passwd</code>).</p>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="folder-lock"></i></div>
+ <h3 class="card-title">Layer 3: Path Sandboxing</h3>
+ <p class="card-text">Path-traversal proof security ensures file operations cannot escape the assigned website root directory (blocks <code>../../etc/passwd</code>).</p>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Traffic Capacity & Performance Benchmarks -->
-  <section id="traffic">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="gauge"></i> TRAFFIC CAPACITY & BENCHMARKS</div>
-        <h2 class="section-title">How Much Traffic Can It Handle?</h2>
-        <p class="section-desc">Real-world performance metrics tested on standard Android ARM64 hardware with Cloudflare Edge CDN offloading.</p>
-      </div>
+ <!-- Traffic Capacity & Performance Benchmarks -->
+ <section id="traffic">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="gauge"></i> TRAFFIC CAPACITY & BENCHMARKS</div>
+ <h2 class="section-title">How Much Traffic Can It Handle?</h2>
+ <p class="section-desc">Real-world performance metrics tested on standard Android ARM64 hardware with Cloudflare Edge CDN offloading.</p>
+ </div>
 
-      <!-- Key Stat Callout Cards -->
-      <div class="grid-3" style="margin-bottom: 30px;">
-        <div class="card" style="border-top: 3px solid #38bdf8;">
-          <div class="badge badge-primary" style="margin-bottom: 8px;">GLOBAL CDN PROXIED</div>
-          <div style="font-size: 32px; font-weight: 800; color: #38bdf8; margin: 4px 0;">5,000+ RPS</div>
-          <div style="color: var(--text); font-weight: 600; font-size: 15px;">500K – 2M+ Daily Visits</div>
-          <p class="card-text" style="margin-top: 8px;">Cloudflare absorbs 90%–98% of static assets and cache hits globally. The phone only handles dynamic API endpoints & cache misses.</p>
-        </div>
+ <!-- Key Stat Callout Cards -->
+ <div class="grid-3" style="margin-bottom: 30px;">
+ <div class="card" style="border-top: 3px solid #38bdf8;">
+ <div class="badge badge-primary" style="margin-bottom: 8px;">GLOBAL CDN PROXIED</div>
+ <div style="font-size: 32px; font-weight: 800; color: #38bdf8; margin: 4px 0;">5,000+ RPS</div>
+ <div style="color: var(--text); font-weight: 600; font-size: 15px;">500K – 2M+ Daily Visits</div>
+ <p class="card-text" style="margin-top: 8px;">Cloudflare absorbs 90%–98% of static assets and cache hits globally. The phone only handles dynamic API endpoints & cache misses.</p>
+ </div>
 
-        <div class="card" style="border-top: 3px solid #4ade80;">
-          <div class="badge badge-success" style="margin-bottom: 8px;">DIRECT STATIC / GZIP</div>
-          <div style="font-size: 32px; font-weight: 800; color: #4ade80; margin: 4px 0;">400 – 1,200 RPS</div>
-          <div style="color: var(--text); font-weight: 600; font-size: 15px;">100K – 500K Daily Visits</div>
-          <p class="card-text" style="margin-top: 8px;">In-memory static asset Gzip compression with non-blocking V8 event loop serving HTML, CSS, and JS directly from mobile RAM.</p>
-        </div>
+ <div class="card" style="border-top: 3px solid #4ade80;">
+ <div class="badge badge-success" style="margin-bottom: 8px;">DIRECT STATIC / GZIP</div>
+ <div style="font-size: 32px; font-weight: 800; color: #4ade80; margin: 4px 0;">400 – 1,200 RPS</div>
+ <div style="color: var(--text); font-weight: 600; font-size: 15px;">100K – 500K Daily Visits</div>
+ <p class="card-text" style="margin-top: 8px;">In-memory static asset Gzip compression with non-blocking V8 event loop serving HTML, CSS, and JS directly from mobile RAM.</p>
+ </div>
 
-        <div class="card" style="border-top: 3px solid #a855f7;">
-          <div class="badge badge-primary" style="margin-bottom: 8px; background: rgba(168, 85, 247, 0.15); color: #a855f7;">NODE.JS API + SQLITE</div>
-          <div style="font-size: 32px; font-weight: 800; color: #a855f7; margin: 4px 0;">150 – 500 RPS</div>
-          <div style="color: var(--text); font-weight: 600; font-size: 15px;">50K – 200K Daily Visits</div>
-          <p class="card-text" style="margin-top: 8px;">Pure SQLite with WAL mode on fast UFS 3.1/4.0 mobile storage delivers sub-millisecond query execution (0.1–0.4ms).</p>
-        </div>
-      </div>
+ <div class="card" style="border-top: 3px solid #a855f7;">
+ <div class="badge badge-primary" style="margin-bottom: 8px; background: rgba(168, 85, 247, 0.15); color: #a855f7;">NODE.JS API + SQLITE</div>
+ <div style="font-size: 32px; font-weight: 800; color: #a855f7; margin: 4px 0;">150 – 500 RPS</div>
+ <div style="color: var(--text); font-weight: 600; font-size: 15px;">50K – 200K Daily Visits</div>
+ <p class="card-text" style="margin-top: 8px;">Pure SQLite with WAL mode on fast UFS 3.1/4.0 mobile storage delivers sub-millisecond query execution (0.1–0.4ms).</p>
+ </div>
+ </div>
 
-      <!-- Detailed Breakdown Table -->
-      <div class="table-wrapper" style="margin-bottom: 24px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Stack / Scenario</th>
-              <th>Throughput (RPS)</th>
-              <th>Concurrent Users</th>
-              <th>Daily Hits Capacity</th>
-              <th>Average Latency</th>
-              <th>Recommended Use Case</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Cloudflare CDN + Static Site</strong></td>
-              <td><span class="badge badge-success">5,000+ req/s</span></td>
-              <td>500 – 2,000+ active</td>
-              <td><strong>500,000 – 2,000,000+</strong></td>
-              <td>10 – 25 ms (Edge)</td>
-              <td>Landing pages, blogs, docs, portfolios</td>
-            </tr>
-            <tr>
-              <td><strong>Direct Static Serving (Node/Nginx)</strong></td>
-              <td><span class="badge badge-primary">400 – 1,200 req/s</span></td>
-              <td>100 – 300 active</td>
-              <td><strong>100,000 – 500,000</strong></td>
-              <td>15 – 45 ms</td>
-              <td>SPA apps (React/Vue), marketing sites</td>
-            </tr>
-            <tr>
-              <td><strong>Node.js / Express API + SQLite</strong></td>
-              <td><span class="badge badge-primary">150 – 500 req/s</span></td>
-              <td>50 – 150 active</td>
-              <td><strong>50,000 – 200,000</strong></td>
-              <td>20 – 60 ms</td>
-              <td>REST APIs, webhook receivers, SaaS backends</td>
-            </tr>
-            <tr>
-              <td><strong>Python (FastAPI / Flask) + SQLite</strong></td>
-              <td><span class="badge badge-warning">80 – 250 req/s</span></td>
-              <td>30 – 80 active</td>
-              <td><strong>25,000 – 100,000</strong></td>
-              <td>35 – 90 ms</td>
-              <td>Microservices, automation bots, scraping</td>
-            </tr>
-            <tr>
-              <td><strong>PHP (Built-in Web Server) + SQLite</strong></td>
-              <td><span class="badge badge-warning">40 – 120 req/s</span></td>
-              <td>15 – 50 active</td>
-              <td><strong>15,000 – 50,000</strong></td>
-              <td>50 – 120 ms</td>
-              <td>Lightweight CMSs, contact forms, admin tools</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+ <!-- Detailed Breakdown Table -->
+ <div class="table-wrapper" style="margin-bottom: 24px;">
+ <table>
+ <thead>
+ <tr>
+ <th>Stack / Scenario</th>
+ <th>Throughput (RPS)</th>
+ <th>Concurrent Users</th>
+ <th>Daily Hits Capacity</th>
+ <th>Average Latency</th>
+ <th>Recommended Use Case</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Cloudflare CDN + Static Site</strong></td>
+ <td><span class="badge badge-success">5,000+ req/s</span></td>
+ <td>500 – 2,000+ active</td>
+ <td><strong>500,000 – 2,000,000+</strong></td>
+ <td>10 – 25 ms (Edge)</td>
+ <td>Landing pages, blogs, docs, portfolios</td>
+ </tr>
+ <tr>
+ <td><strong>Direct Static Serving (Node/Nginx)</strong></td>
+ <td><span class="badge badge-primary">400 – 1,200 req/s</span></td>
+ <td>100 – 300 active</td>
+ <td><strong>100,000 – 500,000</strong></td>
+ <td>15 – 45 ms</td>
+ <td>SPA apps (React/Vue), marketing sites</td>
+ </tr>
+ <tr>
+ <td><strong>Node.js / Express API + SQLite</strong></td>
+ <td><span class="badge badge-primary">150 – 500 req/s</span></td>
+ <td>50 – 150 active</td>
+ <td><strong>50,000 – 200,000</strong></td>
+ <td>20 – 60 ms</td>
+ <td>REST APIs, webhook receivers, SaaS backends</td>
+ </tr>
+ <tr>
+ <td><strong>Python (FastAPI / Flask) + SQLite</strong></td>
+ <td><span class="badge badge-warning">80 – 250 req/s</span></td>
+ <td>30 – 80 active</td>
+ <td><strong>25,000 – 100,000</strong></td>
+ <td>35 – 90 ms</td>
+ <td>Microservices, automation bots, scraping</td>
+ </tr>
+ <tr>
+ <td><strong>PHP (Built-in Web Server) + SQLite</strong></td>
+ <td><span class="badge badge-warning">40 – 120 req/s</span></td>
+ <td>15 – 50 active</td>
+ <td><strong>15,000 – 50,000</strong></td>
+ <td>50 – 120 ms</td>
+ <td>Lightweight CMSs, contact forms, admin tools</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
 
-      <!-- Optimization Tips Grid -->
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="zap"></i></div>
-          <h3 class="card-title">How to Maximize Traffic Capacity</h3>
-          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
-            <li><strong>Enable Cloudflare Proxy (Orange Cloud ☁️):</strong> Caches static images, CSS, and JS worldwide so only API calls reach your phone.</li>
-            <li><strong>Use SQLite WAL Mode:</strong> Run <code>PRAGMA journal_mode = WAL;</code> for non-blocking concurrent reads while writes occur.</li>
-            <li><strong>In-Memory Gzip Compression:</strong> TermuxPanel compresses HTML/JSON payloads down to ~20% original size before transmission.</li>
-            <li><strong>Automated CPU Wake-Lock:</strong> TermuxPanel keeps ARM CPU running at peak efficiency even with screen off.</li>
-          </ul>
-        </div>
+ <!-- Optimization Tips Grid -->
+ <div class="grid-2">
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="zap"></i></div>
+ <h3 class="card-title">How to Maximize Traffic Capacity</h3>
+ <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+ <li><strong>Enable Cloudflare Proxy (Orange Cloud ):</strong> Caches static images, CSS, and JS worldwide so only API calls reach your phone.</li>
+ <li><strong>Use SQLite WAL Mode:</strong> Run <code>PRAGMA journal_mode = WAL;</code> for non-blocking concurrent reads while writes occur.</li>
+ <li><strong>In-Memory Gzip Compression:</strong> TermuxPanel compresses HTML/JSON payloads down to ~20% original size before transmission.</li>
+ <li><strong>Automated CPU Wake-Lock:</strong> TermuxPanel keeps ARM CPU running at peak efficiency even with screen off.</li>
+ </ul>
+ </div>
 
-        <div class="card">
-          <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
-          <h3 class="card-title">Hardware Thermal & Battery Best Practices</h3>
-          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
-            <li><strong>Battery Bypass / 80% Limit:</strong> Enable "Protect Battery" in Android Settings to keep battery cool and healthy 24/7.</li>
-            <li><strong>Ventilation:</strong> Place phone in a well-ventilated spot or use a small phone cooling stand for heavy 24/7 production loads.</li>
-            <li><strong>Wi-Fi Always-On:</strong> Set Android Wi-Fi sleep policy to "Keep Wi-Fi on during sleep: Always".</li>
-            <li><strong>Watchdog Protection:</strong> The built-in 60-second watchdog auto-recovers processes if memory pressure occurs.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+ <div class="card">
+ <div class="card-icon-wrap"><i data-lucide="shield-check"></i></div>
+ <h3 class="card-title">Hardware Thermal & Battery Best Practices</h3>
+ <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+ <li><strong>Battery Bypass / 80% Limit:</strong> Enable "Protect Battery" in Android Settings to keep battery cool and healthy 24/7.</li>
+ <li><strong>Ventilation:</strong> Place phone in a well-ventilated spot or use a small phone cooling stand for heavy 24/7 production loads.</li>
+ <li><strong>Wi-Fi Always-On:</strong> Set Android Wi-Fi sleep policy to "Keep Wi-Fi on during sleep: Always".</li>
+ <li><strong>Watchdog Protection:</strong> The built-in 60-second watchdog auto-recovers processes if memory pressure occurs.</li>
+ </ul>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Real-World Limitations & When to Upgrade -->
-  <section id="limitations" style="background: rgba(11, 15, 25, 0.6);">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="scale"></i> TRANSPARENCY & BOUNDARIES</div>
-        <h2 class="section-title">Real-World Limitations & When to Upgrade</h2>
-        <p class="section-desc">An honest, realistic guide for small business owners on what TermuxPanel excels at, and when your growing platform should upgrade to dedicated cloud datacenters.</p>
-      </div>
+ <!-- Real-World Limitations & When to Upgrade -->
+ <section id="limitations" style="background: rgba(11, 15, 25, 0.6);">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="scale"></i> TRANSPARENCY & BOUNDARIES</div>
+ <h2 class="section-title">Real-World Limitations & When to Upgrade</h2>
+ <p class="section-desc">An honest, realistic guide for small business owners on what TermuxPanel excels at, and when your growing platform should upgrade to dedicated cloud datacenters.</p>
+ </div>
 
-      <div class="grid-2">
-        <!-- Sweet Spot Card -->
-        <div class="card" style="border-top: 4px solid #10b981;">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <div class="card-icon-wrap" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981; margin-bottom: 0;">
-              <i data-lucide="check-circle-2"></i>
-            </div>
-            <div>
-              <h3 class="card-title" style="margin-bottom: 2px;">The Small Business Sweet Spot</h3>
-              <span class="badge badge-success">500 to 50,000+ Daily Visits</span>
-            </div>
-          </div>
-          <p class="card-text" style="margin-bottom: 14px;">TermuxPanel is ideally suited for 95% of small and medium businesses looking to host their online presence with zero recurring server bills:</p>
-          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
-            <li><strong>Local Store & Service Websites:</strong> Restaurants, salons, medical clinics, dental practices, law offices, and local shops.</li>
-            <li><strong>Portfolios & Client Portals:</strong> Freelancers, creative agencies, consultants, developers, and designers.</li>
-            <li><strong>Landing Pages & Catalogs:</strong> Product launches, digital menus, event registration pages, and marketing funnels.</li>
-            <li><strong>Documentation & Blogs:</strong> Company documentation, knowledge bases, news, and markdown blogs.</li>
-            <li><strong>REST APIs & Webhooks:</strong> Contact form receivers, CRM triggers, and lightweight SQLite database backends.</li>
-          </ul>
-        </div>
+ <div class="grid-2">
+ <!-- Sweet Spot Card -->
+ <div class="card" style="border-top: 4px solid #10b981;">
+ <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+ <div class="card-icon-wrap" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981; margin-bottom: 0;">
+ <i data-lucide="check-circle-2"></i>
+ </div>
+ <div>
+ <h3 class="card-title" style="margin-bottom: 2px;">The Small Business Sweet Spot</h3>
+ <span class="badge badge-success">500 to 50,000+ Daily Visits</span>
+ </div>
+ </div>
+ <p class="card-text" style="margin-bottom: 14px;">TermuxPanel is ideally suited for 95% of small and medium businesses looking to host their online presence with zero recurring server bills:</p>
+ <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+ <li><strong>Local Store & Service Websites:</strong> Restaurants, salons, medical clinics, dental practices, law offices, and local shops.</li>
+ <li><strong>Portfolios & Client Portals:</strong> Freelancers, creative agencies, consultants, developers, and designers.</li>
+ <li><strong>Landing Pages & Catalogs:</strong> Product launches, digital menus, event registration pages, and marketing funnels.</li>
+ <li><strong>Documentation & Blogs:</strong> Company documentation, knowledge bases, news, and markdown blogs.</li>
+ <li><strong>REST APIs & Webhooks:</strong> Contact form receivers, CRM triggers, and lightweight SQLite database backends.</li>
+ </ul>
+ </div>
 
-        <!-- Upgrade Indicators Card -->
-        <div class="card" style="border-top: 4px solid #f59e0b;">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <div class="card-icon-wrap" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; margin-bottom: 0;">
-              <i data-lucide="alert-triangle"></i>
-            </div>
-            <div>
-              <h3 class="card-title" style="margin-bottom: 2px;">When You Should Upgrade</h3>
-              <span class="badge badge-warning">High Concurrency & Enterprise Needs</span>
-            </div>
-          </div>
-          <p class="card-text" style="margin-bottom: 14px;">As your business scales, you should transition to cloud datacenters (AWS, GCP, DigitalOcean) if you encounter:</p>
-          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
-            <li><strong>Extreme Database Concurrency:</strong> 10,000+ simultaneous DB write transactions per second during a flash sale (requires distributed PostgreSQL / MySQL clusters).</li>
-            <li><strong>Heavy GPU & AI Model Training:</strong> Training massive 70B parameter LLMs or 3D rendering (requires dedicated Nvidia A100/H100 Tensor GPUs).</li>
-            <li><strong>Physical Device & Internet Dependency:</strong> If your phone loses power or local Wi-Fi, the site pauses until connection resumes.</li>
-            <li><strong>Enterprise SOC 2 / HIPAA Certification:</strong> Enterprise contracts that legally mandate certified physical datacenter locks and ISO/IEC 27001 audits.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+ <!-- Upgrade Indicators Card -->
+ <div class="card" style="border-top: 4px solid #f59e0b;">
+ <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+ <div class="card-icon-wrap" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; margin-bottom: 0;">
+ <i data-lucide="alert-triangle"></i>
+ </div>
+ <div>
+ <h3 class="card-title" style="margin-bottom: 2px;">When You Should Upgrade</h3>
+ <span class="badge badge-warning">High Concurrency & Enterprise Needs</span>
+ </div>
+ </div>
+ <p class="card-text" style="margin-bottom: 14px;">As your business scales, you should transition to cloud datacenters (AWS, GCP, DigitalOcean) if you encounter:</p>
+ <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+ <li><strong>Extreme Database Concurrency:</strong> 10,000+ simultaneous DB write transactions per second during a flash sale (requires distributed PostgreSQL / MySQL clusters).</li>
+ <li><strong>Heavy GPU & AI Model Training:</strong> Training massive 70B parameter LLMs or 3D rendering (requires dedicated Nvidia A100/H100 Tensor GPUs).</li>
+ <li><strong>Physical Device & Internet Dependency:</strong> If your phone loses power or local Wi-Fi, the site pauses until connection resumes.</li>
+ <li><strong>Enterprise SOC 2 / HIPAA Certification:</strong> Enterprise contracts that legally mandate certified physical datacenter locks and ISO/IEC 27001 audits.</li>
+ </ul>
+ </div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Comparison Table -->
-  <section id="comparison">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="bar-chart-2"></i> COMPARISON</div>
-        <h2 class="section-title">How Does It Compare?</h2>
-        <p class="section-desc">Why running TermuxPanel on Android beats traditional setups.</p>
-      </div>
+ <!-- Comparison Table -->
+ <section id="comparison">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="bar-chart-2"></i> COMPARISON</div>
+ <h2 class="section-title">How Does It Compare?</h2>
+ <p class="section-desc">Why running TermuxPanel on Android beats traditional setups.</p>
+ </div>
 
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>TermuxPanel (Android)</th>
-              <th>Cloud VPS ($5-$20/mo)</th>
-              <th>Port-Forwarded Home PC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Hardware Cost</strong></td>
-              <td><span class="badge badge-success">Free (Use Old Phone)</span></td>
-              <td>Monthly Recurring Fee</td>
-              <td>High PC Power Consumption</td>
-            </tr>
-            <tr>
-              <td><strong>Port Forwarding Needed?</strong></td>
-              <td><span class="badge badge-success">NO (Zero-Trust Tunnel)</span></td>
-              <td>No</td>
-              <td><span class="badge badge-warning">YES (Security Risk)</span></td>
-            </tr>
-            <tr>
-              <td><strong>Built-in Battery Backup</strong></td>
-              <td><span class="badge badge-success">YES (Phone Battery)</span></td>
-              <td>Datacenter UPS</td>
-              <td>Requires expensive UPS</td>
-            </tr>
-            <tr>
-              <td><strong>Mobile & Wi-Fi IP Survival</strong></td>
-              <td><span class="badge badge-success">Auto-Reconnects</span></td>
-              <td>Static IP required</td>
-              <td>Dynamic DNS required</td>
-            </tr>
-            <tr>
-              <td><strong>Multi-Runtime Support</strong></td>
-              <td><span class="badge badge-success">HTML, Node, Python, PHP</span></td>
-              <td>Manual CLI Setup</td>
-              <td>Manual CLI Setup</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+ <div class="table-wrapper">
+ <table>
+ <thead>
+ <tr>
+ <th>Feature</th>
+ <th>TermuxPanel (Android)</th>
+ <th>Cloud VPS ($5-$20/mo)</th>
+ <th>Port-Forwarded Home PC</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Hardware Cost</strong></td>
+ <td><span class="badge badge-success">Free (Use Old Phone)</span></td>
+ <td>Monthly Recurring Fee</td>
+ <td>High PC Power Consumption</td>
+ </tr>
+ <tr>
+ <td><strong>Port Forwarding Needed?</strong></td>
+ <td><span class="badge badge-success">NO (Zero-Trust Tunnel)</span></td>
+ <td>No</td>
+ <td><span class="badge badge-warning">YES (Security Risk)</span></td>
+ </tr>
+ <tr>
+ <td><strong>Built-in Battery Backup</strong></td>
+ <td><span class="badge badge-success">YES (Phone Battery)</span></td>
+ <td>Datacenter UPS</td>
+ <td>Requires expensive UPS</td>
+ </tr>
+ <tr>
+ <td><strong>Mobile & Wi-Fi IP Survival</strong></td>
+ <td><span class="badge badge-success">Auto-Reconnects</span></td>
+ <td>Static IP required</td>
+ <td>Dynamic DNS required</td>
+ </tr>
+ <tr>
+ <td><strong>Multi-Runtime Support</strong></td>
+ <td><span class="badge badge-success">HTML, Node, Python, PHP</span></td>
+ <td>Manual CLI Setup</td>
+ <td>Manual CLI Setup</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+ </section>
 
-  <!-- Minimum Requirements Table -->
-  <section>
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="cpu"></i> SPECIFICATIONS</div>
-        <h2 class="section-title">Hardware & OS Requirements</h2>
-      </div>
+ <!-- Minimum Requirements Table -->
+ <section>
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="cpu"></i> SPECIFICATIONS</div>
+ <h2 class="section-title">Hardware & OS Requirements</h2>
+ </div>
 
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Minimum Requirement</th>
-              <th>Recommended Specification</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Android Version</strong></td>
-              <td>Android 7.0 (Nougat) or higher</td>
-              <td>Android 10.0+</td>
-            </tr>
-            <tr>
-              <td><strong>RAM</strong></td>
-              <td>2 GB</td>
-              <td>3 GB – 4 GB+</td>
-            </tr>
-            <tr>
-              <td><strong>Free Storage</strong></td>
-              <td>1 GB</td>
-              <td>4 GB+ (for website files & backups)</td>
-            </tr>
-            <tr>
-              <td><strong>Architecture</strong></td>
-              <td>ARM64 (<code>aarch64</code>), ARMv7 (<code>arm</code>), or <code>x86_64</code></td>
-              <td>ARM64</td>
-            </tr>
-            <tr>
-              <td><strong>Termux Source</strong></td>
-              <td>Google Play Store, F-Droid, or GitHub</td>
-              <td>Google Play Store, F-Droid (with Termux:Boot), or GitHub</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+ <div class="table-wrapper">
+ <table>
+ <thead>
+ <tr>
+ <th>Component</th>
+ <th>Minimum Requirement</th>
+ <th>Recommended Specification</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Android Version</strong></td>
+ <td>Android 7.0 (Nougat) or higher</td>
+ <td>Android 10.0+</td>
+ </tr>
+ <tr>
+ <td><strong>RAM</strong></td>
+ <td>2 GB</td>
+ <td>3 GB – 4 GB+</td>
+ </tr>
+ <tr>
+ <td><strong>Free Storage</strong></td>
+ <td>1 GB</td>
+ <td>4 GB+ (for website files & backups)</td>
+ </tr>
+ <tr>
+ <td><strong>Architecture</strong></td>
+ <td>ARM64 (<code>aarch64</code>), ARMv7 (<code>arm</code>), or <code>x86_64</code></td>
+ <td>ARM64</td>
+ </tr>
+ <tr>
+ <td><strong>Termux Source</strong></td>
+ <td>Google Play Store, F-Droid, or GitHub</td>
+ <td>Google Play Store, F-Droid (with Termux:Boot), or GitHub</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+ </section>
 
-  <!-- FAQ Section -->
-  <section id="faq">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag"><i data-lucide="help-circle"></i> QUESTIONS & ANSWERS</div>
-        <h2 class="section-title">Frequently Asked Questions</h2>
-      </div>
+ <!-- FAQ Section -->
+ <section id="faq">
+ <div class="container">
+ <div class="section-header">
+ <div class="section-tag"><i data-lucide="help-circle"></i> QUESTIONS & ANSWERS</div>
+ <h2 class="section-title">Frequently Asked Questions</h2>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">Is hosting really $0 recurring cost for Small Businesses? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer"><strong>YES.</strong> You literally only pay your domain registrar ~$8–$12/year for your domain name. Web hosting runs on your Android hardware ($0), SSL is automated via Cloudflare ($0), business email is routed to Gmail ($0), cloud backups are stored in Telegram ($0), and web traffic analytics run locally in SQLite ($0). You save $500–$1,400+ every single year compared to cloud VPS and SaaS suites.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">Is hosting really $0 recurring cost for Small Businesses? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer"><strong>YES.</strong> You literally only pay your domain registrar ~$8–$12/year for your domain name. Web hosting runs on your Android hardware ($0), SSL is automated via Cloudflare ($0), business email is routed to Gmail ($0), cloud backups are stored in Telegram ($0), and web traffic analytics run locally in SQLite ($0). You save $500–$1,400+ every single year compared to cloud VPS and SaaS suites.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">What are the real-world limitations for a growing business? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">TermuxPanel easily handles small-to-medium business traffic (up to 50,000+ daily page views when paired with Cloudflare CDN caching). You only need to upgrade to cloud datacenters if your business demands <strong>extreme concurrent database writes</strong> (e.g., 10,000+ simultaneous checkout writes/sec during flash sales), requires dedicated <strong>GPU AI model training</strong>, or mandates <strong>SOC 2 Type II physical datacenter compliance</strong>.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">What are the real-world limitations for a growing business? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">TermuxPanel easily handles small-to-medium business traffic (up to 50,000+ daily page views when paired with Cloudflare CDN caching). You only need to upgrade to cloud datacenters if your business demands <strong>extreme concurrent database writes</strong> (e.g., 10,000+ simultaneous checkout writes/sec during flash sales), requires dedicated <strong>GPU AI model training</strong>, or mandates <strong>SOC 2 Type II physical datacenter compliance</strong>.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">Does this require rooting my Android phone? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer"><strong>NO.</strong> TermuxPanel runs 100% in user space inside Termux. You do NOT need root permissions, unlocked bootloaders, or custom ROMs.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">Does this require rooting my Android phone? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer"><strong>NO.</strong> TermuxPanel runs 100% in user space inside Termux. You do NOT need root permissions, unlocked bootloaders, or custom ROMs.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">What happens if my phone's IP address changes? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">Because Cloudflare Tunnel uses an <strong>outbound connection</strong>, your website stays online seamlessly even if your phone switches between Wi-Fi and 5G mobile data.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">What happens if my phone's IP address changes? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">Because Cloudflare Tunnel uses an <strong>outbound connection</strong>, your website stays online seamlessly even if your phone switches between Wi-Fi and 5G mobile data.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How do I keep it running 24/7 when my screen is off? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">TermuxPanel automatically acquires a CPU wake-lock (<code>termux-wake-lock</code>). Simply go to Android Settings ➔ Apps ➔ Termux ➔ Battery and select <strong>"Unrestricted"</strong> so Android doesn't put the app to sleep.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How do I keep it running 24/7 when my screen is off? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">TermuxPanel automatically acquires a CPU wake-lock (<code>termux-wake-lock</code>). Simply go to Android Settings Apps Termux Battery and select <strong>"Unrestricted"</strong> so Android doesn't put the app to sleep.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">Can I host PHP, Python, and Node.js at the same time? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer"><strong>YES.</strong> TermuxPanel assigns each site an isolated local port (8100, 8101, 8102...) and supervises each process independently.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">Can I host PHP, Python, and Node.js at the same time? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer"><strong>YES.</strong> TermuxPanel assigns each site an isolated local port (8100, 8101, 8102...) and supervises each process independently.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How much traffic can this server handle? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">When paired with <strong>Cloudflare CDN (Orange Cloud ☁️)</strong>, your Android phone can easily handle <strong>5,000+ requests/sec (over 1,000,000+ daily page views)</strong> because 95% of static hits and images are cached at Cloudflare's global edge. Direct dynamic Node.js/SQLite APIs handle <strong>150–500 requests/sec</strong> with sub-millisecond query latencies.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How much traffic can this server handle? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">When paired with <strong>Cloudflare CDN (Orange Cloud )</strong>, your Android phone can easily handle <strong>5,000+ requests/sec (over 1,000,000+ daily page views)</strong> because 95% of static hits and images are cached at Cloudflare's global edge. Direct dynamic Node.js/SQLite APIs handle <strong>150–500 requests/sec</strong> with sub-millisecond query latencies.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How do Custom Domains, DNS and Free SSL work? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">TermuxPanel lets you map any custom domain or subdomain (e.g. <code>panel.yourdomain.com</code>, <code>api.yourdomain.com</code>) to your local server ports. Cloudflare automatically issues free Universal SSL certificates (HTTPS 🔒) with TLS 1.3 encryption and automatic HTTP-to-HTTPS redirect — without router port forwarding.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How do Custom Domains, DNS and Free SSL work? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">TermuxPanel lets you map any custom domain or subdomain (e.g. <code>panel.yourdomain.com</code>, <code>api.yourdomain.com</code>) to your local server ports. Cloudflare automatically issues free Universal SSL certificates (HTTPS ) with TLS 1.3 encryption and automatic HTTP-to-HTTPS redirect — without router port forwarding.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How does Free Professional Email Routing work? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">It uses two halves at $0 cost: <strong>Inbound</strong> is handled by Cloudflare Email Routing forwarding <code>support@yourdomain.com</code> to your personal Gmail. <strong>Outbound</strong> is handled by free Brevo SMTP (300 emails/day) connected to your Gmail account with DKIM/SPF/DMARC authentication so people see your domain name when you reply.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How does Free Professional Email Routing work? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">It uses two halves at $0 cost: <strong>Inbound</strong> is handled by Cloudflare Email Routing forwarding <code>support@yourdomain.com</code> to your personal Gmail. <strong>Outbound</strong> is handled by free Brevo SMTP (300 emails/day) connected to your Gmail account with DKIM/SPF/DMARC authentication so people see your domain name when you reply.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How does Unlimited Telegram Cloud & TeleDrive work? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">TeleDrive connects to your private Telegram Bot API channel to provide unlimited, zero-cost cloud object storage. You can 1-click export running websites into <code>.zip</code> archives, 1-click deploy websites from Telegram Cloud, and push automated <code>.tar.gz</code> server/database backups with automated 7-day retention pruning.</div>
-      </div>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How does Unlimited Telegram Cloud & TeleDrive work? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">TeleDrive connects to your private Telegram Bot API channel to provide unlimited, zero-cost cloud object storage. You can 1-click export running websites into <code>.zip</code> archives, 1-click deploy websites from Telegram Cloud, and push automated <code>.tar.gz</code> server/database backups with automated 7-day retention pruning.</div>
+ </div>
 
-      <div class="faq-item">
-        <div class="faq-question" onclick="toggleFaq(this)">How do I manage the server from the phone terminal? <span><i data-lucide="chevron-down"></i></span></div>
-        <div class="faq-answer">Type <code>tp</code> in Termux to launch the interactive terminal management menu, or use commands like <code>tp status</code>, <code>tp start</code>, <code>tp stop</code>, and <code>tp logs</code>.</div>
-      </div>
-    </div>
-  </section>
+ <div class="faq-item">
+ <div class="faq-question" onclick="toggleFaq(this)">How do I manage the server from the phone terminal? <span><i data-lucide="chevron-down"></i></span></div>
+ <div class="faq-answer">Type <code>tp</code> in Termux to launch the interactive terminal management menu, or use commands like <code>tp status</code>, <code>tp start</code>, <code>tp stop</code>, and <code>tp logs</code>.</div>
+ </div>
+ </div>
+ </section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <p style="margin-bottom: 8px;"><strong>TermuxPanel</strong> — Built for the Android, Termux & self-hosting community.</p>
-      <p>Created by <a href="https://github.com/himalayladha" target="_blank" style="color: #38bdf8; text-decoration: none;">Himalay Ladha</a> • Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" style="color: var(--text-muted);">MIT License</a></p>
-    </div>
-  </footer>
+ <!-- Footer -->
+ <footer>
+ <div class="container">
+ <p style="margin-bottom: 8px;"><strong>TermuxPanel</strong> — Built for the Android, Termux & self-hosting community.</p>
+ <p>Created by <a href="https://github.com/himalayladha" target="_blank" style="color: #38bdf8; text-decoration: none;">Himalay Ladha</a> • Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" style="color: var(--text-muted);">MIT License</a></p>
+ </div>
+ </footer>
 
-  <!-- Interactive Scripts -->
-  <script>
-    const applyLandingTheme = (theme) => {
-      document.documentElement.setAttribute('data-theme', theme);
-      if (theme === 'light') {
-        document.body.classList.remove('dark-theme');
-        document.body.classList.add('light-theme');
-      } else {
-        document.body.classList.remove('light-theme');
-        document.body.classList.add('dark-theme');
-      }
-      const icon = document.getElementById('landing-theme-icon');
-      const mIcon = document.getElementById('landing-theme-icon-mobile');
-      if (icon) icon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
-      if (mIcon) mIcon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
-      if (window.lucide) lucide.createIcons();
-    };
+ <!-- Interactive Scripts -->
+ <script>
+ const applyLandingTheme = (theme) => {
+ document.documentElement.setAttribute('data-theme', theme);
+ if (theme === 'light') {
+ document.body.classList.remove('dark-theme');
+ document.body.classList.add('light-theme');
+ } else {
+ document.body.classList.remove('light-theme');
+ document.body.classList.add('dark-theme');
+ }
+ const icon = document.getElementById('landing-theme-icon');
+ const mIcon = document.getElementById('landing-theme-icon-mobile');
+ if (icon) icon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+ if (mIcon) mIcon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+ if (window.lucide) lucide.createIcons();
+ };
 
-    const savedTheme = localStorage.getItem('tp_theme') || 'dark';
-    applyLandingTheme(savedTheme);
+ const savedTheme = localStorage.getItem('tp_theme') || 'dark';
+ applyLandingTheme(savedTheme);
 
-    const toggleTheme = () => {
-      const isLight = document.body.classList.contains('light-theme');
-      const newTheme = isLight ? 'dark' : 'light';
-      localStorage.setItem('tp_theme', newTheme);
-      applyLandingTheme(newTheme);
-    };
+ const toggleTheme = () => {
+ const isLight = document.body.classList.contains('light-theme');
+ const newTheme = isLight ? 'dark' : 'light';
+ localStorage.setItem('tp_theme', newTheme);
+ applyLandingTheme(newTheme);
+ };
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const btn = document.getElementById('theme-toggle');
-      const mBtn = document.getElementById('theme-toggle-mobile');
-      if (btn) btn.addEventListener('click', toggleTheme);
-      if (mBtn) mBtn.addEventListener('click', toggleTheme);
+ document.addEventListener('DOMContentLoaded', () => {
+ const btn = document.getElementById('theme-toggle');
+ const mBtn = document.getElementById('theme-toggle-mobile');
+ if (btn) btn.addEventListener('click', toggleTheme);
+ if (mBtn) mBtn.addEventListener('click', toggleTheme);
 
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    });
+ if (window.lucide) {
+ lucide.createIcons();
+ }
+ });
 
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      const menuBtn = document.getElementById('menu-btn');
-      if (!menu) return;
-      const isOpen = menu.classList.toggle('open');
-      if (menuBtn) {
-        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        menuBtn.innerHTML = isOpen ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
-        if (window.lucide) lucide.createIcons();
-      }
-    }
+ function toggleMobileMenu() {
+ const menu = document.getElementById('mobile-menu');
+ const menuBtn = document.getElementById('menu-btn');
+ if (!menu) return;
+ const isOpen = menu.classList.toggle('open');
+ if (menuBtn) {
+ menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+ menuBtn.innerHTML = isOpen ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
+ if (window.lucide) lucide.createIcons();
+ }
+ }
 
-    // Close mobile menu on outside click
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('mobile-menu');
-      const menuBtn = document.getElementById('menu-btn');
-      if (menu && menu.classList.contains('open')) {
-        if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
-          toggleMobileMenu();
-        }
-      }
-    });
+ // Close mobile menu on outside click
+ document.addEventListener('click', (e) => {
+ const menu = document.getElementById('mobile-menu');
+ const menuBtn = document.getElementById('menu-btn');
+ if (menu && menu.classList.contains('open')) {
+ if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+ toggleMobileMenu();
+ }
+ }
+ });
 
-    // Close mobile menu on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const menu = document.getElementById('mobile-menu');
-        if (menu && menu.classList.contains('open')) {
-          toggleMobileMenu();
-        }
-      }
-    });
+ // Close mobile menu on Escape key
+ document.addEventListener('keydown', (e) => {
+ if (e.key === 'Escape') {
+ const menu = document.getElementById('mobile-menu');
+ if (menu && menu.classList.contains('open')) {
+ toggleMobileMenu();
+ }
+ }
+ });
 
-    function switchRuntimeTab(tabKey) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+ function switchRuntimeTab(tabKey) {
+ document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+ document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-      const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().includes(tabKey));
-      const targetContent = document.getElementById(`tab-${tabKey}`);
+ const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().includes(tabKey));
+ const targetContent = document.getElementById(`tab-${tabKey}`);
 
-      if (targetBtn) targetBtn.classList.add('active');
-      if (targetContent) targetContent.classList.add('active');
-      if (window.lucide) lucide.createIcons();
-    }
+ if (targetBtn) targetBtn.classList.add('active');
+ if (targetContent) targetContent.classList.add('active');
+ if (window.lucide) lucide.createIcons();
+ }
 
-    function toggleFaq(el) {
-      const parent = el.closest('.faq-item');
-      parent.classList.toggle('open');
-    }
-  </script>
+ function toggleFaq(el) {
+ const parent = el.closest('.faq-item');
+ parent.classList.toggle('open');
+ }
+ </script>
 </body>
 </html>

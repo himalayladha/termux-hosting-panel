@@ -156,15 +156,15 @@ const webhookService = {
       logs.push('[Process] Reloading application service...');
       try {
         await processService.restartWebsite(site.id);
-        logs.push(`✓ Application restarted on port :${site.port}`);
+        logs.push(`Application restarted on port :${site.port}`);
       } catch (procErr) {
         logs.push(`[Restart Warning] ${procErr.message}`);
       }
 
-      logs.push(`✓ Deployment completed successfully at ${new Date().toISOString()}`);
+      logs.push(`Deployment completed successfully at ${new Date().toISOString()}`);
     } catch (err) {
       isSuccess = false;
-      logs.push(`❌ Deployment failed: ${err.message}`);
+      logs.push(`Deployment failed: ${err.message}`);
     }
 
     const logOutput = logs.join('\n');

@@ -92,7 +92,7 @@ function initTerminalServer(server) {
 
     // Welcome banner
     const welcomeBanner = `\r\n\x1b[1;36m==================================================\x1b[0m\r\n` +
-      `\x1b[1;32m  📱 TermuxPanel Interactive Web Terminal\x1b[0m\r\n` +
+      `\x1b[1;32m  TermuxPanel Interactive Web Terminal\x1b[0m\r\n` +
       `  User: \x1b[1;33m${user.username}\x1b[0m | Shell: \x1b[1;35m${path.basename(shellConf.command)}\x1b[0m\r\n` +
       `  Root: \x1b[1;34m${workingDir}\x1b[0m\r\n` +
       `\x1b[1;36m==================================================\x1b[0m\r\n\r\n`;
