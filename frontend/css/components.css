@@ -41,6 +41,10 @@
 .gap-3 { gap: 12px; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .flex-align { display: flex; align-items: center; }
+.flex-center { display: flex !important; align-items: center !important; justify-content: center !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.text-center { text-align: center !important; }
 .flex-wrap { flex-wrap: wrap; }
 .hidden { display: none !important; }
 

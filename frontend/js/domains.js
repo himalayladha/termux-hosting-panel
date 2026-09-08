@@ -374,13 +374,13 @@ const domainsManager = {
       tbody.innerHTML = `
         <tr>
           <td colspan="6" style="padding: 36px 20px; text-align: center;">
-            <div style="max-width: 440px; margin: 0 auto;">
+            <div style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="globe-2" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Domains or Subdomains Connected</h4>
-              <p class="text-muted text-sm mb-3">Connect your custom domain with automated Cloudflare SSL or launch instant subdomains with 1-click database & site provisioning.</p>
-              <div class="flex-align gap-2 justify-center flex-wrap">
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Domains or Subdomains Connected</h4>
+              <p class="text-muted text-sm mb-3" style="text-align: center;">Connect your custom domain with automated Cloudflare SSL or launch instant subdomains with 1-click database & site provisioning.</p>
+              <div class="empty-state-actions" style="margin-bottom: 0;">
                 <button class="btn btn-primary btn-sm" onclick="domainsManager.openSubdomainModal()">
                   <i data-lucide="sparkles" style="width: 13px; height: 13px; margin-right: 3px;"></i> Create Subdomain
                 </button>

@@ -68,12 +68,12 @@ const websites = {
           <p class="empty-state-subtitle mb-4">
             Host high-speed web apps directly on your Android phone with instant local & Cloudflare Zero Trust public access.
           </p>
-          <div class="flex-align gap-2 justify-center flex-wrap mb-4">
+          <div class="empty-state-actions">
             <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">
               <i data-lucide="plus" style="width: 15px; height: 15px; margin-right: 5px;"></i> Create Your First Website
             </button>
           </div>
-          <div class="flex-align gap-2 justify-center flex-wrap">
+          <div class="empty-state-features">
             <div class="tech-pill"><span style="color: #60a5fa;">⚡</span> Node.js (Express / Fastify)</div>
             <div class="tech-pill"><span style="color: #fbbf24;">🐍</span> Python (Flask / FastAPI)</div>
             <div class="tech-pill"><span style="color: #38bdf8;">🌐</span> Static HTML5 / JS</div>

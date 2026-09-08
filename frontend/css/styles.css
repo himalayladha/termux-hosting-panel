@@ -498,15 +498,21 @@ a:hover {
   border: 1px solid rgba(56, 189, 248, 0.18) !important;
   border-radius: 16px !important;
   padding: 44px 28px !important;
-  text-align: center;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
   animation: fadeIn 0.3s ease;
 }
 
 .empty-state-icon-wrapper {
   margin: 0 auto 16px auto;
-  display: flex;
-  justify-content: center;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100%;
 }
 
 .empty-state-icon {
@@ -515,9 +521,9 @@ a:hover {
   border-radius: 20px;
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.15));
   border: 1px solid rgba(56, 189, 248, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2);
 }
 
@@ -526,6 +532,8 @@ a:hover {
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.3px;
+  text-align: center !important;
+  width: 100%;
 }
 
 .empty-state-subtitle {
@@ -533,8 +541,32 @@ a:hover {
   font-size: 13.5px;
   line-height: 1.6;
   max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  width: 100%;
+}
+
+.empty-state-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 auto 16px auto !important;
+  width: 100%;
+  text-align: center !important;
+}
+
+.empty-state-features {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 auto !important;
+  width: 100%;
+  text-align: center !important;
 }
 
 /* Interactive Tech Pills */

@@ -75,15 +75,17 @@ const emailManager = {
       tbody.innerHTML = `
         <tr>
           <td colspan="5" style="padding: 36px 20px; text-align: center;">
-            <div style="max-width: 440px; margin: 0 auto;">
+            <div style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="mail" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Email Forwarders Configured</h4>
-              <p class="text-muted text-sm mb-3">Forward custom domain emails (<code>support@yourdomain.com</code>) to your personal Gmail and reply with custom DKIM at $0 cost.</p>
-              <button class="btn btn-primary btn-sm" onclick="emailManager.openSetupModal()">
-                <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Setup Professional Email
-              </button>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Email Forwarders Configured</h4>
+              <p class="text-muted text-sm mb-3" style="text-align: center;">Forward custom domain emails (<code>support@yourdomain.com</code>) to your personal Gmail and reply with custom DKIM at $0 cost.</p>
+              <div class="empty-state-actions" style="margin-bottom: 0;">
+                <button class="btn btn-primary btn-sm" onclick="emailManager.openSetupModal()">
+                  <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Setup Professional Email
+                </button>
+              </div>
             </div>
           </td>
         </tr>

@@ -361,39 +361,56 @@
             </div>
           </div>
 
-          <!-- Live Metrics Stat Grid -->
-          <div class="metrics-grid">
-            <div class="card metric-card">
-              <div class="flex-between">
-                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Live Traffic RPS</span>
+          <!-- Live Realtime Traffic Bar -->
+          <div class="card mb-3" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.6)); border-color: rgba(56, 189, 248, 0.25);">
+            <div class="card-body p-3 flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
                 <span class="status-dot online" style="animation: pulse 1.5s infinite;"></span>
+                <span class="text-sm" style="text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600;">Live Traffic Monitor</span>
               </div>
-              <div class="metric-value mt-2" id="stat-analytics-rps" style="color: #38bdf8; font-size: 24px; font-weight: 700;">0.00 req/s</div>
-              <span class="text-muted text-sm" id="stat-analytics-active-visitors">~1 active visitor</span>
+              <div class="flex-align gap-3">
+                <div class="text-sm text-muted" id="stat-analytics-active-visitors">~1 active visitor</div>
+                <div class="metric-value" id="stat-analytics-rps" style="color: #38bdf8; font-size: 20px; font-weight: 700; margin: 0;">0.00 req/s</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2x2 Core Metrics Grid (2 Rows x 2 Columns) -->
+          <div class="grid grid-2 gap-3 mb-3">
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Total Requests</span>
+                <i data-lucide="bar-chart-2" style="width: 16px; height: 16px; color: #38bdf8;"></i>
+              </div>
+              <div class="metric-value" id="stat-analytics-requests" style="font-size: 26px; font-weight: 700; color: #fff;">0</div>
+              <span class="text-muted text-sm mt-1" style="display: block;">All HTTP endpoints</span>
             </div>
 
-            <div class="card metric-card">
-              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Total Requests</span>
-              <div class="metric-value mt-2" id="stat-analytics-requests" style="font-size: 24px; font-weight: 700;">0</div>
-              <span class="text-muted text-sm">All HTTP endpoints</span>
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Unique Visitors</span>
+                <i data-lucide="users" style="width: 16px; height: 16px; color: #a855f7;"></i>
+              </div>
+              <div class="metric-value" id="stat-analytics-visitors" style="color: #a855f7; font-size: 26px; font-weight: 700;">0</div>
+              <span class="text-muted text-sm mt-1" style="display: block;">Anonymized IP hashes</span>
             </div>
 
-            <div class="card metric-card">
-              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Unique Visitors</span>
-              <div class="metric-value mt-2" id="stat-analytics-visitors" style="color: #a855f7; font-size: 24px; font-weight: 700;">0</div>
-              <span class="text-muted text-sm">Anonymized IP hashes</span>
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Bandwidth Served</span>
+                <i data-lucide="arrow-down-up" style="width: 16px; height: 16px; color: #4ade80;"></i>
+              </div>
+              <div class="metric-value" id="stat-analytics-bandwidth" style="color: #4ade80; font-size: 26px; font-weight: 700;">0 B</div>
+              <span class="text-muted text-sm mt-1" style="display: block;">Gzip compressed data</span>
             </div>
 
-            <div class="card metric-card">
-              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Bandwidth Served</span>
-              <div class="metric-value mt-2" id="stat-analytics-bandwidth" style="color: #4ade80; font-size: 24px; font-weight: 700;">0 B</div>
-              <span class="text-muted text-sm">Gzip compressed data</span>
-            </div>
-
-            <div class="card metric-card">
-              <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Avg Response Latency</span>
-              <div class="metric-value mt-2" id="stat-analytics-latency" style="color: #f59e0b; font-size: 24px; font-weight: 700;">0 ms</div>
-              <span class="text-muted text-sm">Local edge latency</span>
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Avg Response Latency</span>
+                <i data-lucide="zap" style="width: 16px; height: 16px; color: #f59e0b;"></i>
+              </div>
+              <div class="metric-value" id="stat-analytics-latency" style="color: #f59e0b; font-size: 26px; font-weight: 700;">0 ms</div>
+              <span class="text-muted text-sm mt-1" style="display: block;">Local edge latency</span>
             </div>
           </div>
 

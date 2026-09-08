@@ -45,13 +45,13 @@ const backupsManager = {
       tbody.innerHTML = `
         <tr>
           <td colspan="4" style="padding: 36px 20px; text-align: center;">
-            <div style="max-width: 440px; margin: 0 auto;">
+            <div style="max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
               <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
                 <i data-lucide="archive" style="width: 28px; height: 28px; color: #38bdf8;"></i>
               </div>
-              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Backups Created Yet</h4>
-              <p class="text-muted text-sm mb-3">Generate full <code>.tar.gz</code> archives of your sites, databases, and panel configs with 1-click cloud sync.</p>
-              <div class="flex-align gap-2 justify-center flex-wrap">
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff; text-align: center;">No Backups Created Yet</h4>
+              <p class="text-muted text-sm mb-3" style="text-align: center;">Generate full <code>.tar.gz</code> archives of your sites, databases, and panel configs with 1-click cloud sync.</p>
+              <div class="empty-state-actions" style="margin-bottom: 0;">
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-create-backup').classList.remove('hidden')">
                   <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Create Backup
                 </button>
