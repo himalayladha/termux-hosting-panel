@@ -658,8 +658,10 @@
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
+        <a href="#smb-cost">$0 SMB Stack</a>
         <a href="#dashboard-preview">Live Demo</a>
         <a href="#traffic">Traffic & Benchmarks</a>
+        <a href="#limitations">Limitations</a>
         <a href="#runtimes">Runtimes</a>
         <a href="#architecture">Architecture</a>
         <a href="#install">Installation</a>
@@ -679,8 +681,10 @@
   <!-- Mobile Navigation Drawer -->
   <div class="mobile-menu" id="mobile-menu">
     <a href="#features" onclick="toggleMobileMenu()">Features</a>
+    <a href="#smb-cost" onclick="toggleMobileMenu()">$0 SMB Stack</a>
     <a href="#dashboard-preview" onclick="toggleMobileMenu()">Live Demo</a>
     <a href="#traffic" onclick="toggleMobileMenu()">Traffic & Benchmarks</a>
+    <a href="#limitations" onclick="toggleMobileMenu()">Limitations</a>
     <a href="#runtimes" onclick="toggleMobileMenu()">Runtimes</a>
     <a href="#architecture" onclick="toggleMobileMenu()">Architecture</a>
     <a href="#install" onclick="toggleMobileMenu()">Installation</a>
@@ -696,22 +700,22 @@
   <header class="hero">
     <div class="container">
       <div class="hero-badge">
-        <i data-lucide="zap"></i> Self-Hosted Web Server for Android & Termux
+        <i data-lucide="badge-dollar-sign"></i> The $0/Month Small Business Web Stack
       </div>
       <h1 class="hero-title">
         Turn Any Android Phone Into a<br>
         <span class="hero-highlight">24/7 Production Web Hosting Server</span>
       </h1>
       <p class="hero-subtitle">
-        A lightweight, production-grade web hosting control panel & process engine for Termux. Host HTML, Node.js, Python, and PHP apps with <strong>Custom Domains, Free SSL (HTTPS)</strong>, <strong>Free Professional Email in Gmail</strong>, and <strong>Unlimited Telegram Cloud Object Storage</strong> — zero router port-forwarding required.
+        Built for <strong>Small to Medium Businesses, Local Stores, Freelancers & Startups</strong>: Host your websites and apps with <strong>$0 recurring hosting overhead</strong>. You literally only pay for your domain name (~$10/year) — <strong>Web Hosting, Free SSL Certificates, Business Email in Gmail, and Unlimited Telegram Cloud Storage</strong> are 100% free forever.
       </p>
 
       <div class="hero-actions">
         <a href="#install" class="btn btn-primary">
           <i data-lucide="rocket"></i> Install in 1-Click
         </a>
-        <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-secondary">
-          <i data-lucide="folder-git-2"></i> View Source Code
+        <a href="#smb-cost" class="btn btn-secondary">
+          <i data-lucide="calculator"></i> See $0 Cost Breakdown
         </a>
       </div>
 
@@ -910,6 +914,123 @@
           <h3 class="card-title">24/7 Self-Healing Watchdog</h3>
           <p class="card-text">Continuous monitor resurrects Node.js and Cloudflare processes within 60 seconds if Android's memory manager ever kills them.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Small Business $0 Hosting Stack & Cost Comparison -->
+  <section id="smb-cost" style="background: rgba(2, 132, 199, 0.03);">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i data-lucide="badge-dollar-sign"></i> ZERO RECURRING OVERHEAD</div>
+        <h2 class="section-title">The $0/Month Small Business Web Stack</h2>
+        <p class="section-desc">You literally only pay for your domain name (~$8–$12/year). Every other layer of your web presence is 100% free forever.</p>
+      </div>
+
+      <!-- Cost Breakdown 4 Cards -->
+      <div class="grid-2" style="margin-bottom: 36px;">
+        <div class="card" style="border-left: 4px solid var(--primary-light);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="server" style="color: var(--primary-light);"></i> Web Hosting Server</h3>
+            <span class="badge badge-success">$0 / Month</span>
+          </div>
+          <p class="card-text">Run Node.js APIs, Python Flask/FastAPI, PHP, and static HTML websites on a repurposed Android phone or tablet. Zero server rental fees, zero VPS contracts.</p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid #10b981;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="lock" style="color: #10b981;"></i> Automatic SSL (HTTPS 🔒)</h3>
+            <span class="badge badge-success">$0 / Month</span>
+          </div>
+          <p class="card-text">Automatic Cloudflare Universal SSL with auto-renewing TLS 1.3 certificates, green security padlock, and strict HTTP-to-HTTPS redirect without paid SSL add-ons.</p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid #f59e0b;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="mail" style="color: #f59e0b;"></i> Custom Domain Email in Gmail</h3>
+            <span class="badge badge-success">$0 / Month</span>
+          </div>
+          <p class="card-text">Receive <code>support@yourdomain.com</code> in your personal Gmail via Cloudflare Inbound Routing, and reply from Gmail with custom domain branding via free Brevo SMTP.</p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid #a855f7;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="hard-drive" style="color: #a855f7;"></i> Telegram Cloud Storage</h3>
+            <span class="badge badge-success">$0 / Month</span>
+          </div>
+          <p class="card-text">TeleDrive utilizes Telegram Bot API as unlimited offsite object storage. Store media, export static .zip websites, and schedule automated 7-day backup archives at $0 cost.</p>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Infrastructure Component</th>
+              <th>Traditional Cloud / SaaS Providers</th>
+              <th>Traditional Cost</th>
+              <th>TermuxPanel Self-Hosted Stack</th>
+              <th>TermuxPanel Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Domain Name (yourdomain.com)</strong></td>
+              <td>Namecheap / GoDaddy / Cloudflare</td>
+              <td>~$10 / year</td>
+              <td>Standard Domain Registrar of your choice</td>
+              <td><span class="badge badge-primary">~$10 / yr (Only Cost!)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Web Hosting Server (VPS / Cloud)</strong></td>
+              <td>DigitalOcean / AWS / Linode</td>
+              <td>$120 – $360 / year</td>
+              <td>Repurposed Android Phone / Tablet</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr>
+              <td><strong>SSL Security Certificates (HTTPS 🔒)</strong></td>
+              <td>Sectigo / DigiCert / Comodo</td>
+              <td>$50 – $100 / year</td>
+              <td>Automatic Cloudflare Universal SSL</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Custom Domain Business Email</strong></td>
+              <td>Google Workspace / Microsoft 365</td>
+              <td>$72 – $216 / user / yr</td>
+              <td>Cloudflare Inbound + Brevo SMTP in Gmail</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cloud Object Storage & Backups</strong></td>
+              <td>AWS S3 / Google Cloud Storage</td>
+              <td>$60 – $180 / year</td>
+              <td>Unlimited Telegram Cloud & TeleDrive</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Web Traffic Analytics Engine</strong></td>
+              <td>Plausible / Fathom Analytics</td>
+              <td>$108 – $240 / year</td>
+              <td>Embedded Privacy-First SQLite Engine</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Database Engine</strong></td>
+              <td>Managed Supabase / PlanetScale</td>
+              <td>$180 – $300 / year</td>
+              <td>Built-in Pure SQLite3 (WAL Mode)</td>
+              <td><span class="badge badge-success">$0.00 (FREE)</span></td>
+            </tr>
+            <tr style="background: rgba(2, 132, 199, 0.1); font-weight: 700;">
+              <td><strong>TOTAL ESTIMATED ANNUAL SPEND</strong></td>
+              <td colspan="2"><span style="color: #ef4444; font-size: 16px;">$600 – $1,400+ / year</span></td>
+              <td colspan="2"><span style="color: #10b981; font-size: 18px;">~$10 / year total</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -1290,6 +1411,60 @@ echo json_encode([
     </div>
   </section>
 
+  <!-- Real-World Limitations & When to Upgrade -->
+  <section id="limitations" style="background: rgba(11, 15, 25, 0.6);">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i data-lucide="scale"></i> TRANSPARENCY & BOUNDARIES</div>
+        <h2 class="section-title">Real-World Limitations & When to Upgrade</h2>
+        <p class="section-desc">An honest, realistic guide for small business owners on what TermuxPanel excels at, and when your growing platform should upgrade to dedicated cloud datacenters.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Sweet Spot Card -->
+        <div class="card" style="border-top: 4px solid #10b981;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <div class="card-icon-wrap" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981; margin-bottom: 0;">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div>
+              <h3 class="card-title" style="margin-bottom: 2px;">The Small Business Sweet Spot</h3>
+              <span class="badge badge-success">500 to 50,000+ Daily Visits</span>
+            </div>
+          </div>
+          <p class="card-text" style="margin-bottom: 14px;">TermuxPanel is ideally suited for 95% of small and medium businesses looking to host their online presence with zero recurring server bills:</p>
+          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+            <li><strong>Local Store & Service Websites:</strong> Restaurants, salons, medical clinics, dental practices, law offices, and local shops.</li>
+            <li><strong>Portfolios & Client Portals:</strong> Freelancers, creative agencies, consultants, developers, and designers.</li>
+            <li><strong>Landing Pages & Catalogs:</strong> Product launches, digital menus, event registration pages, and marketing funnels.</li>
+            <li><strong>Documentation & Blogs:</strong> Company documentation, knowledge bases, news, and markdown blogs.</li>
+            <li><strong>REST APIs & Webhooks:</strong> Contact form receivers, CRM triggers, and lightweight SQLite database backends.</li>
+          </ul>
+        </div>
+
+        <!-- Upgrade Indicators Card -->
+        <div class="card" style="border-top: 4px solid #f59e0b;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <div class="card-icon-wrap" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; margin-bottom: 0;">
+              <i data-lucide="alert-triangle"></i>
+            </div>
+            <div>
+              <h3 class="card-title" style="margin-bottom: 2px;">When You Should Upgrade</h3>
+              <span class="badge badge-warning">High Concurrency & Enterprise Needs</span>
+            </div>
+          </div>
+          <p class="card-text" style="margin-bottom: 14px;">As your business scales, you should transition to cloud datacenters (AWS, GCP, DigitalOcean) if you encounter:</p>
+          <ul style="color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px;">
+            <li><strong>Extreme Database Concurrency:</strong> 10,000+ simultaneous DB write transactions per second during a flash sale (requires distributed PostgreSQL / MySQL clusters).</li>
+            <li><strong>Heavy GPU & AI Model Training:</strong> Training massive 70B parameter LLMs or 3D rendering (requires dedicated Nvidia A100/H100 Tensor GPUs).</li>
+            <li><strong>Physical Device & Internet Dependency:</strong> If your phone loses power or local Wi-Fi, the site pauses until connection resumes.</li>
+            <li><strong>Enterprise SOC 2 / HIPAA Certification:</strong> Enterprise contracts that legally mandate certified physical datacenter locks and ISO/IEC 27001 audits.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Comparison Table -->
   <section id="comparison">
     <div class="container">
@@ -1401,6 +1576,16 @@ echo json_encode([
       <div class="section-header">
         <div class="section-tag"><i data-lucide="help-circle"></i> QUESTIONS & ANSWERS</div>
         <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Is hosting really $0 recurring cost for Small Businesses? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer"><strong>YES.</strong> You literally only pay your domain registrar ~$8–$12/year for your domain name. Web hosting runs on your Android hardware ($0), SSL is automated via Cloudflare ($0), business email is routed to Gmail ($0), cloud backups are stored in Telegram ($0), and web traffic analytics run locally in SQLite ($0). You save $500–$1,400+ every single year compared to cloud VPS and SaaS suites.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">What are the real-world limitations for a growing business? <span><i data-lucide="chevron-down"></i></span></div>
+        <div class="faq-answer">TermuxPanel easily handles small-to-medium business traffic (up to 50,000+ daily page views when paired with Cloudflare CDN caching). You only need to upgrade to cloud datacenters if your business demands <strong>extreme concurrent database writes</strong> (e.g., 10,000+ simultaneous checkout writes/sec during flash sales), requires dedicated <strong>GPU AI model training</strong>, or mandates <strong>SOC 2 Type II physical datacenter compliance</strong>.</div>
       </div>
 
       <div class="faq-item">

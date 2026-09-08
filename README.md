@@ -17,20 +17,21 @@
 ## 📖 Table of Contents
 
 1. [What is TermuxPanel?](#1-what-is-termuxpanel)
-2. [How Does It Connect to the Internet? (No Port Forwarding)](#2-how-does-it-connect-to-the-internet-no-port-forwarding)
-3. [What You Need Before Starting](#3-what-you-need-before-starting)
-4. [Step-by-Step Installation Guide](#4-step-by-step-installation-guide)
-5. [First-Time Setup: Creating Your Admin Account](#5-first-time-setup-creating-your-admin-account)
-6. [Cloudflare Zero Trust Setup (Access from Anywhere)](#6-cloudflare-zero-trust-setup-access-from-anywhere)
+2. [The $0/Month Small Business Web Stack (You Only Pay for Your Domain)](#2-the-0month-small-business-web-stack-you-only-pay-for-your-domain)
+3. [How Does It Connect to the Internet? (No Port Forwarding)](#3-how-does-it-connect-to-the-internet-no-port-forwarding)
+4. [What You Need Before Starting](#4-what-you-need-before-starting)
+5. [Step-by-Step Installation Guide](#5-step-by-step-installation-guide)
+6. [First-Time Setup: Creating Your Admin Account](#6-first-time-setup-creating-your-admin-account)
+7. [Cloudflare Zero Trust Setup (Access from Anywhere)](#7-cloudflare-zero-trust-setup-access-from-anywhere)
    - [Option A: Semi-Automatic Setup (Copy & Paste Token)](#option-a-semi-automatic-setup-copy--paste-token---easiest)
    - [Option B: Fully-Automatic Setup (Using Cloudflare API)](#option-b-fully-automatic-setup-using-cloudflare-api)
    - [Adding Extra Security: Password Protect Before Login (Cloudflare Access)](#adding-extra-security-password-protect-before-login-cloudflare-access)
-7. [How to Deploy Websites & Apps (Step-by-Step)](#7-how-to-deploy-websites--apps-step-by-step)
+8. [How to Deploy Websites & Apps (Step-by-Step)](#8-how-to-deploy-websites--apps-step-by-step)
    - [Deploying a Static HTML/CSS/JS Website](#deploying-a-static-htmlcssjs-website)
    - [Deploying a Node.js Application](#deploying-a-nodejs-application)
    - [Deploying a Python App (Flask / FastAPI)](#deploying-a-python-app-flask--fastapi)
    - [Deploying a PHP Application](#deploying-a-php-application)
-8. [How to Use the Panel Features](#8-how-to-use-the-panel-features)
+9. [How to Use the Panel Features](#9-how-to-use-the-panel-features)
    - [Custom Domain, DNS & Free Automatic SSL (HTTPS) Management](#custom-domain-dns--free-automatic-ssl-https-management)
    - [Free Professional Custom Domain Email Routing Suite](#free-professional-custom-domain-email-routing-suite)
    - [Unlimited Telegram Cloud & TeleDrive Object Storage Management](#unlimited-telegram-cloud--teledrive-object-storage-management)
@@ -44,12 +45,13 @@
    - [In-Browser Web Terminal (`tp`)](#in-browser-web-terminal-tp)
    - [Security & Zero-Trust Defense (2FA TOTP & IP Jail)](#security--zero-trust-defense-2fa-totp--ip-jail)
    - [Viewing Live Server Logs](#viewing-live-server-logs)
-9. [Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)](#9-traffic-capacity--performance-benchmarks)
-10. [Terminal CLI (`tp`) - Control via Phone Terminal](#10-terminal-cli-tp---control-via-phone-terminal)
-11. [How to Keep It Running 24/7 (Prevent Android from Killing It)](#11-how-to-keep-it-running-247-prevent-android-from-killing-it)
-12. [Understanding the Project Folder Structure](#12-understanding-the-project-folder-structure)
-13. [Troubleshooting & Common Errors Solved](#13-troubleshooting--common-errors-solved)
-14. [License](#14-license)
+10. [Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)](#10-traffic-capacity--performance-benchmarks)
+11. [Real-World Limitations & When to Upgrade (Honest Boundaries for Businesses)](#11-real-world-limitations--when-to-upgrade)
+12. [Terminal CLI (`tp`) - Control via Phone Terminal](#12-terminal-cli-tp---control-via-phone-terminal)
+13. [How to Keep It Running 24/7 (Prevent Android from Killing It)](#13-how-to-keep-it-running-247-prevent-android-from-killing-it)
+14. [Understanding the Project Folder Structure](#14-understanding-the-project-folder-structure)
+15. [Troubleshooting & Common Errors Solved](#15-troubleshooting--common-errors-solved)
+16. [License](#16-license)
 
 ---
 
@@ -68,7 +70,30 @@ Normally, if you want to host a website or manage web applications, you have to 
 
 ---
 
-## 2. How Does It Connect to the Internet? (No Port Forwarding)
+## 2. The $0/Month Small Business Web Stack (You Only Pay for Your Domain)
+
+If you are a **Small to Medium Business (SMB)**, **Local Shop Owner**, **Freelancer**, **Digital Agency**, **Doctor/Dentist/Lawyer**, **Restaurant/Café**, or **Startup**, the traditional cost of maintaining an online web presence quickly adds up to hundreds of dollars every year.
+
+With **TermuxPanel**, your entire infrastructure stack runs at **$0 recurring cost**. **The only expense you will EVER pay is your annual domain registration fee (~$8–$12/year)** to a domain registrar of your choice (such as Cloudflare Registrar, Namecheap, or Porkbun). Everything else is 100% free forever.
+
+### 💰 Annual Cost Comparison: Traditional Cloud Hosting vs. TermuxPanel
+
+| Infrastructure Component | Traditional Cloud / SaaS Provider | Traditional Annual Cost | TermuxPanel Self-Hosted Stack | TermuxPanel Annual Cost |
+| :--- | :--- | :--- | :--- | :--- |
+| **Domain Name** | Namecheap / Cloudflare / GoDaddy | ~$10 / year | Any Standard Domain Registrar | **~$10 / year (Only Cost!)** |
+| **Web Hosting Server** | DigitalOcean / Linode / AWS EC2 | $120 – $360 / year | Repurposed Android Phone / Tablet | **$0.00 / month (FREE)** |
+| **SSL Security (HTTPS 🔒)** | Sectigo / DigiCert / Hostinger | $50 – $100 / year | Automatic Cloudflare Universal SSL | **$0.00 (FREE)** |
+| **Business Email (custom domain)**| Google Workspace / Microsoft 365 | $72 – $216 / user / yr | Cloudflare Routing + Brevo in Gmail | **$0.00 (FREE)** |
+| **Cloud Object Storage & Backups**| AWS S3 / Google Cloud Storage | $60 – $180 / year | Unlimited Telegram Cloud & TeleDrive | **$0.00 (FREE)** |
+| **Web Analytics & Traffic Stats** | Plausible / Fathom Analytics | $108 – $240 / year | Embedded Privacy-First SQLite Engine | **$0.00 (FREE)** |
+| **Database Engine** | Managed Supabase / PlanetScale | $180 – $300 / year | Built-in Pure SQLite3 (WAL Mode) | **$0.00 (FREE)** |
+| **TOTAL ESTIMATED ANNUAL SPEND** | — | **$600 – $1,400+ / year** | — | **~$10 / year total** |
+
+> 💡 **The Bottom Line**: You save **$500 to $1,400+ every single year** by turning a spare Android device into your dedicated 24/7 hosting server.
+
+---
+
+## 3. How Does It Connect to the Internet? (No Port Forwarding)
 
 ### The Problem with Traditional Hosting on Phones
 Normally, hosting a server at home requires:
@@ -117,7 +142,7 @@ TermuxPanel uses **Cloudflare Zero Trust Tunnel**:
 
 ---
 
-## 3. What You Need Before Starting
+## 4. What You Need Before Starting
 
 You only need 3 things:
 
@@ -132,7 +157,7 @@ You only need 3 things:
 
 ---
 
-## 4. Step-by-Step Installation Guide
+## 5. Step-by-Step Installation Guide
 
 Follow these exact steps on your Android device:
 
@@ -199,7 +224,7 @@ Access your control panel:
 
 ---
 
-## 5. First-Time Setup: Creating Your Admin Account
+## 6. First-Time Setup: Creating Your Admin Account
 
 1. On your phone, open any web browser (Chrome, Firefox, Brave).
 2. Go to:
@@ -215,7 +240,7 @@ Access your control panel:
 
 ---
 
-## 6. Cloudflare Zero Trust Setup (Access from Anywhere)
+## 7. Cloudflare Zero Trust Setup (Access from Anywhere)
 
 To access your panel and websites from your laptop, office computer, or anywhere in the world over HTTPS (`https://panel.yourdomain.com`), choose either **Option A** or **Option B**.
 
@@ -307,7 +332,7 @@ To add a firewall policy that requires your personal Google or Email PIN before 
 
 ---
 
-## 7. How to Deploy Websites & Apps (Step-by-Step)
+## 8. How to Deploy Websites & Apps (Step-by-Step)
 
 In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create Website**.
 
@@ -355,7 +380,7 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ---
 
-## 8. How to Use the Panel Features
+## 9. How to Use the Panel Features
 
 ### Custom Domain, DNS & Free Automatic SSL (HTTPS) Management
 - Click the **Domains** tab.
@@ -447,14 +472,14 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ---
 
-## 9. Traffic Capacity & Performance Benchmarks
+## 10. Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)
 
 ### 📊 How Much Traffic Can This Server Handle?
 
 Modern Android processors (Snapdragon 8-series / 7-series / Dimensity / Tensor) have 8-core ARM64 architectures that rival dedicated cloud VPS instances. 
 
 | Traffic Scenario | Requests / Sec (RPS) | Concurrent Active Users | Daily Page Views Capacity | Average Latency |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | **With Cloudflare CDN (Orange Cloud ☁️🧡)** | **5,000+ RPS** | **500 – 2,000+ users** | **500,000 – 2,000,000+ / day** | **10 – 25 ms** (Edge) |
 | **Direct Static Site (HTML/CSS/JS + Gzip)** | **400 – 1,200 RPS** | **100 – 300 users** | **100,000 – 500,000 / day** | **15 – 45 ms** |
 | **Node.js / Express API + SQLite** | **150 – 500 RPS** | **50 – 150 users** | **50,000 – 200,000 / day** | **20 – 60 ms** |
@@ -479,7 +504,50 @@ Modern Android processors (Snapdragon 8-series / 7-series / Dimensity / Tensor) 
 
 ---
 
-## 10. Terminal CLI (`tp`) - Control via Phone Terminal
+## 11. Real-World Limitations & When to Upgrade (Honest Boundaries for Businesses)
+
+TermuxPanel is designed specifically to help **small and medium businesses, local store owners, service providers, freelancers, and independent creators** run their web presence with **$0 recurring hosting overhead**.
+
+To ensure you make the right architectural choices for your business as you grow, here is an honest, transparent breakdown of where TermuxPanel excels and the boundaries where upgrading to dedicated cloud datacenters makes sense.
+
+---
+
+### 🟢 What TermuxPanel Excels At (The Business Sweet Spot)
+
+For 95% of small-to-medium businesses, TermuxPanel running on an Android phone paired with Cloudflare CDN delivers speed, reliability, and security identical to a $20–$50/month cloud server:
+
+- **Local Business & Service Websites**: Restaurants, cafés, dental/medical practices, law firms, auto repair shops, salons, gyms, and consulting agencies.
+- **Portfolios & Client Showcases**: Designers, developers, photographers, and copywriters.
+- **Product Landing Pages & Catalogs**: Product launches, waitlists, informational catalogs, digital brochures, and event signups.
+- **Content Platforms & Blogs**: Company news, documentation, knowledge bases, and tutorials.
+- **Small-to-Medium APIs & Webhook Receivers**: Contact form submissions, booking request collectors, CRM integrations, and lightweight microservices.
+- **Traffic Volume**: Easily handles **500 to 50,000+ daily page views** without breaking a sweat thanks to Cloudflare caching static assets at the global edge.
+
+---
+
+### 🔴 Real-World Limitations & When to Upgrade
+
+If your business scales into any of the following technical demands, you should transition those specific workloads to traditional datacenter cloud infrastructure:
+
+#### 1. Extreme Database Concurrency & High-Frequency Writes
+- **The Boundary**: SQLite3 is an in-process, zero-configuration database that uses database-level locking during writes. With WAL (Write-Ahead Logging) mode, it effortlessly handles hundreds of simultaneous reads alongside continuous writes. However, if your business runs high-frequency write concurrency (e.g. 10,000+ simultaneous database write transactions per second during a Black Friday flash sale with live inventory depletion), SQLite will encounter write-lock contention.
+- **When to Upgrade**: When your platform requires multi-master distributed clustering (PostgreSQL / CockroachDB / MySQL Replication).
+
+#### 2. Heavy Local GPU Machine Learning & Model Training
+- **The Boundary**: The phone's ARM CPU is ideal for serving Node.js, Python FastAPI, and PHP backends. However, mobile chipsets are not designed for training 70B parameter Large Language Models (LLMs) or rendering multi-hour 3D Blender animations.
+- **When to Upgrade**: When your core application requires dedicated Nvidia Tensor-core GPUs (A100 / H100 clusters).
+
+#### 3. Physical Device & Network Redundancy
+- **The Boundary**: Cloud datacenters feature multi-homed BGP fiber lines and dual power generators. When self-hosting on a smartphone, your server uptime depends on your local Wi-Fi / cellular data and your charging cable.
+- **Mitigation**: TermuxPanel includes an automated 24/7 CPU WakeLock, battery protection telemetry, and a self-healing watchdog. However, if the phone is physically turned off or loses internet connectivity, your site will be temporarily unreachable until power/connection returns.
+
+#### 4. Strict Enterprise Physical Compliance (SOC 2 Type II / HIPAA)
+- **The Boundary**: If enterprise clients require signed SOC 2 Type II audit reports certifying biometric datacenter access and ISO/IEC 27001 physical security guarantees, self-hosting on a personal phone does not satisfy physical compliance audits.
+- **When to Upgrade**: When enterprise contracts legally require certified physical datacenter certifications.
+
+---
+
+## 12. Terminal CLI (`tp`) - Control via Phone Terminal
 
 You don't always need a web browser to manage your server. Open the Termux app and type:
 
@@ -520,7 +588,7 @@ tp backup      # Generate an immediate full server backup archive
 
 ---
 
-## 11. How to Keep It Running 24/7 (Prevent Android from Killing It)
+## 13. How to Keep It Running 24/7 (Prevent Android from Killing It)
 
 Android has aggressive battery-saving features that put apps to sleep when your screen is locked. To make your server run **24/7/365 uninterrupted**:
 
@@ -541,7 +609,7 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 
 ---
 
-## 12. Understanding the Project Folder Structure
+## 14. Understanding the Project Folder Structure
 
 ```
 ~/termux-panel/
@@ -602,7 +670,7 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 
 ---
 
-## 13. Troubleshooting & Common Errors Solved
+## 15. Troubleshooting & Common Errors Solved
 
 ### Q1: `Error 1033: Cloudflare Tunnel error` when opening the website
 - **Reason**: The `cloudflared` process on your phone is stopped or your phone lost internet connection.
@@ -627,7 +695,7 @@ TermuxPanel installs a watchdog script (`scripts/watchdog.sh`) in `crontab` that
 
 ---
 
-## 14. License
+## 16. License
 
 This project is licensed under the **[MIT License](LICENSE)**.
 
