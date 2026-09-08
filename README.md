@@ -31,13 +31,15 @@
 8. [How to Use the Panel Features](#8-how-to-use-the-panel-features)
    - [Privacy-First Web Traffic Analytics & Real-Time RPS](#privacy-first-web-traffic-analytics--real-time-rps)
    - [Free Professional Custom Domain Email Routing](#free-professional-custom-domain-email-routing)
+   - [Telegram Cloud & TeleDrive (Unlimited Free Object Storage)](#telegram-cloud--teledrive-unlimited-free-object-storage)
    - [File Manager & In-Browser Code Editor](#file-manager--in-browser-code-editor)
    - [SQLite Database Studio & SQL Runner](#sqlite-database-studio--sql-query-runner)
-   - [Automated Cron Jobs](#automated-cron-jobs)
-   - [Cloud Backup Sync (Telegram & rclone) & Pruning](#cloud-backup-sync-telegram--rclone--retention-pruning)
-   - [Hardware Battery Guard & Thermal Monitor](#hardware-battery-guard--thermal-monitor)
    - [Visual NPM & PIP Package Manager](#visual-npm--pip-package-manager)
-   - [Telegram Cloud & TeleDrive (Unlimited Free Object Storage)](#telegram-cloud--teledrive-unlimited-free-object-storage)
+   - [Automated Cron Jobs](#automated-cron-jobs)
+   - [Hardware Battery Guard & Thermal Monitor](#hardware-battery-guard--thermal-monitor)
+   - [Multi-Tunnel Fallback (Cloudflare, Ngrok, LocalXpose, Tailscale)](#multi-tunnel-fallback-cloudflare-ngrok-localxpose-tailscale)
+   - [In-Browser Web Terminal (`tp`)](#in-browser-web-terminal-tp)
+   - [Security & Zero-Trust Defense (2FA TOTP & IP Jail)](#security--zero-trust-defense-2fa-totp--ip-jail)
    - [Viewing Live Server Logs](#viewing-live-server-logs)
 9. [Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)](#9-traffic-capacity--performance-benchmarks)
 10. [Terminal CLI (`tp`) - Control via Phone Terminal](#10-terminal-cli-tp---control-via-phone-terminal)
@@ -129,13 +131,15 @@ You only need 3 things:
 
 Follow these exact steps on your Android device:
 
-### Step 1: Install Termux from F-Droid
-> ⚠️ **IMPORTANT**: Do **NOT** install Termux from the Google Play Store. The Google Play Store version is deprecated and will not work.
+### Step 1: Install Termux (Google Play Store, F-Droid, or GitHub)
 
-1. Open your phone's browser and go to: **[https://f-droid.org/packages/com.termux/](https://f-droid.org/packages/com.termux/)**
-2. Scroll down and tap **"Download APK"**.
-3. Once downloaded, open the file and tap **Install**.
-4. *(Optional but recommended)*: Also download and install **[Termux:Boot from F-Droid](https://f-droid.org/packages/com.termux.boot/)** if you want the server to start automatically when your phone reboots.
+TermuxPanel is fully compatible with all standard Termux installations on Android:
+
+1. **Google Play Store**: Install directly from the [Google Play Store](https://play.google.com/store/apps/details?id=com.termux).
+2. **F-Droid**: Download the APK from [F-Droid](https://f-droid.org/packages/com.termux/).
+3. **GitHub Releases**: Download APK directly from [Termux GitHub Releases](https://github.com/termux/termux-app/releases).
+
+*(Optional but recommended)*: Also install **[Termux:Boot](https://f-droid.org/packages/com.termux.boot/)** if you want the server to start automatically when your phone reboots.
 
 ---
 
@@ -352,7 +356,7 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - Click the **Analytics** tab.
 - **Zero-PII & Zero Third-Party Cookies**: Collects visitor metrics stored in your local SQLite database without sending telemetry to Google, Meta, or third parties.
 - **Live RPS Gauge**: Visualizes real-time requests/second and active visitors.
-- **2x2 Core Metrics Dashboard**: Tracks `Total Requests`, `Unique Visitors` (anonymized hash), `Bandwidth Served`, and `Avg Latency (ms)`.
+- **2x2 Core Metrics Dashboard**: Tracks `Total Requests`, `Unique Visitors` (anonymized SHA-256 hash), `Bandwidth Served`, and `Avg Latency (ms)`.
 - **HTTP Status Code Breakdown**: Interactive visual distribution of `2xx Success`, `3xx Redirect`, `4xx Client Error`, and `5xx Server Error`.
 - **Hourly Traffic Activity Chart**: Bar chart illustrating traffic trends across 1h, 24h, 7d, and 30d ranges.
 - **Top Visited Endpoints**: Ranked table of most requested pages, hits, unique visitors, and bandwidth consumed.
@@ -361,9 +365,19 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - Click the **Email Routing** tab.
 - **Receive at $0 Cost**: Receive emails sent to `support@yourdomain.com` forwarded directly to your personal Gmail inbox via Cloudflare Email Routing.
 - **Send & Reply from Gmail**: Send and reply to emails from Gmail showing your custom domain as the sender via free Brevo SMTP (300 emails/day forever).
-- **1-Click Cloudflare API Auto-Setup**: Auto-provisions Cloudflare Email Routing, destination address, and required MX/SPF records.
-- **1-Click Brevo DNS Auto-Push**: Injects Brevo DKIM keys (CNAME) and DMARC TXT records into Cloudflare DNS with 1 click.
+- **Dual-Mode Setup**:
+  - **Option A: 1-Click Cloudflare API Auto-Setup**: Auto-provisions Cloudflare Email Routing, destination address, and required MX/SPF records.
+  - **Option B: Step-by-Step Guided Wizard**: Generates required MX, SPF, DKIM (CNAME), and DMARC TXT records with a 1-click **Download BIND Zone File** button for bulk DNS import.
+- **1-Click Brevo DNS Auto-Push**: Injects Brevo DKIM keys and DMARC TXT records into Cloudflare DNS with 1 click.
 - **Live DNS Health Auditor**: Audits your domain's live MX, SPF, DKIM, and DMARC configuration across global nameservers with a real-time deliverability score.
+
+### Telegram Cloud & TeleDrive (Unlimited Free Object Storage)
+- Click the **TeleDrive (Cloud)** tab.
+- **Unlimited Free Cloud Object Storage**: Connect your private Telegram Bot (`@BotFather`) and Channel/Chat to unlock 100% free, unlimited off-device cloud object storage ($0 storage fees).
+- **Static Web Hosting Exports (.zip)**: 1-click package and export any running website into a clean `.zip` archive stored on Telegram Cloud.
+- **1-Click Instant Web Deployment**: Select any static `.zip` archive stored in Telegram Cloud and launch it as a live TermuxPanel website with auto-port allocation and domain mapping.
+- **Automated Backup Sync & 7-Day Retention Pruning**: Seamlessly pushes scheduled `.tar.gz` backups to Telegram and auto-prunes backups older than 7 days from Telegram and local storage.
+- **Categorized File Management**: Filter and search through stored `Backups`, `Static Sites`, `Media`, and `Documents` with direct download URLs.
 
 ### File Manager & In-Browser Code Editor
 - Select your website from the dropdown to browse its files.
@@ -378,6 +392,10 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - Type custom SQL queries (e.g. `SELECT * FROM users;` or `CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT);`) into the query runner and click **Execute SQL**.
 - Click **Export .db** to download the raw database file to your computer.
 
+### Visual NPM & PIP Package Manager
+- Manage dependencies for Node.js (`npm`) and Python (`pip`) apps directly inside the web UI without opening a terminal.
+- 1-click search, install, and uninstall with live terminal progress output.
+
 ### Automated Cron Jobs
 - Click the **Cron Jobs** tab ➔ **+ Add Cron Job**.
 - Choose a schedule preset:
@@ -389,29 +407,22 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - Type the shell command to execute (e.g. `node /path/to/script.js` or `bash /path/to/backup.sh`).
 - Click **▶ Run Now** to test execution immediately.
 
-### Cloud Backup Sync (Telegram & rclone) & Retention Pruning
-- Click the **Backups** tab ➔ **+ Create Backup**.
-- **Scope Options**: Full Server (`.tar.gz`), Websites Only, or Databases Only.
-- **Telegram Cloud Storage**: Dispatch backup archives directly to your private Telegram channel/bot for unlimited free off-device cloud storage.
-- **Automated Retention Pruning**: Keeps the last 7 daily backups and automatically purges older archives to preserve mobile disk space.
-- Click **⬇ Download** to save archives locally anytime.
-
 ### Hardware Battery Guard & Thermal Monitor
 - Real-time battery temperature, percentage, and charging status telemetry.
 - Automated thermal-throttling alarms with instant Telegram notification alerts if battery temperature exceeds 45°C.
 - CPU clock speed & core load monitoring to prevent device degradation.
 
-### Visual NPM & PIP Package Manager
-- Manage dependencies for Node.js (`npm`) and Python (`pip`) apps directly inside the web UI without opening a terminal.
-- 1-click search, install, and uninstall with live terminal progress output.
+### Multi-Tunnel Fallback (Cloudflare, Ngrok, LocalXpose, Tailscale)
+- Click the **Cloudflare Tunnel** tab ➔ Switch provider tabs between **Cloudflare Zero Trust**, **Ngrok**, **LocalXpose**, and **Tailscale**.
+- Keep your sites reachable even when one provider undergoes maintenance.
 
-### Telegram Cloud & TeleDrive (Unlimited Free Object Storage)
-- Click the **TeleDrive (Cloud)** tab.
-- **Unlimited Free Cloud Object Storage**: Connect your private Telegram Bot and Channel/Chat to unlock 100% free, unlimited off-device cloud object storage.
-- **Static Web Hosting Exports (.zip)**: 1-click package and export any running website into a clean `.zip` archive stored on Telegram Cloud.
-- **1-Click Instant Web Deployment**: Select any static `.zip` archive stored in Telegram Cloud and launch it as a live TermuxPanel website with auto-port allocation and domain mapping.
-- **Automated Backup Sync & 7-Day Retention Pruning**: Seamlessly pushes scheduled `.tar.gz` backups to Telegram and auto-prunes backups older than 7 days from Telegram and local storage.
-- **Categorized File Management**: Filter and search through stored `Backups`, `Static Sites`, `Media`, and `Documents` with direct download URLs.
+### In-Browser Web Terminal (`tp`)
+- Click the **Web Terminal** tab to access a full interactive Linux shell right in your browser.
+- Run `tp`, check system metrics, inspect processes, and test scripts in real time.
+
+### Security & Zero-Trust Defense (2FA TOTP & IP Jail)
+- **Two-Factor Authentication (2FA)**: RFC 6238 TOTP compatible with Google Authenticator, Authy, and 1Password with recovery backup codes.
+- **Brute-Force IP Jail**: Automatically bans attacking IPs after repeated failed login attempts with a permanent localhost whitelist.
 
 ### Viewing Live Server Logs
 - Click the **Logs** tab.
