@@ -72,7 +72,23 @@ const emailManager = {
     if (!tbody) return;
 
     if (!this.forwarders || this.forwarders.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-muted text-center p-4">No custom email forwarders configured yet. Click "+ Setup Professional Email" above to get started for free.</td></tr>`;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="padding: 36px 20px; text-align: center;">
+            <div style="max-width: 440px; margin: 0 auto;">
+              <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
+                <i data-lucide="mail" style="width: 28px; height: 28px; color: #38bdf8;"></i>
+              </div>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Email Forwarders Configured</h4>
+              <p class="text-muted text-sm mb-3">Forward custom domain emails (<code>support@yourdomain.com</code>) to your personal Gmail and reply with custom DKIM at $0 cost.</p>
+              <button class="btn btn-primary btn-sm" onclick="emailManager.openSetupModal()">
+                <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Setup Professional Email
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 

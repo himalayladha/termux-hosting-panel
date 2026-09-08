@@ -58,12 +58,26 @@ const websites = {
 
     if (!this.list || this.list.length === 0) {
       grid.innerHTML = `
-        <div class="card p-4 text-center">
-          <p class="text-muted">No websites or applications deployed yet.</p>
-          <div class="mt-3">
+        <div class="empty-state-hero card p-5 text-center">
+          <div class="empty-state-icon-wrapper mb-3">
+            <div class="empty-state-icon">
+              <i data-lucide="globe" style="width: 36px; height: 36px; color: #38bdf8;"></i>
+            </div>
+          </div>
+          <h3 class="empty-state-title mb-2">No Websites Deployed Yet</h3>
+          <p class="empty-state-subtitle mb-4">
+            Host high-speed web apps directly on your Android phone with instant local & Cloudflare Zero Trust public access.
+          </p>
+          <div class="flex-align gap-2 justify-center flex-wrap mb-4">
             <button class="btn btn-primary" onclick="document.getElementById('modal-create-site').classList.remove('hidden')">
-              <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i> Create Website
+              <i data-lucide="plus" style="width: 15px; height: 15px; margin-right: 5px;"></i> Create Your First Website
             </button>
+          </div>
+          <div class="flex-align gap-2 justify-center flex-wrap">
+            <div class="tech-pill"><span style="color: #60a5fa;">⚡</span> Node.js (Express / Fastify)</div>
+            <div class="tech-pill"><span style="color: #fbbf24;">🐍</span> Python (Flask / FastAPI)</div>
+            <div class="tech-pill"><span style="color: #38bdf8;">🌐</span> Static HTML5 / JS</div>
+            <div class="tech-pill"><span style="color: #a855f7;">🐘</span> PHP Server</div>
           </div>
         </div>
       `;
@@ -80,14 +94,15 @@ const websites = {
         const openUrl = isRunning ? (wifiIp ? `http://${wifiIp}:${site.port}` : `http://127.0.0.1:${site.port}`) : '#';
 
         return `
-          <div class="card mb-3">
-            <div class="card-body">
-              <div class="flex-between flex-wrap gap-3 mb-3">
+          <div class="card website-card mb-3 ${isRunning ? 'is-running' : 'is-stopped'}">
+            <div class="card-body p-3">
+              <div class="flex-between flex-wrap gap-2 mb-3">
                 <div class="flex-align gap-2">
-                  <h4 style="font-size: 16px; margin: 0; font-weight: 600;">${site.name}</h4>
-                  <span class="badge badge-primary">${typeBadge}</span>
-                  <span class="badge ${isRunning ? 'badge-success' : 'badge-danger'}">
-                    ${isRunning ? '● RUNNING' : '○ STOPPED'}
+                  <span class="status-beacon ${isRunning ? 'running' : 'stopped'}"></span>
+                  <h4 style="font-size: 16px; margin: 0; font-weight: 700; color: #f8fafc;">${site.name}</h4>
+                  <span class="badge badge-primary" style="font-size: 11px;">${typeBadge}</span>
+                  <span class="badge ${isRunning ? 'badge-success' : 'badge-secondary'}" style="font-size: 11px;">
+                    ${isRunning ? 'RUNNING' : 'STOPPED'}
                   </span>
                 </div>
 

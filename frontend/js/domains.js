@@ -373,9 +373,22 @@ const domainsManager = {
     if (!this.domainsList || this.domainsList.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" class="text-muted text-center" style="padding: 32px;">
-            <i data-lucide="globe-2" style="width: 36px; height: 36px; color: #475569; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
-            No custom domains or subdomains connected yet.<br>Click <strong>"+ Connect Existing Domain"</strong> or <strong>"+ Create Subdomain"</strong> to route traffic.
+          <td colspan="6" style="padding: 36px 20px; text-align: center;">
+            <div style="max-width: 440px; margin: 0 auto;">
+              <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
+                <i data-lucide="globe-2" style="width: 28px; height: 28px; color: #38bdf8;"></i>
+              </div>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Domains or Subdomains Connected</h4>
+              <p class="text-muted text-sm mb-3">Connect your custom domain with automated Cloudflare SSL or launch instant subdomains with 1-click database & site provisioning.</p>
+              <div class="flex-align gap-2 justify-center flex-wrap">
+                <button class="btn btn-primary btn-sm" onclick="domainsManager.openSubdomainModal()">
+                  <i data-lucide="sparkles" style="width: 13px; height: 13px; margin-right: 3px;"></i> Create Subdomain
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="domainsManager.openConnectModal()">
+                  <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Connect Domain
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       `;

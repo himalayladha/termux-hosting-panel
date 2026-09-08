@@ -42,7 +42,25 @@ const backupsManager = {
     if (!tbody) return;
 
     if (!this.backupsList || this.backupsList.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-muted text-center" style="padding: 24px;">No backups created yet. Click "+ Create Backup" to generate one.</td></tr>`;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" style="padding: 36px 20px; text-align: center;">
+            <div style="max-width: 440px; margin: 0 auto;">
+              <div class="empty-state-icon" style="width: 56px; height: 56px; margin: 0 auto 12px auto; border-radius: 16px;">
+                <i data-lucide="archive" style="width: 28px; height: 28px; color: #38bdf8;"></i>
+              </div>
+              <h4 style="font-size: 16px; margin-bottom: 6px; color: #fff;">No Backups Created Yet</h4>
+              <p class="text-muted text-sm mb-3">Generate full <code>.tar.gz</code> archives of your sites, databases, and panel configs with 1-click cloud sync.</p>
+              <div class="flex-align gap-2 justify-center flex-wrap">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-create-backup').classList.remove('hidden')">
+                  <i data-lucide="plus" style="width: 13px; height: 13px; margin-right: 3px;"></i> Create Backup
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 
