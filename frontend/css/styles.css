@@ -702,6 +702,11 @@ body.light-theme .auth-card {
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
 }
 
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4,
+body.light-theme h5,
 body.light-theme .auth-header h1,
 body.light-theme .card-title,
 body.light-theme .metric-value,
@@ -711,6 +716,14 @@ body.light-theme .page-title,
 body.light-theme .brand-title,
 body.light-theme .modal-header h3 {
   color: #0f172a;
+}
+
+body.light-theme .card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .website-card:hover {
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.08);
 }
 
 body.light-theme .topbar {
