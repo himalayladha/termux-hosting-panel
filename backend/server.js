@@ -31,6 +31,7 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const uptimeRoutes = require('./routes/uptime.routes');
 const uptimeService = require('./services/uptime.service');
 const packagesRoutes = require('./routes/packages.routes');
+const emailRoutes = require('./routes/email.routes');
 const { ipBanGuard } = require('./auth/ipban.middleware');
 
 const app = express();
@@ -95,6 +96,7 @@ app.use('/api/security', securityRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/uptime', uptimeRoutes);
 app.use('/api/packages', packagesRoutes);
+app.use('/api/email', emailRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');

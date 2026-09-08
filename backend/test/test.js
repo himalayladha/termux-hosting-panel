@@ -501,7 +501,7 @@ async function runTests() {
   console.log('  ✓ In-memory static asset Gzip compression and Cloudflare purge API verified.');
 
   // 17. Dependency & Package Visual Manager (NPM & PIP)
-  console.log('[17/17] Testing Dependency & Package Visual Manager (NPM & PIP)...');
+  console.log('[17/18] Testing Dependency & Package Visual Manager (NPM & PIP)...');
   const packagesService = require('../services/packages.service');
 
   // Test Node.js package.json parsing on backend itself
@@ -513,8 +513,49 @@ async function runTests() {
   assert(expressPkg && expressPkg.status === 'installed', 'Express dependency was not detected as installed');
   console.log('  ✓ NPM & PIP dependency inspection and manifest parsing verified.');
 
+  // 18. Free Professional Email & Inbound Routing Suite
+  console.log('[18/18] Testing Free Professional Email & Inbound Routing Suite...');
+  const emailService = require('../services/email.service');
+
+  // Test Forwarder Creation
+  const testFwd = await emailService.createForwarder({
+    domain: 'example.com',
+    customEmail: 'support@example.com',
+    destinationEmail: 'admin@gmail.com',
+    mode: 'cloudflare_api',
+    brevoConfigured: 1
+  });
+  assert(testFwd && testFwd.id > 0, 'Email forwarder creation failed');
+
+  // Test Forwarder Listing
+  const forwarders = await emailService.listForwarders();
+  const foundFwd = forwarders.find((f) => f.custom_email === 'support@example.com');
+  assert(foundFwd && foundFwd.destination_email === 'admin@gmail.com', 'Forwarder record missing in list');
+
+  // Test DNS Templates & BIND File Generation
+  const dnsTpl = emailService.generateDnsTemplates('example.com', 'brevo-code:abc123xyz', 'dmarc@example.com');
+  assert(dnsTpl && Array.isArray(dnsTpl.records), 'DNS templates array missing');
+  assert(dnsTpl.records.some((r) => r.type === 'MX' && r.value.includes('cloudflare.net')), 'Cloudflare MX record missing');
+  assert(dnsTpl.records.some((r) => r.type === 'TXT' && r.value.startsWith('v=spf1')), 'SPF TXT record missing');
+  assert(dnsTpl.records.some((r) => r.type === 'CNAME' && r.name === 'brevo1._domainkey'), 'Brevo DKIM CNAME missing');
+  assert(dnsTpl.bindZoneText && dnsTpl.bindZoneText.includes('route1.mx.cloudflare.net'), 'BIND zone file format invalid');
+
+  // Test Live DNS Propagation Checker
+  const dnsReport = await emailService.verifyDnsPropagation('google.com');
+  assert(dnsReport && dnsReport.domain === 'google.com', 'DNS report domain mismatch');
+  assert(typeof dnsReport.overallScore === 'number', 'DNS report overall score must be numeric');
+  assert(dnsReport.mx && typeof dnsReport.mx.status === 'string', 'MX status missing in DNS report');
+  assert(dnsReport.spf && typeof dnsReport.spf.count === 'number', 'SPF count missing in DNS report');
+  assert(dnsReport.dkim && typeof dnsReport.dkim.status === 'string', 'DKIM status missing in DNS report');
+  assert(dnsReport.dmarc && typeof dnsReport.dmarc.status === 'string', 'DMARC status missing in DNS report');
+
+  // Test Forwarder Deletion
+  const delFwdRes = await emailService.deleteForwarder(testFwd.id);
+  assert(delFwdRes && delFwdRes.success === true, 'Forwarder deletion failed');
+  console.log('  ✓ Forwarder CRUD, Cloudflare MX/SPF & Brevo DKIM template generation, and live DNS checker verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 17/17 Verifications Passed!     ');
+  console.log('  All TermuxPanel 18/18 Verifications Passed!     ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

@@ -153,6 +153,7 @@ const app = {
     packagesManager.init();
     websites.init();
     domainsManager.init();
+    emailManager.init();
     fileManager.init();
     databases.init();
     cronManager.init();
@@ -244,6 +245,7 @@ const app = {
       analytics: 'Web Traffic & Analytics',
       websites: 'Websites & Applications',
       domains: 'Custom Domain Management',
+      email: 'Professional Email Routing',
       filemanager: 'File Manager',
       databases: 'SQLite Database Explorer',
       cron: 'Scheduled Cron Jobs',
@@ -268,6 +270,7 @@ const app = {
     if (tabId === 'dashboard') dashboard.loadSummary();
     if (tabId === 'websites') websites.loadWebsites();
     if (tabId === 'domains') domainsManager.loadDomains();
+    if (tabId === 'email') emailManager.loadForwarders();
     if (tabId === 'filemanager') fileManager.populateSiteSelector();
     if (tabId === 'databases') databases.loadDatabases();
     if (tabId === 'cron') cronManager.loadJobs();

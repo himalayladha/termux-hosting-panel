@@ -136,3 +136,16 @@ CREATE TABLE IF NOT EXISTS uptime_checks (
     FOREIGN KEY (website_id) REFERENCES websites(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_uptime_site_date ON uptime_checks(website_id, checked_at);
+
+CREATE TABLE IF NOT EXISTS email_forwarders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    domain TEXT NOT NULL,
+    custom_email TEXT NOT NULL,
+    destination_email TEXT NOT NULL,
+    cloudflare_rule_id TEXT,
+    status TEXT DEFAULT 'active',
+    mode TEXT DEFAULT 'manual',
+    brevo_configured INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_email_domain ON email_forwarders(domain);
