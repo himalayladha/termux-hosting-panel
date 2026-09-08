@@ -741,7 +741,7 @@ svg[data-lucide], i[data-lucide] {
   color: #fff;
 }
 
-.modal-close-btn {
+.modal-close-btn:not(.btn) {
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -757,9 +757,9 @@ svg[data-lucide], i[data-lucide] {
   transition: all var(--transition-fast);
 }
 
-.modal-close-btn:hover {
+.modal-close-btn:not(.btn):hover {
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--text-main);
 }
 
 .modal-body {
@@ -773,7 +773,9 @@ svg[data-lucide], i[data-lucide] {
   background: var(--bg-card-darker);
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Toast Notification */
