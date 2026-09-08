@@ -416,7 +416,7 @@ async function runTests() {
   console.log('  ✓ RFC 6238 TOTP engine, backup recovery codes, and brute-force IP jail verified.');
 
   // 13. Privacy-First Web Analytics Engine
-  console.log('[13/17] Testing Privacy-First Web Analytics Engine...');
+  console.log('[13/19] Testing Privacy-First Web Analytics Engine...');
   const analyticsService = require('../services/analytics.service');
 
   // Record simulated traffic hits
@@ -455,7 +455,7 @@ async function runTests() {
   console.log('  ✓ Analytics hit recording, live RPS gauge, status breakdown, and top URLs verified.');
 
   // 14. Cloud Backup & Retention Pruning
-  console.log('[14/17] Testing Cloud Backup & Retention Pruning...');
+  console.log('[14/19] Testing Cloud Backup & Retention Pruning...');
   const backupService = require('../services/backup.service');
 
   const createdBackup = await backupService.createBackup('websites');
@@ -471,7 +471,7 @@ async function runTests() {
   console.log('  ✓ Backup archiving, Telegram document streamer, and retention pruning verified.');
 
   // 15. Synthetic Uptime Monitor & Auto-Healer
-  console.log('[15/17] Testing Synthetic Uptime Monitor & Auto-Healer...');
+  console.log('[15/19] Testing Synthetic Uptime Monitor & Auto-Healer...');
   const uptimeService = require('../services/uptime.service');
 
   // Simulate recordCheck
@@ -487,7 +487,7 @@ async function runTests() {
   console.log('  ✓ Synthetic uptime health pinger, latency tracker, and crash recovery verified.');
 
   // 16. Gzip Compression & Cloudflare Cache Purge
-  console.log('[16/17] Testing In-Memory Gzip Compression & Cloudflare Cache Purge...');
+  console.log('[16/19] Testing In-Memory Gzip Compression & Cloudflare Cache Purge...');
   const zlib = require('zlib');
   const cloudflareService = require('../services/cloudflare.service');
 
@@ -501,7 +501,7 @@ async function runTests() {
   console.log('  ✓ In-memory static asset Gzip compression and Cloudflare purge API verified.');
 
   // 17. Dependency & Package Visual Manager (NPM & PIP)
-  console.log('[17/18] Testing Dependency & Package Visual Manager (NPM & PIP)...');
+  console.log('[17/19] Testing Dependency & Package Visual Manager (NPM & PIP)...');
   const packagesService = require('../services/packages.service');
 
   // Test Node.js package.json parsing on backend itself
@@ -514,7 +514,7 @@ async function runTests() {
   console.log('  ✓ NPM & PIP dependency inspection and manifest parsing verified.');
 
   // 18. Free Professional Email & Inbound Routing Suite
-  console.log('[18/18] Testing Free Professional Email & Inbound Routing Suite...');
+  console.log('[18/19] Testing Free Professional Email & Inbound Routing Suite...');
   const emailService = require('../services/email.service');
 
   // Test Forwarder Creation
@@ -554,8 +554,87 @@ async function runTests() {
   assert(delFwdRes && delFwdRes.success === true, 'Forwarder deletion failed');
   console.log('  ✓ Forwarder CRUD, Cloudflare MX/SPF & Brevo DKIM template generation, and live DNS checker verified.');
 
+  // 19. Telegram Cloud & TeleDrive Engine
+  console.log('[19/19] Testing Telegram Cloud & TeleDrive Engine...');
+  const teledriveService = require('../services/teledrive.service');
+
+  // Test 1: Config save & retrieval
+  await teledriveService.saveConfig({
+    botToken: '123456:TEST_BOT_TOKEN_XYZ',
+    chatId: '-1001987654321',
+    channelUsername: '@termux_cloud_drive_test',
+    enabled: true
+  });
+  const teleCfg = await teledriveService.getConfig();
+  assert(teleCfg.botToken === '123456:TEST_BOT_TOKEN_XYZ', 'TeleDrive bot token mismatch');
+  assert(teleCfg.chatId === '-1001987654321', 'TeleDrive chat ID mismatch');
+  assert(teleCfg.isConfigured === true, 'TeleDrive isConfigured should be true');
+
+  // Test 2: Database recording of files in telegram_files
+  const dummyFileInsert = await db.run(
+    `INSERT INTO telegram_files (file_name, file_size, mime_type, category, telegram_file_id, telegram_message_id, chat_id, caption)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      'test-archive.zip',
+      1048576,
+      'application/zip',
+      'static_site',
+      'BAADAgADrwADqaCwU-test-id-1',
+      99101,
+      '-1001987654321',
+      'Test static export'
+    ]
+  );
+  assert(dummyFileInsert.lastID > 0, 'telegram_files insert failed');
+
+  // Test 3: List files with category filter and search
+  const fileList = await teledriveService.listFiles({ category: 'static_site' });
+  assert(fileList.total >= 1, 'File count in category static_site should be >= 1');
+  const foundFile = fileList.files.find((f) => f.fileName === 'test-archive.zip');
+  assert(foundFile && foundFile.telegramFileId === 'BAADAgADrwADqaCwU-test-id-1', 'TeleDrive listFiles item mismatch');
+
+  const searchList = await teledriveService.listFiles({ search: 'test-archive' });
+  assert(searchList.files.length >= 1, 'TeleDrive search filter failed');
+
+  // Test 4: Drive stats calculation
+  const driveStats = await teledriveService.getDriveStats();
+  assert(driveStats.totalFiles >= 1, 'Drive stats totalFiles should be >= 1');
+  assert(driveStats.totalBytes >= 1048576, 'Drive stats totalBytes should reflect uploaded sizes');
+  assert(driveStats.categories.static_sites.count >= 1, 'Drive stats category count missing');
+
+  // Test 5: 7-day retention pruning logic
+  // Insert an expired backup with date older than 7 days
+  const oldDate = new Date();
+  oldDate.setDate(oldDate.getDate() - 10);
+  await db.run(
+    `INSERT INTO telegram_files (file_name, file_size, mime_type, category, telegram_file_id, telegram_message_id, chat_id, caption, uploaded_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      'backup-expired-10d.tar.gz',
+      2048000,
+      'application/gzip',
+      'backup',
+      'BAADAgADrwADqaCwU-test-id-expired',
+      99102,
+      '-1001987654321',
+      'Old automated backup',
+      oldDate.toISOString()
+    ]
+  );
+
+  const pruneResult = await teledriveService.pruneOldBackups(7);
+  assert(pruneResult.success === true, 'Prune old backups failed');
+  assert(pruneResult.prunedCount >= 1, 'Pruned count should be >= 1 for 10-day old backup');
+
+  const prunedCheck = await db.get("SELECT * FROM telegram_files WHERE file_name = 'backup-expired-10d.tar.gz'");
+  assert(!prunedCheck, 'Expired backup should have been removed from database index');
+
+  // Clean up test file
+  await teledriveService.deleteFile(dummyFileInsert.lastID);
+  console.log('  ✓ TeleDrive storage metadata index, category filtering, stats aggregation, and 7-day backup pruning verified.');
+
   console.log('--------------------------------------------------');
-  console.log('  All TermuxPanel 18/18 Verifications Passed!     ');
+  console.log('  All TermuxPanel 19/19 Verifications Passed!     ');
   console.log('--------------------------------------------------');
   process.exit(0);
 }

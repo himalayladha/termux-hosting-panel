@@ -37,6 +37,7 @@
    - [Cloud Backup Sync (Telegram & rclone) & Pruning](#cloud-backup-sync-telegram--rclone--retention-pruning)
    - [Hardware Battery Guard & Thermal Monitor](#hardware-battery-guard--thermal-monitor)
    - [Visual NPM & PIP Package Manager](#visual-npm--pip-package-manager)
+   - [Telegram Cloud & TeleDrive (Unlimited Free Object Storage)](#telegram-cloud--teledrive-unlimited-free-object-storage)
    - [Viewing Live Server Logs](#viewing-live-server-logs)
 9. [Traffic Capacity & Performance Benchmarks (How Much Traffic Can It Handle?)](#9-traffic-capacity--performance-benchmarks)
 10. [Terminal CLI (`tp`) - Control via Phone Terminal](#10-terminal-cli-tp---control-via-phone-terminal)
@@ -403,6 +404,14 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 ### Visual NPM & PIP Package Manager
 - Manage dependencies for Node.js (`npm`) and Python (`pip`) apps directly inside the web UI without opening a terminal.
 - 1-click search, install, and uninstall with live terminal progress output.
+
+### Telegram Cloud & TeleDrive (Unlimited Free Object Storage)
+- Click the **TeleDrive (Cloud)** tab.
+- **Unlimited Free Cloud Object Storage**: Connect your private Telegram Bot and Channel/Chat to unlock 100% free, unlimited off-device cloud object storage.
+- **Static Web Hosting Exports (.zip)**: 1-click package and export any running website into a clean `.zip` archive stored on Telegram Cloud.
+- **1-Click Instant Web Deployment**: Select any static `.zip` archive stored in Telegram Cloud and launch it as a live TermuxPanel website with auto-port allocation and domain mapping.
+- **Automated Backup Sync & 7-Day Retention Pruning**: Seamlessly pushes scheduled `.tar.gz` backups to Telegram and auto-prunes backups older than 7 days from Telegram and local storage.
+- **Categorized File Management**: Filter and search through stored `Backups`, `Static Sites`, `Media`, and `Documents` with direct download URLs.
 
 ### Viewing Live Server Logs
 - Click the **Logs** tab.

@@ -160,6 +160,7 @@ const app = {
     logsViewer.init();
     backupsManager.init();
     tunnelManager.init();
+    teledriveManager.init();
     terminalManager.init();
     settingsManager.init();
 
@@ -253,6 +254,7 @@ const app = {
       logs: 'System & Application Logs',
       backups: 'Backups & Archives',
       tunnel: 'Cloudflare Zero Trust Tunnel',
+      teledrive: 'TeleDrive & Telegram Cloud Storage',
       settings: 'Server Settings'
     };
 
@@ -278,6 +280,7 @@ const app = {
     if (tabId === 'logs') logsViewer.discoverLogs();
     if (tabId === 'backups') backupsManager.loadBackups();
     if (tabId === 'tunnel') tunnelManager.loadStatus();
+    if (tabId === 'teledrive') teledriveManager.loadDrive();
     if (tabId === 'settings') settingsManager.loadSettings();
 
     if (window.lucide) {

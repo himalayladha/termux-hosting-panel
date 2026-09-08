@@ -32,6 +32,7 @@ const uptimeRoutes = require('./routes/uptime.routes');
 const uptimeService = require('./services/uptime.service');
 const packagesRoutes = require('./routes/packages.routes');
 const emailRoutes = require('./routes/email.routes');
+const teledriveRoutes = require('./routes/teledrive.routes');
 const { ipBanGuard } = require('./auth/ipban.middleware');
 
 const app = express();
@@ -97,6 +98,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/uptime', uptimeRoutes);
 app.use('/api/packages', packagesRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/teledrive', teledriveRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');

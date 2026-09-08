@@ -146,6 +146,10 @@
           <i data-lucide="hard-drive-download" class="nav-icon"></i>
           <span class="nav-label">Backups</span>
         </button>
+        <button class="nav-item" data-tab="teledrive">
+          <i data-lucide="cloud-upload" class="nav-icon"></i>
+          <span class="nav-label">TeleDrive (Cloud)</span>
+        </button>
         <button class="nav-item" data-tab="tunnel">
           <i data-lucide="cloud" class="nav-icon"></i>
           <span class="nav-label">Cloudflare Tunnel</span>
@@ -935,7 +939,117 @@
           </div>
         </section>
 
-        <!-- 8. TUNNEL & MULTI-PROVIDER VIEW -->
+        <!-- 8. TELEDRIVE & TELEGRAM CLOUD VIEW -->
+        <section id="view-teledrive" class="tab-view">
+          <div class="view-header flex-between flex-wrap gap-2">
+            <div>
+              <h3>TeleDrive & Telegram Cloud Storage</h3>
+              <p class="text-muted">Unlimited free cloud object storage, static web exports, and automated 7-day pruned backups</p>
+            </div>
+            <div class="flex-align gap-2 flex-wrap">
+              <button class="btn btn-secondary btn-sm" onclick="teledriveManager.openConfigModal()" title="Configure Telegram Bot Token & Channel ID">
+                <i data-lucide="settings" style="width: 14px; height: 14px; margin-right: 4px; color: #38bdf8;"></i>
+                Bot Settings
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="teledriveManager.triggerBackupAndSync()" title="Push automated full backup with 7-day retention pruning">
+                <i data-lucide="cloud-upload" style="width: 14px; height: 14px; margin-right: 4px; color: #a855f7;"></i>
+                Backup & Sync
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="teledriveManager.openExportModal()" title="Export website as static .zip bundle to Telegram">
+                <i data-lucide="package" style="width: 14px; height: 14px; margin-right: 4px; color: #4ade80;"></i>
+                Export Site
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="teledriveManager.openUploadModal()">
+                <i data-lucide="upload" style="width: 14px; height: 14px; margin-right: 4px;"></i>
+                Upload to Cloud
+              </button>
+            </div>
+          </div>
+
+          <!-- Telegram Unconfigured Alert Banner -->
+          <div id="teledrive-status-banner" class="card mb-4 hidden" style="background: rgba(245, 158, 11, 0.08); border-left: 4px solid #f59e0b;">
+            <div class="card-body p-3 flex-between flex-wrap gap-2">
+              <div class="flex-align gap-2">
+                <i data-lucide="alert-triangle" style="width: 20px; height: 20px; color: #f59e0b;"></i>
+                <div>
+                  <strong style="color: #f59e0b;">Telegram Cloud is not connected yet!</strong>
+                  <div class="text-muted text-sm">Connect your Telegram Bot Token and Private Channel ID to unlock unlimited free cloud storage & automated backup sync.</div>
+                </div>
+              </div>
+              <button class="btn btn-warning btn-sm" onclick="teledriveManager.openConfigModal()" style="background: #f59e0b; color: #000; font-weight: 600;">
+                <i data-lucide="link" style="width: 13px; height: 13px; margin-right: 3px;"></i> Connect Bot (1-Min Setup)
+              </button>
+            </div>
+          </div>
+
+          <!-- TeleDrive Metric Cards -->
+          <div class="grid grid-2 gap-3 mb-4">
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Cloud Objects Stored</span>
+                <i data-lucide="cloud" style="width: 16px; height: 16px; color: #38bdf8;"></i>
+              </div>
+              <div class="metric-value" id="teledrive-stat-files" style="font-size: 26px; font-weight: 700; color: #fff;">0</div>
+              <div class="flex-between mt-2 flex-wrap gap-1">
+                <span class="text-muted text-sm">Stored on Telegram Datacenters</span>
+                <span id="teledrive-channel-badge"></span>
+              </div>
+            </div>
+
+            <div class="card p-3">
+              <div class="flex-between mb-2">
+                <span class="text-muted text-sm" style="text-transform: uppercase; font-weight: 600;">Total Storage Used</span>
+                <i data-lucide="hard-drive" style="width: 16px; height: 16px; color: #a855f7;"></i>
+              </div>
+              <div class="metric-value" id="teledrive-stat-size" style="color: #a855f7; font-size: 26px; font-weight: 700;">0 B</div>
+              <div class="flex-between mt-2 flex-wrap gap-1">
+                <span class="text-muted text-sm">Zero Storage Cost ($0.00)</span>
+                <span id="teledrive-pruning-badge"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Explorer Card -->
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-2">
+              <!-- Category Filter Buttons -->
+              <div class="flex-align gap-1 flex-wrap">
+                <button class="btn btn-secondary btn-sm teledrive-filter-btn active" data-category="all">All Files</button>
+                <button class="btn btn-secondary btn-sm teledrive-filter-btn" data-category="backup">📦 Backups</button>
+                <button class="btn btn-secondary btn-sm teledrive-filter-btn" data-category="static_site">🌐 Static Sites</button>
+                <button class="btn btn-secondary btn-sm teledrive-filter-btn" data-category="media">🖼️ Media</button>
+                <button class="btn btn-secondary btn-sm teledrive-filter-btn" data-category="documents">📁 Documents</button>
+              </div>
+
+              <!-- Search and Refresh -->
+              <div class="flex-align gap-2">
+                <input type="text" id="teledrive-search-input" placeholder="Search files..." class="form-control-sm" style="min-width: 180px;">
+                <button id="teledrive-refresh-btn" class="btn btn-secondary btn-sm" title="Refresh TeleDrive">
+                  <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i>
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>Category</th>
+                    <th>File Size</th>
+                    <th>Uploaded Date</th>
+                    <th>Telegram Msg</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="teledrive-table-body">
+                  <!-- Dynamic File Items -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. TUNNEL & MULTI-PROVIDER VIEW -->
         <section id="view-tunnel" class="tab-view">
           <!-- Provider Tab Switcher -->
           <div class="flex-align gap-2 mb-4 flex-wrap" id="tunnel-provider-tabs">
@@ -2657,6 +2771,176 @@
     </div>
   </div>
 
+  <!-- Modal: TeleDrive Configuration & Telegram Cloud Setup -->
+  <div id="modal-teledrive-config" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="send" style="width: 20px; height: 20px; color: #38bdf8;"></i>
+          <h3>Telegram Cloud & TeleDrive Setup</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info mb-3" style="font-size: 13px;">
+          <i data-lucide="info" style="width: 16px; height: 16px; margin-right: 6px; display: inline-block; vertical-align: text-top;"></i>
+          Connect your custom Telegram Bot and Channel/Chat to unlock <strong>unlimited free cloud object storage</strong>, automated 7-day backup syncing, and static site packaging!
+        </div>
+
+        <form id="teledrive-config-form">
+          <div class="form-group">
+            <label for="teledrive-bot-token-input"><strong>Telegram Bot Token</strong></label>
+            <input type="password" id="teledrive-bot-token-input" class="form-control" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ" required>
+            <small class="text-muted">Create a bot for free with <a href="https://t.me/BotFather" target="_blank" style="color: #38bdf8;">@BotFather</a> on Telegram.</small>
+          </div>
+
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label for="teledrive-chat-id-input"><strong>Chat / Channel ID</strong></label>
+              <input type="text" id="teledrive-chat-id-input" class="form-control" placeholder="e.g. -1001234567890 or @channel" required>
+              <small class="text-muted">Channel/Group ID or your private Chat ID.</small>
+            </div>
+            <div class="form-group">
+              <label for="teledrive-channel-username-input"><strong>Channel Handle (Optional)</strong></label>
+              <input type="text" id="teledrive-channel-username-input" class="form-control" placeholder="@my_termux_storage">
+              <small class="text-muted">Display name for your channel.</small>
+            </div>
+          </div>
+
+          <div id="teledrive-test-result" class="mb-3" style="font-size: 13px;"></div>
+
+          <div class="modal-footer flex-between" style="padding: 0; border: none; background: transparent; margin-top: 20px;">
+            <button type="button" id="teledrive-test-btn" class="btn btn-secondary btn-sm">
+              <i data-lucide="radio" style="width: 13px; height: 13px; margin-right: 4px;"></i> Test Connection
+            </button>
+            <div class="flex-align gap-2">
+              <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="save" style="width: 14px; height: 14px; margin-right: 4px;"></i> Save & Connect
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Upload File to Telegram Cloud -->
+  <div id="modal-teledrive-upload" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="upload-cloud" style="width: 20px; height: 20px; color: #38bdf8;"></i>
+          <h3>Upload to Telegram Cloud Drive</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="teledrive-upload-form">
+          <div class="form-group">
+            <label for="teledrive-file-input"><strong>Select File</strong></label>
+            <input type="file" id="teledrive-file-input" class="form-control" required style="padding: 8px;">
+            <small class="text-muted">Upload any file format (up to 50 MB via standard bot API, up to 2 GB with local bot server).</small>
+          </div>
+
+          <div class="form-group">
+            <label for="teledrive-category-select"><strong>Storage Category</strong></label>
+            <select id="teledrive-category-select" class="form-control">
+              <option value="general">General File</option>
+              <option value="media">Media & Images</option>
+              <option value="documents">Documents & Text</option>
+              <option value="backup">Server / DB Backup (.tar.gz)</option>
+              <option value="static_site">Static Web Export (.zip)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="teledrive-caption-input"><strong>Caption / Description (Optional)</strong></label>
+            <input type="text" id="teledrive-caption-input" class="form-control" placeholder="e.g. Production database snapshot or assets bundle">
+          </div>
+
+          <div class="modal-footer flex-between" style="padding: 0; border: none; background: transparent; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+            <button type="submit" id="teledrive-upload-submit-btn" class="btn btn-primary">
+              <i data-lucide="upload" style="width: 14px; height: 14px; margin-right: 4px;"></i> Upload to Telegram
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Export Website to Telegram Cloud -->
+  <div id="modal-teledrive-export" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="package" style="width: 20px; height: 20px; color: #4ade80;"></i>
+          <h3>Export Website to Telegram Cloud</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted text-sm mb-3">
+          Package your entire website into a clean, standalone <code>.zip</code> archive and securely store it on Telegram Cloud for instant distribution, backup, or 1-click redeploy.
+        </p>
+        <form id="teledrive-export-form">
+          <div class="form-group">
+            <label for="teledrive-export-site-select"><strong>Choose Website to Export</strong></label>
+            <select id="teledrive-export-site-select" class="form-control" required></select>
+          </div>
+
+          <div class="modal-footer flex-between" style="padding: 0; border: none; background: transparent; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+            <button type="submit" id="teledrive-export-submit-btn" class="btn btn-primary">
+              <i data-lucide="package" style="width: 14px; height: 14px; margin-right: 4px;"></i> Export to Telegram
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: 1-Click Deploy Website from Telegram Cloud -->
+  <div id="modal-teledrive-deploy" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="flex-align gap-2">
+          <i data-lucide="rocket" style="width: 20px; height: 20px; color: #38bdf8;"></i>
+          <h3>1-Click Deploy from Telegram Cloud</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info mb-3" style="font-size: 13px;">
+          Deploying: <strong id="teledrive-deploy-file-name-text" style="color: #fff;">file.zip</strong>
+        </div>
+        <form id="teledrive-deploy-form">
+          <input type="hidden" id="teledrive-deploy-file-id">
+
+          <div class="form-group">
+            <label for="teledrive-deploy-site-name-input"><strong>Website / App Name</strong></label>
+            <input type="text" id="teledrive-deploy-site-name-input" class="form-control" placeholder="my-awesome-site" required>
+            <small class="text-muted">Unique identifier for this site.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="teledrive-deploy-domain-input"><strong>Custom Domain (Optional)</strong></label>
+            <input type="text" id="teledrive-deploy-domain-input" class="form-control" placeholder="site.yourdomain.com">
+            <small class="text-muted">Optional domain mapped to this site.</small>
+          </div>
+
+          <div class="modal-footer flex-between" style="padding: 0; border: none; background: transparent; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+            <button type="submit" id="teledrive-deploy-submit-btn" class="btn btn-primary">
+              <i data-lucide="rocket" style="width: 14px; height: 14px; margin-right: 4px;"></i> Launch Website
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Universal Fullscreen Modal Dialog (No browser alert/confirm) -->
   <div id="modal-app-dialog" class="modal-overlay hidden" style="z-index: 99999;">
     <div class="modal-card" style="max-width: 460px; text-align: center; padding: 28px 24px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);">
@@ -2693,6 +2977,7 @@
   <script src="js/logs.js"></script>
   <script src="js/backups.js"></script>
   <script src="js/tunnel.js"></script>
+  <script src="js/teledrive.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/app.js"></script>
 </body>

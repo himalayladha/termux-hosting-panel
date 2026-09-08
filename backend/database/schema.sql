@@ -150,3 +150,19 @@ CREATE TABLE IF NOT EXISTS email_forwarders (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_email_domain ON email_forwarders(domain);
+
+CREATE TABLE IF NOT EXISTS telegram_files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    file_name TEXT NOT NULL,
+    file_size INTEGER DEFAULT 0,
+    mime_type TEXT,
+    category TEXT DEFAULT 'general',
+    telegram_file_id TEXT,
+    telegram_message_id INTEGER,
+    chat_id TEXT,
+    caption TEXT,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_teledrive_category ON telegram_files(category);
+CREATE INDEX IF NOT EXISTS idx_teledrive_uploaded ON telegram_files(uploaded_at);
+
