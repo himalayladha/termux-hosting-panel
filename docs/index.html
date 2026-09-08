@@ -14,7 +14,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    :root {
+    :root,
+    body.dark-theme,
+    [data-theme="dark"] {
       --bg: #0b0f19;
       --bg-card: #131b2e;
       --bg-card-hover: #1a253f;
@@ -33,6 +35,44 @@
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       --radius: 12px;
     }
+
+    body.light-theme,
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-darker: #f1f5f9;
+      --border: #e2e8f0;
+      --border-light: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-glow: rgba(2, 132, 199, 0.2);
+      --primary-light: #0284c7;
+      --success: #059669;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+
+    body, .navbar, .card, .pricing-card, .faq-item, .arch-card, .btn {
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    body.light-theme .navbar {
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom-color: var(--border);
+    }
+    body.light-theme .nav-brand { color: #0f172a; }
+    body.light-theme .nav-links a:hover { color: #0f172a; }
+    body.light-theme .mobile-menu { background: #ffffff; }
+    body.light-theme .mobile-menu a:hover { color: #0f172a; }
+    body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4 { color: #0f172a; }
+    body.light-theme .btn-secondary { background: #ffffff; border-color: #cbd5e1; color: #1e293b; }
+    body.light-theme .btn-secondary:hover { background: #f1f5f9; }
+    body.light-theme .comparison-table th { background: #f1f5f9; color: #64748b; }
+    body.light-theme .comparison-table td { color: #1e293b; }
+    body.light-theme .comparison-table tr:hover td { background: #f8fafc; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -668,6 +708,9 @@
         <a href="#cloudflare">Cloudflare Tunnel</a>
         <a href="#security">Security</a>
         <a href="#faq">FAQ</a>
+        <button id="theme-toggle" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 6px 10px;">
+          <i id="landing-theme-icon" data-lucide="sun" style="width: 15px; height: 15px;"></i>
+        </button>
         <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm">
           <i data-lucide="star"></i> GitHub Repo
         </a>
@@ -691,6 +734,10 @@
     <a href="#cloudflare" onclick="toggleMobileMenu()">Cloudflare Tunnel</a>
     <a href="#security" onclick="toggleMobileMenu()">Security</a>
     <a href="#faq" onclick="toggleMobileMenu()">FAQ</a>
+    <button id="mobile-theme-toggle" class="btn btn-secondary btn-sm" style="margin-top: 6px; width: 100%; justify-content: center;">
+      <i id="mobile-theme-icon" data-lucide="sun" style="width: 15px; height: 15px; margin-right: 6px;"></i>
+      <span>Toggle Light / Dark Mode</span>
+    </button>
     <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm" style="margin-top: 8px;">
       <i data-lucide="star"></i> View on GitHub
     </a>
@@ -1645,7 +1692,38 @@ echo json_encode([
 
   <!-- Interactive Scripts -->
   <script>
+    const applyLandingTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'light') {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+      }
+      const icon = document.getElementById('landing-theme-icon');
+      const mIcon = document.getElementById('mobile-theme-icon');
+      if (icon) icon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+      if (mIcon) mIcon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+      if (window.lucide) lucide.createIcons();
+    };
+
+    const savedTheme = localStorage.getItem('tp_theme') || 'dark';
+    applyLandingTheme(savedTheme);
+
+    const toggleTheme = () => {
+      const isLight = document.body.classList.contains('light-theme');
+      const newTheme = isLight ? 'dark' : 'light';
+      localStorage.setItem('tp_theme', newTheme);
+      applyLandingTheme(newTheme);
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('theme-toggle');
+      const mBtn = document.getElementById('mobile-theme-toggle');
+      if (btn) btn.addEventListener('click', toggleTheme);
+      if (mBtn) mBtn.addEventListener('click', toggleTheme);
+
       if (window.lucide) {
         lucide.createIcons();
       }

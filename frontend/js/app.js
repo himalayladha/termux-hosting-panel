@@ -1,7 +1,112 @@
+const themeManager = {
+  currentChoice: 'dark',
+
+  init() {
+    this.currentChoice = localStorage.getItem('tp_theme') || 'dark';
+    this.applyTheme(this.currentChoice, false);
+    this.bindEvents();
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (this.currentChoice === 'auto') {
+          this.applyTheme('auto', false);
+        }
+      });
+    }
+  },
+
+  bindEvents() {
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => this.toggle());
+    }
+
+    const authToggleBtn = document.getElementById('auth-theme-toggle-btn');
+    if (authToggleBtn) {
+      authToggleBtn.addEventListener('click', () => this.toggle());
+    }
+
+    document.querySelectorAll('.theme-select-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.themeChoice;
+        this.applyTheme(choice, true);
+        if (window.API && API.toast) {
+          API.toast(`Theme set to ${choice.charAt(0).toUpperCase() + choice.slice(1)} Mode`, 'info');
+        }
+      });
+    });
+  },
+
+  getEffectiveTheme(choice) {
+    if (choice === 'auto') {
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
+    return choice === 'light' ? 'light' : 'dark';
+  },
+
+  applyTheme(choice, save = true) {
+    this.currentChoice = choice;
+    if (save) {
+      localStorage.setItem('tp_theme', choice);
+    }
+
+    const effective = this.getEffectiveTheme(choice);
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.setAttribute('data-theme', effective);
+    if (effective === 'light') {
+      body.classList.remove('dark-theme');
+      body.classList.add('light-theme');
+    } else {
+      body.classList.remove('light-theme');
+      body.classList.add('dark-theme');
+    }
+
+    const updateBtn = (btnId, iconId) => {
+      const btn = document.getElementById(btnId);
+      const icon = document.getElementById(iconId);
+      if (icon) {
+        icon.setAttribute('data-lucide', effective === 'light' ? 'moon' : 'sun');
+      }
+      if (btn) {
+        btn.setAttribute('title', effective === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode');
+      }
+    };
+
+    updateBtn('theme-toggle-btn', 'theme-icon');
+    updateBtn('auth-theme-toggle-btn', 'auth-theme-icon');
+
+    document.querySelectorAll('.theme-select-btn').forEach((btn) => {
+      if (btn.dataset.themeChoice === choice) {
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+      } else {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+      }
+    });
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  },
+
+  toggle() {
+    const effective = this.getEffectiveTheme(this.currentChoice);
+    const newChoice = effective === 'light' ? 'dark' : 'light';
+    this.applyTheme(newChoice, true);
+    if (window.API && API.toast) {
+      API.toast(`Switched to ${newChoice === 'light' ? 'Light' : 'Dark'} Mode`, 'info');
+    }
+  }
+};
+
 const app = {
   currentUser: null,
 
   init() {
+    themeManager.init();
     this.bindGlobalEvents();
     this.checkAuthStatus();
   },

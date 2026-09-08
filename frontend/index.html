@@ -16,7 +16,12 @@
 <body class="dark-theme">
   <!-- Authentication / Setup Screen -->
   <div id="auth-container" class="auth-wrapper hidden">
-    <div class="auth-card">
+    <div class="auth-card" style="position: relative;">
+      <div style="position: absolute; top: 16px; right: 16px;">
+        <button id="auth-theme-toggle-btn" class="icon-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode">
+          <i id="auth-theme-icon" data-lucide="sun" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
       <div class="auth-header">
         <div class="logo-badge">
           <i data-lucide="server" style="width: 26px; height: 26px;"></i>
@@ -182,6 +187,9 @@
           <h2 id="page-title" class="page-title">Dashboard</h2>
         </div>
         <div class="topbar-right">
+          <button id="theme-toggle-btn" class="icon-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode">
+            <i id="theme-icon" data-lucide="sun" style="width: 16px; height: 16px;"></i>
+          </button>
           <div class="user-menu">
             <span id="nav-username" class="nav-username">Admin</span>
             <button id="logout-btn" class="btn btn-secondary btn-sm">
@@ -1552,7 +1560,32 @@
         <section id="view-settings" class="tab-view">
           <div class="view-header">
             <h3>Server & Security Settings</h3>
-            <p class="text-muted">Manage administrator access, server configurations, and system maintenance</p>
+            <p class="text-muted">Manage administrator access, appearance preferences, server configurations, and system maintenance</p>
+          </div>
+
+          <!-- 0. Appearance & Theme Preference Card -->
+          <div class="card mb-4">
+            <div class="card-header flex-align gap-2">
+              <i data-lucide="palette" style="width: 18px; height: 18px; color: #f59e0b;"></i>
+              <h3>Appearance & Theme</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-muted text-sm mb-3">Choose your interface display preference. Preferences persist across browser sessions and devices.</p>
+              <div class="flex-align gap-3 flex-wrap">
+                <button type="button" class="btn btn-primary theme-select-btn" data-theme-choice="dark" id="btn-theme-dark">
+                  <i data-lucide="moon" style="width: 15px; height: 15px; margin-right: 4px;"></i>
+                  Dark Mode
+                </button>
+                <button type="button" class="btn btn-secondary theme-select-btn" data-theme-choice="light" id="btn-theme-light">
+                  <i data-lucide="sun" style="width: 15px; height: 15px; margin-right: 4px;"></i>
+                  Light Mode
+                </button>
+                <button type="button" class="btn btn-secondary theme-select-btn" data-theme-choice="auto" id="btn-theme-auto">
+                  <i data-lucide="monitor" style="width: 15px; height: 15px; margin-right: 4px;"></i>
+                  System Auto-Detect
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="grid grid-2 gap-4">
