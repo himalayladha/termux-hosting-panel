@@ -5,10 +5,12 @@
 [![Android](https://img.shields.io/badge/Android-7.0%2B-brightgreen.svg)](https://www.android.com/)
 [![Termux](https://img.shields.io/badge/Platform-Termux-black.svg)](https://termux.dev/)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Zero%20Trust%20Tunnel-orange.svg)](https://www.cloudflare.com/)
+[![SSL](https://img.shields.io/badge/SSL-Auto%20HTTPS-brightgreen.svg)](https://www.cloudflare.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite3-blue.svg)](https://www.sqlite.org/)
+[![Telegram](https://img.shields.io/badge/Telegram-Cloud%20Storage-2CA5E0.svg)](https://telegram.org/)
 
 > **A complete, beginner-friendly web hosting control panel that turns any Android phone or tablet into a secure, self-hosted web server.**
-> Host your HTML, Node.js, Python, and PHP applications, manage SQLite databases, edit files in your browser, and access your server from anywhere in the world over HTTPS using Cloudflare Zero Trust — **no router port-forwarding, no static IP, and zero advanced server knowledge required.**
+> Host your HTML, Node.js, Python, and PHP applications with **Custom Domains, Automated DNS & Free SSL (HTTPS)**, manage **Free Professional Custom Domain Emails** in Gmail, store unlimited files on **Telegram Cloud & TeleDrive ($0 cost)**, explore SQLite databases, edit files in your browser, and access your server from anywhere in the world — **no router port-forwarding, no static IP, and zero advanced server knowledge required.**
 
 ---
 
@@ -29,9 +31,10 @@
    - [Deploying a Python App (Flask / FastAPI)](#deploying-a-python-app-flask--fastapi)
    - [Deploying a PHP Application](#deploying-a-php-application)
 8. [How to Use the Panel Features](#8-how-to-use-the-panel-features)
+   - [Custom Domain, DNS & Free Automatic SSL (HTTPS) Management](#custom-domain-dns--free-automatic-ssl-https-management)
+   - [Free Professional Custom Domain Email Routing Suite](#free-professional-custom-domain-email-routing-suite)
+   - [Unlimited Telegram Cloud & TeleDrive Object Storage Management](#unlimited-telegram-cloud--teledrive-object-storage-management)
    - [Privacy-First Web Traffic Analytics & Real-Time RPS](#privacy-first-web-traffic-analytics--real-time-rps)
-   - [Free Professional Custom Domain Email Routing](#free-professional-custom-domain-email-routing)
-   - [Telegram Cloud & TeleDrive (Unlimited Free Object Storage)](#telegram-cloud--teledrive-unlimited-free-object-storage)
    - [File Manager & In-Browser Code Editor](#file-manager--in-browser-code-editor)
    - [SQLite Database Studio & SQL Runner](#sqlite-database-studio--sql-query-runner)
    - [Visual NPM & PIP Package Manager](#visual-npm--pip-package-manager)
@@ -52,14 +55,16 @@
 
 ## 1. What is TermuxPanel?
 
-Normally, if you want to host a website, you have to pay a hosting company every month. 
+Normally, if you want to host a website or manage web applications, you have to pay a hosting company every month. 
 
-**TermuxPanel lets you use your Android smartphone as your hosting server for free.**
+**TermuxPanel lets you use your Android smartphone as your production web hosting server for free.**
 
-- You get a **modern web dashboard** that looks and feels like cPanel / aaPanel.
-- You can create websites, edit code files in your browser, upload files, manage databases, and view server performance (CPU, RAM, and Storage).
-- It runs inside **Termux**, which is a free Linux environment application for Android.
-- It connects to **Cloudflare**, which gives your website a fast, free, secure HTTPS address (`https://yourdomain.com`) that anyone in the world can visit on their computer or phone.
+- You get a **modern web dashboard** that looks and feels like cPanel / aaPanel / Cloudflare.
+- **Custom Domains, Automated DNS & Free SSL**: Bind any apex domain or subdomain with 1-click automatic HTTPS certificates and zero router port forwarding.
+- **Free Professional Custom Domain Email**: Receive emails in Gmail via Cloudflare Inbound Routing and reply from Gmail with custom domain sender branding via Brevo SMTP ($0 cost).
+- **Unlimited Telegram Cloud & TeleDrive**: Use Telegram Bot API as an unlimited free cloud object storage drive for assets, static website exports/deployments, and automated 7-day backup archives.
+- **Multi-Runtime Engine**: Run HTML static websites, Node.js APIs, Python services (Flask/FastAPI), and PHP applications simultaneously.
+- **Database & Process Studio**: Inspect SQLite databases, execute SQL queries, edit code files in your browser, and monitor hardware metrics (CPU, RAM, Battery Temperature).
 
 ---
 
@@ -352,6 +357,31 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 
 ## 8. How to Use the Panel Features
 
+### Custom Domain, DNS & Free Automatic SSL (HTTPS) Management
+- Click the **Domains** tab.
+- **Apex & Subdomain Provisioning**: Map any custom root domain (`yourdomain.com`) or unlimited subdomains (`api.yourdomain.com`, `shop.yourdomain.com`, `panel.yourdomain.com`) directly to internal local service ports (`:9000`, `:8100`, `:8101`...).
+- **Automated Cloudflare DNS Sync**: Sync ingress routes and DNS CNAME mappings into Cloudflare with 1 click via API token.
+- **Automatic Free SSL Certificates (HTTPS)**: Automatic Universal SSL certificates with green padlock 🔒, TLS 1.3 encryption, HTTP/2 & HTTP/3 multiplexing, and automatic HTTP-to-HTTPS redirection.
+- **Zero Port Forwarding & DDoS Shield**: All traffic routes through Cloudflare Anycast edge servers, hiding your mobile phone's true IP and providing enterprise-grade DDoS mitigation for $0.
+
+### Free Professional Custom Domain Email Routing Suite
+- Click the **Email Routing** tab.
+- **Inbound Receiving ($0 Free Forever)**: Receive emails sent to `support@yourdomain.com`, `admin@yourdomain.com`, or any custom address forwarded directly to your personal Gmail inbox via Cloudflare Email Routing.
+- **Outbound Sending & Reply from Gmail**: Send and reply to emails directly inside your regular Gmail interface showing your custom domain as the verified sender via free Brevo SMTP (300 free emails/day forever).
+- **Dual-Mode Provisioning Engine**:
+  - **Option A: 1-Click Cloudflare API Auto-Setup**: Automatically enables Email Routing on your zone, registers destination Gmail addresses, injects MX and SPF DNS records, and sets up routing rules.
+  - **Option B: Step-by-Step Guided Wizard**: Generates required `MX`, `SPF` (`v=spf1`), `DKIM` (`CNAME`), and `DMARC` (`TXT`) records with a 1-click **Download BIND Zone File** button for bulk DNS import into any registrar.
+- **1-Click Brevo DNS Auto-Push**: Automatically writes Brevo DKIM public keys (`brevo1._domainkey`) and DMARC TXT records into Cloudflare DNS with 1 click.
+- **Live DNS Propagation Health Auditor**: Real-time cross-nameserver verification tool that audits MX, SPF, DKIM, and DMARC records with deliverability scoring and pass/fail diagnostics.
+
+### Unlimited Telegram Cloud & TeleDrive Object Storage Management
+- Click the **TeleDrive (Cloud)** tab.
+- **Unlimited Free Cloud Object Storage**: Connect your private Telegram Bot (`@BotFather`) and Channel/Chat to unlock 100% free, unlimited off-device cloud object storage ($0 storage and bandwidth fees).
+- **Static Web Hosting Exports (.zip)**: 1-click package and export any running website into a clean `.zip` archive stored securely on Telegram Cloud for safe offsite backup or sharing.
+- **1-Click Instant Web Deployment**: Select any static `.zip` archive stored in Telegram Cloud and launch it as a live TermuxPanel website with auto-port allocation (`:8100`, `:8101`...) and optional custom domain mapping.
+- **Automated Backup Sync & 7-Day Retention Pruning**: Seamlessly pushes scheduled `.tar.gz` database and server snapshots to Telegram Cloud and auto-prunes backups older than 7 days from Telegram and local storage to preserve phone storage.
+- **Categorized File Management**: Filter and search through stored `Backups`, `Static Sites`, `Media`, and `Documents` with direct download stream URLs.
+
 ### Privacy-First Web Traffic Analytics & Real-Time RPS
 - Click the **Analytics** tab.
 - **Zero-PII & Zero Third-Party Cookies**: Collects visitor metrics stored in your local SQLite database without sending telemetry to Google, Meta, or third parties.
@@ -360,24 +390,6 @@ In the TermuxPanel dashboard, click the **Websites** tab and click **+ Create We
 - **HTTP Status Code Breakdown**: Interactive visual distribution of `2xx Success`, `3xx Redirect`, `4xx Client Error`, and `5xx Server Error`.
 - **Hourly Traffic Activity Chart**: Bar chart illustrating traffic trends across 1h, 24h, 7d, and 30d ranges.
 - **Top Visited Endpoints**: Ranked table of most requested pages, hits, unique visitors, and bandwidth consumed.
-
-### Free Professional Custom Domain Email Routing
-- Click the **Email Routing** tab.
-- **Receive at $0 Cost**: Receive emails sent to `support@yourdomain.com` forwarded directly to your personal Gmail inbox via Cloudflare Email Routing.
-- **Send & Reply from Gmail**: Send and reply to emails from Gmail showing your custom domain as the sender via free Brevo SMTP (300 emails/day forever).
-- **Dual-Mode Setup**:
-  - **Option A: 1-Click Cloudflare API Auto-Setup**: Auto-provisions Cloudflare Email Routing, destination address, and required MX/SPF records.
-  - **Option B: Step-by-Step Guided Wizard**: Generates required MX, SPF, DKIM (CNAME), and DMARC TXT records with a 1-click **Download BIND Zone File** button for bulk DNS import.
-- **1-Click Brevo DNS Auto-Push**: Injects Brevo DKIM keys and DMARC TXT records into Cloudflare DNS with 1 click.
-- **Live DNS Health Auditor**: Audits your domain's live MX, SPF, DKIM, and DMARC configuration across global nameservers with a real-time deliverability score.
-
-### Telegram Cloud & TeleDrive (Unlimited Free Object Storage)
-- Click the **TeleDrive (Cloud)** tab.
-- **Unlimited Free Cloud Object Storage**: Connect your private Telegram Bot (`@BotFather`) and Channel/Chat to unlock 100% free, unlimited off-device cloud object storage ($0 storage fees).
-- **Static Web Hosting Exports (.zip)**: 1-click package and export any running website into a clean `.zip` archive stored on Telegram Cloud.
-- **1-Click Instant Web Deployment**: Select any static `.zip` archive stored in Telegram Cloud and launch it as a live TermuxPanel website with auto-port allocation and domain mapping.
-- **Automated Backup Sync & 7-Day Retention Pruning**: Seamlessly pushes scheduled `.tar.gz` backups to Telegram and auto-prunes backups older than 7 days from Telegram and local storage.
-- **Categorized File Management**: Filter and search through stored `Backups`, `Static Sites`, `Media`, and `Documents` with direct download URLs.
 
 ### File Manager & In-Browser Code Editor
 - Select your website from the dropdown to browse its files.
