@@ -65,8 +65,28 @@
     }
     body.light-theme .nav-brand { color: #0f172a; }
     body.light-theme .nav-links a:hover { color: #0f172a; }
-    body.light-theme .mobile-menu { background: #ffffff; }
-    body.light-theme .mobile-menu a:hover { color: #0f172a; }
+    body.light-theme .mobile-menu {
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom-color: var(--border);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    body.light-theme .mobile-menu a {
+      color: #0f172a;
+    }
+    body.light-theme .mobile-menu a:hover,
+    body.light-theme .mobile-menu a:active {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+    body.light-theme .menu-toggle {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    body.light-theme .menu-toggle:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
     body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4 { color: #0f172a; }
     body.light-theme .hero-title {
       background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
@@ -121,21 +141,26 @@
       padding: 0 20px;
     }
 
-    /* Top Navbar */
+    /* Top Navbar - Full Width */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 1000;
+      width: 100%;
       background: rgba(11, 15, 25, 0.9);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      padding: 14px 0;
+      padding: 12px 0;
     }
-    .nav-inner {
+    .nav-container {
+      width: 100%;
+      max-width: 100%;
+      padding: 0 clamp(16px, 3.5vw, 40px);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
     }
     .nav-brand {
       display: flex;
@@ -146,6 +171,7 @@
       font-weight: 800;
       font-size: 19px;
       letter-spacing: -0.5px;
+      flex-shrink: 0;
     }
     .brand-logo {
       display: inline-flex;
@@ -157,59 +183,106 @@
       border-radius: 10px;
       color: #fff;
       box-shadow: 0 0 14px var(--primary-glow);
+      flex-shrink: 0;
     }
     .brand-logo .lucide { width: 18px; height: 18px; }
     
     .nav-links {
       display: flex;
-      gap: 18px;
+      gap: 16px;
       align-items: center;
+      flex-wrap: nowrap;
     }
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
       font-weight: 500;
-      font-size: 14px;
+      font-size: 13.5px;
       transition: color 0.2s;
+      white-space: nowrap;
     }
     .nav-links a:hover { color: #fff; }
 
-    /* Mobile Hamburger Menu Toggle */
+    /* Mobile Nav Actions & Hamburger Toggle */
+    .nav-mobile-actions {
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
     .menu-toggle {
       display: none;
-      background: transparent;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      padding: 8px 10px;
+      padding: 0;
       cursor: pointer;
-      font-size: 18px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .menu-toggle:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+      color: var(--primary-light);
+    }
+    .menu-toggle:active {
+      transform: scale(0.94);
+    }
+    .menu-toggle .lucide {
+      width: 20px;
+      height: 20px;
     }
 
-    /* Mobile Navigation Drawer */
+    /* Mobile Navigation Drawer - Full Width Overlay */
     .mobile-menu {
       display: none;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px 20px 20px;
-      background: #0d1322;
+      position: fixed;
+      top: 61px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-height: calc(100vh - 61px);
+      overflow-y: auto;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
+      padding: 16px clamp(16px, 3.5vw, 32px) 24px;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      z-index: 999;
     }
     .mobile-menu.open {
       display: flex;
-      animation: slideDown 0.2s ease;
+      animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .mobile-menu a {
-      color: var(--text-muted);
+      color: var(--text);
       text-decoration: none;
       font-size: 15px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
     }
-    .mobile-menu a:hover { color: #fff; }
+    .mobile-menu a:hover,
+    .mobile-menu a:active {
+      background: var(--bg-card-hover);
+      color: var(--primary-light);
+    }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -686,8 +759,9 @@
     }
 
     /* Mobile Breakpoints */
-    @media (max-width: 860px) {
+    @media (max-width: 1080px) {
       .nav-links { display: none; }
+      .nav-mobile-actions,
       .menu-toggle { display: inline-flex; }
       .hero-actions .btn { width: 100%; }
       .arch-row { flex-direction: column; }
@@ -706,9 +780,9 @@
 </head>
 <body>
 
-  <!-- Top Navigation -->
+  <!-- Top Navigation (Full Width) -->
   <nav class="navbar">
-    <div class="container nav-inner">
+    <div class="nav-container">
       <a href="#" class="nav-brand">
         <span class="brand-logo"><i data-lucide="smartphone"></i></span>
         <span>TermuxPanel</span>
@@ -732,31 +806,32 @@
           <i data-lucide="star"></i> GitHub Repo
         </a>
       </div>
-      <button class="menu-toggle" id="menu-btn" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
-        <i data-lucide="menu"></i>
-      </button>
+      <div class="nav-mobile-actions">
+        <button id="theme-toggle-mobile" class="btn btn-secondary btn-sm" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode" style="padding: 0; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+          <i id="landing-theme-icon-mobile" data-lucide="sun" style="width: 18px; height: 18px;"></i>
+        </button>
+        <button class="menu-toggle" id="menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" onclick="toggleMobileMenu()">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
     </div>
   </nav>
 
   <!-- Mobile Navigation Drawer -->
   <div class="mobile-menu" id="mobile-menu">
-    <a href="#features" onclick="toggleMobileMenu()">Features</a>
-    <a href="#smb-cost" onclick="toggleMobileMenu()">$0 SMB Stack</a>
-    <a href="#dashboard-preview" onclick="toggleMobileMenu()">Live Demo</a>
-    <a href="#traffic" onclick="toggleMobileMenu()">Traffic & Benchmarks</a>
-    <a href="#limitations" onclick="toggleMobileMenu()">Limitations</a>
-    <a href="#runtimes" onclick="toggleMobileMenu()">Runtimes</a>
-    <a href="#architecture" onclick="toggleMobileMenu()">Architecture</a>
-    <a href="#install" onclick="toggleMobileMenu()">Installation</a>
-    <a href="#cloudflare" onclick="toggleMobileMenu()">Cloudflare Tunnel</a>
-    <a href="#security" onclick="toggleMobileMenu()">Security</a>
-    <a href="#faq" onclick="toggleMobileMenu()">FAQ</a>
-    <button id="mobile-theme-toggle" class="btn btn-secondary btn-sm" style="margin-top: 6px; width: 100%; justify-content: center;">
-      <i id="mobile-theme-icon" data-lucide="sun" style="width: 15px; height: 15px; margin-right: 6px;"></i>
-      <span>Toggle Light / Dark Mode</span>
-    </button>
-    <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm" style="margin-top: 8px;">
-      <i data-lucide="star"></i> View on GitHub
+    <a href="#features" onclick="toggleMobileMenu()"><span>Features</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#smb-cost" onclick="toggleMobileMenu()"><span>$0 SMB Stack</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#dashboard-preview" onclick="toggleMobileMenu()"><span>Live Demo</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#traffic" onclick="toggleMobileMenu()"><span>Traffic & Benchmarks</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#limitations" onclick="toggleMobileMenu()"><span>Limitations</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#runtimes" onclick="toggleMobileMenu()"><span>Runtimes</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#architecture" onclick="toggleMobileMenu()"><span>Architecture</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#install" onclick="toggleMobileMenu()"><span>Installation</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#cloudflare" onclick="toggleMobileMenu()"><span>Cloudflare Tunnel</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#security" onclick="toggleMobileMenu()"><span>Security</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="#faq" onclick="toggleMobileMenu()"><span>FAQ</span> <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-muted);"></i></a>
+    <a href="https://github.com/himalayladha/termux-hosting-panel" target="_blank" class="btn btn-primary btn-sm" style="margin-top: 10px; width: 100%; justify-content: center; padding: 10px;">
+      <i data-lucide="star"></i> View on GitHub (Star ⭐)
     </a>
   </div>
 
@@ -1719,7 +1794,7 @@ echo json_encode([
         document.body.classList.add('dark-theme');
       }
       const icon = document.getElementById('landing-theme-icon');
-      const mIcon = document.getElementById('mobile-theme-icon');
+      const mIcon = document.getElementById('landing-theme-icon-mobile');
       if (icon) icon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
       if (mIcon) mIcon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
       if (window.lucide) lucide.createIcons();
@@ -1737,7 +1812,7 @@ echo json_encode([
 
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('theme-toggle');
-      const mBtn = document.getElementById('mobile-theme-toggle');
+      const mBtn = document.getElementById('theme-toggle-mobile');
       if (btn) btn.addEventListener('click', toggleTheme);
       if (mBtn) mBtn.addEventListener('click', toggleTheme);
 
@@ -1748,8 +1823,36 @@ echo json_encode([
 
     function toggleMobileMenu() {
       const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('open');
+      const menuBtn = document.getElementById('menu-btn');
+      if (!menu) return;
+      const isOpen = menu.classList.toggle('open');
+      if (menuBtn) {
+        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menuBtn.innerHTML = isOpen ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
+        if (window.lucide) lucide.createIcons();
+      }
     }
+
+    // Close mobile menu on outside click
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('mobile-menu');
+      const menuBtn = document.getElementById('menu-btn');
+      if (menu && menu.classList.contains('open')) {
+        if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+          toggleMobileMenu();
+        }
+      }
+    });
+
+    // Close mobile menu on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const menu = document.getElementById('mobile-menu');
+        if (menu && menu.classList.contains('open')) {
+          toggleMobileMenu();
+        }
+      }
+    });
 
     function switchRuntimeTab(tabKey) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
