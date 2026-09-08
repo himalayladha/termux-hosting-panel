@@ -71,19 +71,20 @@ function maskToken(token) {
   return '****';
 }
 
-// Check if background process is running
-async function isProcessRunning(processPattern) {
+// Check if background process is running by exact binary name
+async function isProcessRunning(binaryName) {
+  if (!binaryName) return false;
   if (process.platform === 'win32') {
     try {
       const { stdout } = await execPromise('tasklist');
-      return stdout.toLowerCase().includes(processPattern.toLowerCase());
+      return stdout.toLowerCase().includes(binaryName.toLowerCase());
     } catch (_) {
       return false;
     }
   }
 
   try {
-    const { stdout } = await execPromise(`pgrep -f "${processPattern}" || true`);
+    const { stdout } = await execPromise(`pgrep -x "${binaryName}"`);
     return !!stdout.trim();
   } catch (e) {
     return false;
@@ -153,26 +154,45 @@ const multitunnelService = {
     // 2. Ngrok
     const ngrokInstalled = await checkBinaryInstalled('ngrok');
     const ngrokToken = getTokenFile(config.NGROK_TOKEN_FILE);
-    const ngrokRunning = await isProcessRunning('ngrok http');
+    let ngrokRunning = false;
     let ngrokPublicUrl = null;
-    if (ngrokRunning) {
-      ngrokPublicUrl = await fetchNgrokPublicUrl();
+    if (ngrokInstalled.installed) {
+      ngrokRunning = await isProcessRunning('ngrok');
+      if (ngrokRunning) {
+        ngrokPublicUrl = await fetchNgrokPublicUrl();
+      }
     }
 
     // 3. LocalXpose
     const loclxInstalled = await checkBinaryInstalled('loclx');
     const loclxToken = getTokenFile(config.LOCLX_TOKEN_FILE);
-    const loclxRunning = await isProcessRunning('loclx tunnel');
+    let loclxRunning = false;
     let loclxPublicUrl = null;
-    if (loclxRunning) {
-      loclxPublicUrl = extractLoclxPublicUrl();
+    if (loclxInstalled.installed) {
+      loclxRunning = await isProcessRunning('loclx');
+      if (loclxRunning) {
+        loclxPublicUrl = extractLoclxPublicUrl();
+      }
     }
 
     // 4. Tailscale
     const tailscaleInstalled = await checkBinaryInstalled('tailscale');
-    const tailscaleRunning = await isProcessRunning('tailscale funnel');
+    let tailscaleRunning = false;
+    if (tailscaleInstalled.installed) {
+      if (process.platform === 'win32') {
+        tailscaleRunning = await isProcessRunning('tailscale');
+      } else {
+        try {
+          const { stdout } = await execPromise('tailscale funnel status || true');
+          const lower = (stdout || '').toLowerCase();
+          tailscaleRunning = lower.includes('https://') || (lower.includes('funnel') && lower.includes('active')) || lower.includes('funnel: on');
+        } catch (_) {
+          tailscaleRunning = false;
+        }
+      }
+    }
 
-    return {
+    const result = {
       cloudflare: {
         name: 'Cloudflare Zero Trust',
         id: 'cloudflare',
@@ -351,7 +371,7 @@ const multitunnelService = {
     if (provider === 'ngrok') {
       if (process.platform !== 'win32') {
         try {
-          await execPromise('pkill -f "ngrok http" || true');
+          await execPromise('pkill -9 -x ngrok || true');
         } catch (_) {}
       }
       return { success: true, provider: 'ngrok', message: 'Ngrok tunnel stopped' };
@@ -360,7 +380,7 @@ const multitunnelService = {
     if (provider === 'localxpose') {
       if (process.platform !== 'win32') {
         try {
-          await execPromise('pkill -f "loclx tunnel" || true');
+          await execPromise('pkill -9 -x loclx || true');
         } catch (_) {}
       }
       return { success: true, provider: 'localxpose', message: 'LocalXpose tunnel stopped' };

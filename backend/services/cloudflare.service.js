@@ -496,13 +496,15 @@ async function getTunnelStatus() {
   const tunnelConfig = getTunnelConfig();
 
   let isRunning = false;
-  try {
-    if (process.platform !== 'win32') {
-      const { stdout } = await execPromise('pgrep -x cloudflared');
-      isRunning = !!stdout.trim();
+  if (binary.installed) {
+    try {
+      if (process.platform !== 'win32') {
+        const { stdout } = await execPromise('pgrep -x cloudflared');
+        isRunning = !!stdout.trim();
+      }
+    } catch (e) {
+      isRunning = false;
     }
-  } catch (e) {
-    isRunning = false;
   }
 
   return {

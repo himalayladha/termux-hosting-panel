@@ -127,8 +127,6 @@ const tunnelManager = {
         const publicUrlLink = document.getElementById('ngrok-public-url-link');
         const openUrlBtn = document.getElementById('ngrok-open-url-btn');
         const copyUrlBtn = document.getElementById('ngrok-copy-url-btn');
-        const startBtn = document.getElementById('btn-start-ngrok');
-        const stopBtn = document.getElementById('btn-stop-ngrok');
 
         if (statusBadge) {
           statusBadge.textContent = n.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
@@ -136,14 +134,15 @@ const tunnelManager = {
         }
         if (statusText) {
           statusText.textContent = n.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
-          statusText.style.color = n.isRunning ? '#22c55e' : '#f59e0b';
+          statusText.style.color = n.isRunning ? 'var(--success)' : 'var(--text-muted)';
         }
         if (maskedToken) {
           maskedToken.textContent = n.tokenMask || (n.isConfigured ? 'Token Configured' : 'Not Configured');
+          maskedToken.style.color = n.isConfigured ? 'var(--primary)' : 'var(--text-muted)';
         }
         if (binaryInfo) {
           binaryInfo.textContent = n.isInstalled ? 'Installed' : 'Not Installed (pkg install -y ngrok)';
-          binaryInfo.style.color = n.isInstalled ? '#22c55e' : '#f87171';
+          binaryInfo.style.color = n.isInstalled ? 'var(--success)' : 'var(--danger)';
         }
 
         if (n.isRunning && n.publicUrl) {
@@ -181,14 +180,15 @@ const tunnelManager = {
         }
         if (statusText) {
           statusText.textContent = l.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
-          statusText.style.color = l.isRunning ? '#22c55e' : '#f59e0b';
+          statusText.style.color = l.isRunning ? 'var(--success)' : 'var(--text-muted)';
         }
         if (maskedToken) {
           maskedToken.textContent = l.tokenMask || (l.isConfigured ? 'Token Configured' : 'Not Configured');
+          maskedToken.style.color = l.isConfigured ? 'var(--primary)' : 'var(--text-muted)';
         }
         if (binaryInfo) {
           binaryInfo.textContent = l.isInstalled ? 'Installed' : 'Not Installed (curl installer)';
-          binaryInfo.style.color = l.isInstalled ? '#22c55e' : '#f87171';
+          binaryInfo.style.color = l.isInstalled ? 'var(--success)' : 'var(--danger)';
         }
 
         if (l.isRunning && l.publicUrl) {
@@ -221,11 +221,11 @@ const tunnelManager = {
         }
         if (statusText) {
           statusText.textContent = t.isRunning ? 'FUNNEL ACTIVE' : 'STOPPED';
-          statusText.style.color = t.isRunning ? '#22c55e' : '#f59e0b';
+          statusText.style.color = t.isRunning ? 'var(--success)' : 'var(--text-muted)';
         }
         if (binaryInfo) {
           binaryInfo.textContent = t.isInstalled ? 'Installed' : 'Not Installed (pkg install -y tailscale)';
-          binaryInfo.style.color = t.isInstalled ? '#22c55e' : '#f87171';
+          binaryInfo.style.color = t.isInstalled ? 'var(--success)' : 'var(--danger)';
         }
       }
 
@@ -318,6 +318,7 @@ const tunnelManager = {
   renderStatus(s) {
     const connectedPanel = document.getElementById('tunnel-connected-panel');
     const setupCard = document.getElementById('tunnel-setup-card');
+    const liveBadge = document.getElementById('tunnel-badge-live');
     const badge = document.getElementById('tunnel-badge');
     const statusText = document.getElementById('tunnel-status-text');
     const maskedToken = document.getElementById('tunnel-masked-token');
@@ -328,9 +329,16 @@ const tunnelManager = {
       if (connectedPanel) connectedPanel.classList.remove('hidden');
       if (setupCard) setupCard.classList.add('hidden');
 
+      if (liveBadge) {
+        liveBadge.className = s.isRunning ? 'badge badge-success' : 'badge badge-secondary';
+        liveBadge.innerHTML = s.isRunning
+          ? `<i data-lucide="check-circle-2" style="width: 12px; height: 12px; margin-right: 3px;"></i> ACTIVE & ROUTING`
+          : `<i data-lucide="pause-circle" style="width: 12px; height: 12px; margin-right: 3px;"></i> STOPPED`;
+      }
+
       if (statusText) {
         statusText.textContent = s.isRunning ? 'RUNNING / ONLINE' : 'STOPPED';
-        statusText.style.color = s.isRunning ? '#22c55e' : '#f59e0b';
+        statusText.style.color = s.isRunning ? 'var(--success)' : 'var(--text-muted)';
       }
 
       if (maskedToken) {
@@ -338,7 +346,8 @@ const tunnelManager = {
       }
 
       if (binaryInfo) {
-        binaryInfo.textContent = s.binaryVersion ? s.binaryVersion.split(' ')[0] + ' ' + (s.binaryVersion.split(' ')[2] || '') : (s.binaryInstalled ? 'Installed' : 'cloudflared ready');
+        binaryInfo.textContent = s.binaryVersion ? s.binaryVersion.split(' ')[0] + ' ' + (s.binaryVersion.split(' ')[2] || '') : (s.binaryInstalled ? 'Installed' : 'Not Installed (pkg install -y cloudflared)');
+        binaryInfo.style.color = s.binaryInstalled ? 'var(--success)' : 'var(--danger)';
       }
 
       if (powerBtn) {
